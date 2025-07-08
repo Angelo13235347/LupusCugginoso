@@ -95,7 +95,7 @@
                 transparent 75%,
                 rgba(255,255,255,0.1) 75%,
                 rgba(255,255,255,0.1)
-            ;
+            );
             background-size: 5px 5px;
             opacity: 0.3;
         }
@@ -193,7 +193,6 @@
             background-size: cover;
         }
 
-        /* Stile per dispositivi mobili */
         @media (max-width: 600px) {
             h1 {
                 font-size: 2em;
@@ -220,27 +219,23 @@
 <body>
     <div class="blood-splatter"></div>
     
-    <!-- Schermata iniziale -->
     <div id="homeScreen" class="screen active">
         <h1>LUPUS CUGGINOSO</h1>
         <button onclick="showScreen('joinScreen')">ENTRA NEL GIOCO</button>
     </div>
 
-    <!-- Schermata inserimento nome -->
     <div id="joinScreen" class="screen">
         <h1>COME TI CHIAMI?</h1>
         <input type="text" id="playerName" placeholder="Il tuo nome" maxlength="20">
         <button onclick="joinGame()">ENTRA IN PARTITA</button>
     </div>
 
-    <!-- Lobby giocatori -->
     <div id="lobbyScreen" class="screen">
         <h1>IN ATTESA DI GIOCATORI...</h1>
         <div id="playersList"></div>
         <button id="hostButton" onclick="becomeHost()">DIVENTA NARRATORE</button>
     </div>
 
-    <!-- Schermata del narratore -->
     <div id="hostScreen" class="screen">
         <h1>SEI IL NARRATORE</h1>
         <div id="assignedRoles"></div>
@@ -248,30 +243,27 @@
         <button onclick="endGame()" style="background: linear-gradient(to bottom, #333, #111);">TERMINA GIOCO</button>
     </div>
 
-    <!-- Schermata ruolo assegnato -->
     <div id="roleScreen" class="screen">
         <h1>IL TUO RUOLO È:</h1>
         <div id="playerRole" class="role-display">...</div>
     </div>
 
-    <!-- Firebase e logica del gioco -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
-        // Configura Firebase (sostituisci con i tuoi dati)
+        // Configurazione Firebase corretta
         const firebaseConfig = {
-  apiKey: "AIzaSyAsTO8sYN1M7A1aK238RiYXDef4MQkw-AI",
-  authDomain: "lupus-764f6.firebaseapp.com",
-  projectId: "lupus-764f6",
-  storageBucket: "lupus-764f6.firebasestorage.app",
-  messagingSenderId: "695119804153",
-  appId: "1:695119804153:web:d5cdcf9adbf633adb25428",
-  measurementId: "G-NRHHHBE2NL"
-};
+            apiKey: "AIzaSyAsTO8sYN1M7A1aK238RiYXDef4MQkw-AI",
+            authDomain: "lupus-764f6.firebaseapp.com",
+            databaseURL: "https://lupus-764f6-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "lupus-764f6",
+            storageBucket: "lupus-764f6.appspot.com",
+            messagingSenderId: "695119804153",
+            appId: "1:695119804153:web:d5cdcf9adbf633adb25428"
+        };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+        // Inizializza Firebase
+        firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
         // Variabili globali
@@ -281,7 +273,6 @@ const analytics = getAnalytics(app);
         let playersRef;
         let currentPlayerRef;
 
-        // Mostra una schermata e nascondi le altre
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.classList.remove('active');
@@ -289,31 +280,28 @@ const analytics = getAnalytics(app);
             document.getElementById(screenId).classList.add('active');
         }
 
-        // Unisciti al gioco
         function joinGame() {
             const playerName = document.getElementById('playerName').value.trim();
             if (!playerName) {
                 alert("Inserisci un nome cuggino!");
-                return false;
+                return;
             }
 
             playerId = Date.now().toString();
-            currentPlayerRef = database.ref('players/' + playerId);
             playersRef = database.ref('players');
+            currentPlayerRef = database.ref('players/' + playerId);
             
-            // Controlla se il nome è già in uso
+            // Controlla se il nome esiste già
             playersRef.once('value').then(snapshot => {
                 const players = snapshot.val() || {};
-                const nameExists = Object.values(players).some(player => 
-                    player.name.toLowerCase() === playerName.toLowerCase()
+                const nameExists = Object.values(players).some(
+                    player => player.name.toLowerCase() === playerName.toLowerCase()
                 );
                 
                 if (nameExists) {
-                    alert("Questo nome è già in uso! Scegline un altro.");
-                    return Promise.reject("Nome già in uso");
+                    throw new Error("Nome già in uso");
                 }
                 
-                // Aggiungi il giocatore al database
                 return currentPlayerRef.set({
                     name: playerName,
                     role: '',
@@ -321,21 +309,19 @@ const analytics = getAnalytics(app);
                 });
             })
             .then(() => {
-                // Mostra la lobby dopo l'inserimento
                 showScreen('lobbyScreen');
                 listenForPlayers();
-                return true;
             })
             .catch(error => {
-                console.error("Errore durante l'aggiunta del giocatore:", error);
-                if (error !== "Nome già in uso") {
-                    alert("Errore durante la connessione. Ricarica la pagina e riprova.");
+                if (error.message === "Nome già in uso") {
+                    alert("Questo nome è già in uso! Scegline un altro.");
+                } else {
+                    console.error("Errore:", error);
+                    alert("Errore di connessione. Ricarica e riprova.");
                 }
-                return false;
             });
         }
 
-        // Ascolta i giocatori connessi
         function listenForPlayers() {
             playersRef.on('value', (snapshot) => {
                 const players = snapshot.val() || {};
@@ -348,39 +334,32 @@ const analytics = getAnalytics(app);
                     if (player.isHost) hostExists = true;
                 }
 
-                // Mostra/nascondi pulsante "Diventa narratore"
                 document.getElementById('hostButton').style.display = hostExists ? 'none' : 'block';
             });
         }
 
-        // Diventa narratore
         function becomeHost() {
             playersRef.once('value').then(snapshot => {
                 const players = snapshot.val() || {};
                 const existingHost = Object.values(players).find(player => player.isHost);
                 
                 if (existingHost) {
-                    alert(`${existingHost.name} è già il narratore!`);
-                    return Promise.reject("Narratore già esistente");
+                    throw new Error(`${existingHost.name} è già il narratore!`);
                 }
                 
-                isHost = true;
                 return currentPlayerRef.update({ isHost: true });
             })
             .then(() => {
+                isHost = true;
                 showScreen('hostScreen');
                 listenForRoles();
             })
             .catch(error => {
-                if (error !== "Narratore già esistente") {
-                    console.error("Errore diventando narratore:", error);
-                    alert("Errore diventando narratore. Riprova!");
-                    isHost = false;
-                }
+                alert(error.message);
+                console.error("Errore:", error);
             });
         }
 
-        // Ascolta i ruoli assegnati (solo narratore)
         function listenForRoles() {
             playersRef.on('value', (snapshot) => {
                 const players = snapshot.val() || {};
@@ -393,7 +372,6 @@ const analytics = getAnalytics(app);
             });
         }
 
-        // Avvia il gioco (solo narratore)
         function startGame() {
             playersRef.once('value').then((snapshot) => {
                 const players = snapshot.val() || {};
@@ -401,79 +379,58 @@ const analytics = getAnalytics(app);
                 const playerCount = playerIds.length;
                 
                 if (playerCount < 3) {
-                    alert("Servono almeno 3 giocatori per iniziare!");
-                    return Promise.reject("Troppo pochi giocatori");
+                    throw new Error("Servono almeno 3 giocatori per iniziare!");
                 }
                 
-                // Crea la lista dei ruoli
                 let rolesToAssign = [...baseRoles];
-                
-                // Aggiungi contadini extra se necessario
                 while (rolesToAssign.length < playerCount) {
                     rolesToAssign.push("Contadino");
                 }
                 
-                // Mescola i ruoli
                 const shuffledRoles = shuffleArray(rolesToAssign);
-
-                // Assegna ruoli a tutti i giocatori
                 const updates = {};
+                
                 playerIds.forEach((id, index) => {
                     updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
                 });
 
-                // Esegui l'aggiornamento in blocco
                 return database.ref().update(updates);
             })
             .then(() => {
-                // Mostra il ruolo a tutti
                 setTimeout(() => {
                     showPlayerRoles();
                 }, 1000);
             })
             .catch(error => {
-                if (error !== "Troppo pochi giocatori") {
-                    console.error("Errore nell'assegnazione dei ruoli:", error);
-                    alert("Errore nell'assegnazione dei ruoli. Riprova!");
-                }
+                alert(error.message);
+                console.error("Errore:", error);
             });
         }
 
-        // Termina il gioco (solo narratore)
         function endGame() {
             if (confirm("Sei sicuro di voler terminare la partita? Tutti torneranno alla schermata iniziale.")) {
                 playersRef.once('value').then((snapshot) => {
                     const players = snapshot.val() || {};
-                    
-                    // Prepara gli aggiornamenti per resettare tutti i giocatori
                     const updates = {};
+                    
                     for (const id in players) {
                         updates['players/' + id + '/role'] = '';
                         updates['players/' + id + '/isHost'] = false;
                     }
                     
-                    // Esegui l'aggiornamento in blocco
                     return database.ref().update(updates);
                 })
                 .then(() => {
-                    // Torna alla schermata iniziale
                     showScreen('homeScreen');
                     isHost = false;
-                    
-                    // Rimuovi il giocatore corrente
-                    if (currentPlayerRef) {
-                        currentPlayerRef.remove()
-                            .catch(error => console.error("Errore rimuovendo giocatore:", error));
-                    }
                 })
                 .catch(error => {
-                    console.error("Errore nel terminare il gioco:", error);
-                    alert("Errore nel resettare il gioco. Ricarica la pagina manualmente.");
+                    console.error("Errore:", error);
+                    alert("Errore nel resettare il gioco.");
                 });
             }
         }
 
-        // Mostra il ruolo al giocatore
         function showPlayerRoles() {
             if (!currentPlayerRef) return;
             
@@ -484,11 +441,10 @@ const analytics = getAnalytics(app);
                     showScreen('roleScreen');
                 }
             }).catch(error => {
-                console.error("Errore mostrando ruolo:", error);
+                console.error("Errore:", error);
             });
         }
 
-        // Mescola array (per ruoli casuali)
         function shuffleArray(array) {
             const newArray = [...array];
             for (let i = newArray.length - 1; i > 0; i--) {
@@ -498,11 +454,9 @@ const analytics = getAnalytics(app);
             return newArray;
         }
 
-        // Pulisci i listener quando la pagina viene chiusa
         window.addEventListener('beforeunload', () => {
             if (currentPlayerRef) {
-                currentPlayerRef.remove()
-                    .catch(error => console.error("Errore rimuovendo giocatore:", error));
+                currentPlayerRef.remove();
             }
         });
     </script>
