@@ -106,27 +106,28 @@
     <!-- Schermata inserimento nome -->
     <div id="joinScreen" class="screen">
         <h1>COME TI CHIAMI?</h1>
-        <input type="text" id="playerName" placeholder="Il tuo nome cuggino">
-        <button onclick="joinGame()">ENTRA NELLA CUZZATA</button>
+        <input type="text" id="playerName" placeholder="Il tuo nome">
+        <button onclick="joinGame()">ENTRA IN PARTITA</button>
     </div>
 
     <!-- Lobby giocatori -->
     <div id="lobbyScreen" class="screen">
-        <h1>LA CUZZATA SI STA RADUNANDO...</h1>
+        <h1>IN ATTESA DI GIOCATORI...</h1>
         <div id="playersList"></div>
-        <button id="hostButton" onclick="becomeHost()">DIVENTA CAPO CUZZO</button>
+        <button id="hostButton" onclick="becomeHost()">DIVENTA NARRATORE</button>
     </div>
 
-    <!-- Schermata del capo cuzzo -->
+    <!-- Schermata del narratore -->
     <div id="hostScreen" class="screen">
-        <h1>SEI IL CAPO CUZZO</h1>
+        <h1>SEI IL NARRATORE</h1>
         <div id="assignedRoles"></div>
-        <button onclick="startGame()">INIZIA LA CUZZATA</button>
+        <button onclick="startGame()">AVVIA PARTITA</button>
+        <button onclick="endGame()" style="background-color: #333;">TERMINA GIOCO</button>
     </div>
 
     <!-- Schermata ruolo assegnato -->
     <div id="roleScreen" class="screen">
-        <h1>IL TUO DESTINO È:</h1>
+        <h1>IL TUO RUOLO È:</h1>
         <div id="playerRole" class="role-display">...</div>
     </div>
 
@@ -135,23 +136,22 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
         // Configura Firebase (sostituisci con i tuoi dati)
-const firebaseConfig = {
-const firebaseConfig = {
-  apiKey: "AIzaSyAsTO8sYN1M7A1aK238RiYXDef4MQkw-AI",
-  authDomain: "lupus-764f6.firebaseapp.com",
-  projectId: "lupus-764f6",
-  storageBucket: "lupus-764f6.firebasestorage.app",
-  messagingSenderId: "695119804153",
-  appId: "1:695119804153:web:d5cdcf9adbf633adb25428",
-  measurementId: "G-NRHHHBE2NL"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyAsTO8sYN1M7A1aK238RiYXDef4MQkw-AI",
+            authDomain: "lupus-764f6.firebaseapp.com",
+            databaseURL: "https://lupus-764f6.firebaseio.com",
+            projectId: "lupus-764f6",
+            storageBucket: "lupus-764f6.appspot.com",
+            messagingSenderId: "695119804153",
+            appId: "1:695119804153:web:d5cdcf9adbf633adb25428"
+        };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
         // Variabili globali
         let playerId;
         let isHost = false;
-        const roles = ["Lupo Cuggino", "Troia del Borgo", "Sbirro Infame", "Vanessa la Strega", "Sindaco Cornuto", "Contadino Sfigato"];
+        const baseRoles = ["Lupo", "Puttana", "Investigatore", "Vanessa", "Sindaco", "Contadino"];
 
         // Mostra una schermata e nascondi le altre
         function showScreen(screenId) {
@@ -164,7 +164,7 @@ const firebaseConfig = {
         // Unisciti al gioco
         function joinGame() {
             const playerName = document.getElementById('playerName').value.trim();
-            if (!playerName) return alert("Inserisci un nome cuggino!");
+            if (!playerName) return alert("Inserisci un nome!");
 
             playerId = Date.now().toString();
             const playerRef = database.ref('players/' + playerId);
@@ -188,16 +188,16 @@ const firebaseConfig = {
 
                 let hostExists = false;
                 for (const [id, player] of Object.entries(players)) {
-                    playersList.innerHTML += `<div>${player.name} ${player.isHost ? '(CAPO CUZZO)' : ''}</div>`;
+                    playersList.innerHTML += `<div>${player.name} ${player.isHost ? '(NARRATORE)' : ''}</div>`;
                     if (player.isHost) hostExists = true;
                 }
 
-                // Mostra/nascondi pulsante "Diventa capo cuzzo"
+                // Mostra/nascondi pulsante "Diventa narratore"
                 document.getElementById('hostButton').style.display = hostExists ? 'none' : 'block';
             });
         }
 
-        // Diventa capo cuzzo
+        // Diventa narratore
         function becomeHost() {
             isHost = true;
             database.ref('players/' + playerId).update({ isHost: true });
@@ -205,7 +205,7 @@ const firebaseConfig = {
             listenForRoles();
         }
 
-        // Ascolta i ruoli assegnati (solo capo cuzzo)
+        // Ascolta i ruoli assegnati (solo narratore)
         function listenForRoles() {
             database.ref('players').on('value', (snapshot) => {
                 const players = snapshot.val() || {};
@@ -218,16 +218,27 @@ const firebaseConfig = {
             });
         }
 
-        // Avvia il gioco (solo capo cuzzo)
+        // Avvia il gioco (solo narratore)
         function startGame() {
             database.ref('players').once('value').then((snapshot) => {
                 const players = snapshot.val() || {};
                 const playerIds = Object.keys(players);
-                const shuffledRoles = shuffleArray([...roles]);
+                const playerCount = playerIds.length;
+                
+                // Crea la lista dei ruoli
+                let rolesToAssign = [...baseRoles];
+                
+                // Aggiungi contadini extra se necessario
+                while (rolesToAssign.length < playerCount) {
+                    rolesToAssign.push("Contadino");
+                }
+                
+                // Mescola i ruoli
+                const shuffledRoles = shuffleArray(rolesToAssign);
 
                 // Assegna ruoli
                 playerIds.forEach((id, index) => {
-                    const role = shuffledRoles[index] || "Contadino Sfigato";
+                    const role = shuffledRoles[index] || "Contadino";
                     database.ref('players/' + id).update({ role });
                 });
 
@@ -235,6 +246,24 @@ const firebaseConfig = {
                 setTimeout(() => {
                     showPlayerRoles();
                 }, 1000);
+            });
+        }
+
+        // Termina il gioco (solo narratore)
+        function endGame() {
+            database.ref('players').once('value').then((snapshot) => {
+                const players = snapshot.val() || {};
+                
+                // Resetta tutti i giocatori
+                for (const [id, player] of Object.entries(players)) {
+                    database.ref('players/' + id).update({ 
+                        role: '',
+                        isHost: false 
+                    });
+                }
+                
+                // Torna alla schermata iniziale
+                showScreen('homeScreen');
             });
         }
 
