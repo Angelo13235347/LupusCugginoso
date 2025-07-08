@@ -153,6 +153,12 @@
             animation: glow 1.5s infinite alternate;
         }
         
+        .role-description {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #fff;
+        }
+        
         @keyframes glow {
             from { box-shadow: 0 0 20px rgba(255, 50, 50, 0.6); }
             to { box-shadow: 0 0 40px rgba(255, 80, 80, 0.9); }
@@ -213,6 +219,10 @@
                 padding: 20px;
                 margin: 20px 0;
             }
+            
+            .role-description {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
@@ -246,12 +256,13 @@
     <div id="roleScreen" class="screen">
         <h1>IL TUO RUOLO È:</h1>
         <div id="playerRole" class="role-display">...</div>
+        <div id="roleDescription" class="role-description"></div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
-        // Configurazione Firebase corretta
+        // Configurazione Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAsTO8sYN1M7A1aK238RiYXDef4MQkw-AI",
             authDomain: "lupus-764f6.firebaseapp.com",
@@ -270,6 +281,14 @@
         let playerId;
         let isHost = false;
         const baseRoles = ["Lupo", "Puttana", "Investigatore", "Vanessa", "Sindaco", "Contadino"];
+        const roleDescriptions = {
+            "Lupo": "Sei un lupo mannaro! Di notte uccidi gli altri giocatori.",
+            "Puttana": "Ogni notte puoi scegliere di proteggere un giocatore dai lupi.",
+            "Investigatore": "Puoi scoprire il ruolo di un giocatore ogni notte.",
+            "Vanessa": "Sei immune ai lupi la prima notte.",
+            "Sindaco": "Hai un voto doppio durante le votazioni.",
+            "Contadino": "Sei un semplice villico senza poteri speciali."
+        };
         let playersRef;
         let currentPlayerRef;
 
@@ -347,7 +366,10 @@
                     throw new Error(`${existingHost.name} è già il narratore!`);
                 }
                 
-                return currentPlayerRef.update({ isHost: true });
+                return currentPlayerRef.update({ 
+                    isHost: true,
+                    role: 'Narratore' 
+                });
             })
             .then(() => {
                 isHost = true;
@@ -367,7 +389,9 @@
                 assignedRolesDiv.innerHTML = '<h2>RUOLI ASSEGNATI:</h2>';
 
                 for (const [id, player] of Object.entries(players)) {
-                    assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role || '...in attesa...'}</strong></div>`;
+                    if (!player.isHost) {
+                        assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role || '...in attesa...'}</strong></div>`;
+                    }
                 }
             });
         }
@@ -382,24 +406,30 @@
                     throw new Error("Servono almeno 3 giocatori per iniziare!");
                 }
                 
+                // Filtra solo i giocatori (escludi il narratore)
+                const playerIdsToAssign = playerIds.filter(id => !players[id].isHost);
+                
                 let rolesToAssign = [...baseRoles];
-                while (rolesToAssign.length < playerCount) {
+                while (rolesToAssign.length < playerIdsToAssign.length) {
                     rolesToAssign.push("Contadino");
                 }
                 
                 const shuffledRoles = shuffleArray(rolesToAssign);
                 const updates = {};
                 
-                playerIds.forEach((id, index) => {
+                playerIdsToAssign.forEach((id, index) => {
                     updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
                 });
 
                 return database.ref().update(updates);
             })
             .then(() => {
-                setTimeout(() => {
-                    showPlayerRoles();
-                }, 1000);
+                // Mostra il ruolo a tutti i giocatori (tranne al narratore)
+                if (!isHost) {
+                    setTimeout(() => {
+                        showPlayerRoles();
+                    }, 1000);
+                }
             })
             .catch(error => {
                 alert(error.message);
@@ -438,6 +468,7 @@
                 const player = snapshot.val();
                 if (player && player.role) {
                     document.getElementById('playerRole').textContent = player.role;
+                    document.getElementById('roleDescription').textContent = roleDescriptions[player.role] || '';
                     showScreen('roleScreen');
                 }
             }).catch(error => {
