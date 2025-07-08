@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUPUS CUGGINOSO</title>
+    <style>
+        body {
+            font-family: 'Arial Black', sans-serif;
+            text-align: center;
+            background-color: #1a1a1a;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            background-image: url('https://i.imgur.com/9X6JbZS.jpg');
+            background-size: cover;
+        }
+        .screen {
+            display: none;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+            border: 2px solid #ff0000;
+        }
+        .active {
+            display: block;
+        }
+        h1 {
+            color: #ff0000;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+        button {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        button:hover {
+            background-color: #cc0000;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+        }
+        input {
+            padding: 12px;
+            margin: 15px;
+            width: 80%;
+            max-width: 300px;
+            border-radius: 8px;
+            border: 2px solid #ff0000;
+            background-color: #333;
+            color: white;
+            font-size: 16px;
+        }
+        #playersList {
+            margin: 25px 0;
+            text-align: left;
+            font-size: 18px;
+        }
+        #playersList div {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: rgba(255, 0, 0, 0.2);
+            border-left: 4px solid #ff0000;
+        }
+        .role-display {
+            font-size: 32px;
+            margin: 30px;
+            padding: 30px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #ff0000;
+            border-radius: 15px;
+            border: 3px solid #ff0000;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+            font-weight: bold;
+        }
+        #hostButton {
+            background-color: #990000;
+        }
+        #assignedRoles div {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: rgba(255, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Schermata iniziale -->
+    <div id="homeScreen" class="screen active">
+        <h1>LUPUS CUGGINOSO</h1>
+        <button onclick="showScreen('joinScreen')">ENTRA NEL GIOCO</button>
+    </div>
+
+    <!-- Schermata inserimento nome -->
+    <div id="joinScreen" class="screen">
+        <h1>COME TI CHIAMI?</h1>
+        <input type="text" id="playerName" placeholder="Il tuo nome cuggino">
+        <button onclick="joinGame()">ENTRA NELLA CUZZATA</button>
+    </div>
+
+    <!-- Lobby giocatori -->
+    <div id="lobbyScreen" class="screen">
+        <h1>LA CUZZATA SI STA RADUNANDO...</h1>
+        <div id="playersList"></div>
+        <button id="hostButton" onclick="becomeHost()">DIVENTA CAPO CUZZO</button>
+    </div>
+
+    <!-- Schermata del capo cuzzo -->
+    <div id="hostScreen" class="screen">
+        <h1>SEI IL CAPO CUZZO</h1>
+        <div id="assignedRoles"></div>
+        <button onclick="startGame()">INIZIA LA CUZZATA</button>
+    </div>
+
+    <!-- Schermata ruolo assegnato -->
+    <div id="roleScreen" class="screen">
+        <h1>IL TUO DESTINO È:</h1>
+        <div id="playerRole" class="role-display">...</div>
+    </div>
+
+    <!-- Firebase e logica del gioco -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // Configura Firebase (sostituisci con i tuoi dati)
+const firebaseConfig = {
+  apiKey: "AIzaSyAsTO8sYN1M7A1aK238RiYXDef4MQkw-AI",
+  authDomain: "lupus-764f6.firebaseapp.com",
+  projectId: "lupus-764f6",
+  storageBucket: "lupus-764f6.firebasestorage.app",
+  messagingSenderId: "695119804153",
+  appId: "1:695119804153:web:d5cdcf9adbf633adb25428",
+  measurementId: "G-NRHHHBE2NL"
+};
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Variabili globali
+        let playerId;
+        let isHost = false;
+        const roles = ["Lupo Cuggino", "Troia del Borgo", "Sbirro Infame", "Vanessa la Strega", "Sindaco Cornuto", "Contadino Sfigato"];
+
+        // Mostra una schermata e nascondi le altre
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Unisciti al gioco
+        function joinGame() {
+            const playerName = document.getElementById('playerName').value.trim();
+            if (!playerName) return alert("Inserisci un nome cuggino!");
+
+            playerId = Date.now().toString();
+            const playerRef = database.ref('players/' + playerId);
+            playerRef.set({
+                name: playerName,
+                role: '',
+                isHost: false
+            });
+
+            // Mostra la lobby
+            showScreen('lobbyScreen');
+            listenForPlayers();
+        }
+
+        // Ascolta i giocatori connessi
+        function listenForPlayers() {
+            database.ref('players').on('value', (snapshot) => {
+                const players = snapshot.val() || {};
+                const playersList = document.getElementById('playersList');
+                playersList.innerHTML = '';
+
+                let hostExists = false;
+                for (const [id, player] of Object.entries(players)) {
+                    playersList.innerHTML += `<div>${player.name} ${player.isHost ? '(CAPO CUZZO)' : ''}</div>`;
+                    if (player.isHost) hostExists = true;
+                }
+
+                // Mostra/nascondi pulsante "Diventa capo cuzzo"
+                document.getElementById('hostButton').style.display = hostExists ? 'none' : 'block';
+            });
+        }
+
+        // Diventa capo cuzzo
+        function becomeHost() {
+            isHost = true;
+            database.ref('players/' + playerId).update({ isHost: true });
+            showScreen('hostScreen');
+            listenForRoles();
+        }
+
+        // Ascolta i ruoli assegnati (solo capo cuzzo)
+        function listenForRoles() {
+            database.ref('players').on('value', (snapshot) => {
+                const players = snapshot.val() || {};
+                const assignedRolesDiv = document.getElementById('assignedRoles');
+                assignedRolesDiv.innerHTML = '<h2>RUOLI ASSEGNATI:</h2>';
+
+                for (const [id, player] of Object.entries(players)) {
+                    assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role || '...in attesa...'}</strong></div>`;
+                }
+            });
+        }
+
+        // Avvia il gioco (solo capo cuzzo)
+        function startGame() {
+            database.ref('players').once('value').then((snapshot) => {
+                const players = snapshot.val() || {};
+                const playerIds = Object.keys(players);
+                const shuffledRoles = shuffleArray([...roles]);
+
+                // Assegna ruoli
+                playerIds.forEach((id, index) => {
+                    const role = shuffledRoles[index] || "Contadino Sfigato";
+                    database.ref('players/' + id).update({ role });
+                });
+
+                // Mostra il ruolo a tutti
+                setTimeout(() => {
+                    showPlayerRoles();
+                }, 1000);
+            });
+        }
+
+        // Mostra il ruolo al giocatore
+        function showPlayerRoles() {
+            database.ref('players/' + playerId).once('value').then((snapshot) => {
+                const player = snapshot.val();
+                document.getElementById('playerRole').textContent = player.role;
+                showScreen('roleScreen');
+            });
+        }
+
+        // Mescola array (per ruoli casuali)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+    </script>
+</body>
+</html>
