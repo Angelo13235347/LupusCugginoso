@@ -159,30 +159,6 @@
             color: #fff;
         }
         
-        .custom-alert {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            border: 3px solid #ff3232;
-            box-shadow: 0 0 30px rgba(255, 50, 50, 0.8);
-            z-index: 1000;
-            max-width: 80%;
-            text-align: center;
-            font-size: 20px;
-            animation: pulse 2s infinite alternate;
-        }
-        
-        .custom-alert button {
-            margin: 15px auto 0;
-            padding: 10px 25px;
-            font-size: 18px;
-        }
-        
         @keyframes glow {
             from { box-shadow: 0 0 20px rgba(255, 50, 50, 0.6); }
             to { box-shadow: 0 0 40px rgba(255, 80, 80, 0.9); }
@@ -245,11 +221,6 @@
             }
             
             .role-description {
-                font-size: 18px;
-            }
-            
-            .custom-alert {
-                padding: 20px;
                 font-size: 18px;
             }
         }
@@ -321,34 +292,6 @@
         let playersRef;
         let currentPlayerRef;
 
-        // Mostra alert personalizzato
-        function showCustomAlert(message, isConfirm = false) {
-            return new Promise((resolve) => {
-                const alertDiv = document.createElement('div');
-                alertDiv.className = 'custom-alert';
-                alertDiv.innerHTML = `
-                    <p>${message}</p>
-                    <button onclick="this.parentNode.remove(); ${isConfirm ? 'resolve(true)' : 'resolve()'}">
-                        ${isConfirm ? 'CONFERMA' : 'OK'}
-                    </button>
-                `;
-                
-                if (isConfirm) {
-                    const cancelBtn = document.createElement('button');
-                    cancelBtn.textContent = 'ANNULLA';
-                    cancelBtn.style.background = 'linear-gradient(to bottom, #333, #111)';
-                    cancelBtn.style.marginLeft = '10px';
-                    cancelBtn.onclick = () => {
-                        alertDiv.remove();
-                        resolve(false);
-                    };
-                    alertDiv.querySelector('button').after(cancelBtn);
-                }
-                
-                document.body.appendChild(alertDiv);
-            });
-        }
-
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.classList.remove('active');
@@ -356,46 +299,46 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        async function joinGame() {
+        function joinGame() {
             const playerName = document.getElementById('playerName').value.trim();
             if (!playerName) {
-                await showCustomAlert("Inserisci un nome cuggino!");
+                alert("Inserisci un nome cuggino!");
                 return;
             }
 
-            try {
-                playerId = Date.now().toString();
-                playersRef = database.ref('players');
-                currentPlayerRef = database.ref('players/' + playerId);
-                
-                // Controlla se il nome esiste già
-                const snapshot = await playersRef.once('value');
+            playerId = Date.now().toString();
+            playersRef = database.ref('players');
+            currentPlayerRef = database.ref('players/' + playerId);
+            
+            // Controlla se il nome esiste già
+            playersRef.once('value').then(snapshot => {
                 const players = snapshot.val() || {};
-                
                 const nameExists = Object.values(players).some(
                     player => player.name.toLowerCase() === playerName.toLowerCase()
                 );
                 
                 if (nameExists) {
-                    await showCustomAlert("Questo nome è già in uso! Scegline un altro.");
-                    return;
+                    throw new Error("Nome già in uso");
                 }
                 
-                // Aggiungi il nuovo giocatore
-                await currentPlayerRef.set({
+                return currentPlayerRef.set({
                     name: playerName,
                     role: '',
                     isHost: false
                 });
-
-                // Mostra la lobby
+            })
+            .then(() => {
                 showScreen('lobbyScreen');
                 listenForPlayers();
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore di connessione. Ricarica e riprova.");
-            }
+            })
+            .catch(error => {
+                if (error.message === "Nome già in uso") {
+                    alert("Questo nome è già in uso! Scegline un altro.");
+                } else {
+                    console.error("Errore:", error);
+                    alert("Errore di connessione. Ricarica e riprova.");
+                }
+            });
         }
 
         function listenForPlayers() {
@@ -414,30 +357,29 @@
             });
         }
 
-        async function becomeHost() {
-            try {
-                const snapshot = await playersRef.once('value');
+        function becomeHost() {
+            playersRef.once('value').then(snapshot => {
                 const players = snapshot.val() || {};
                 const existingHost = Object.values(players).find(player => player.isHost);
                 
                 if (existingHost) {
-                    await showCustomAlert(`${existingHost.name} è già il narratore!`);
-                    return;
+                    throw new Error(`${existingHost.name} è già il narratore!`);
                 }
                 
-                await currentPlayerRef.update({ 
+                return currentPlayerRef.update({ 
                     isHost: true,
                     role: 'Narratore' 
                 });
-                
+            })
+            .then(() => {
                 isHost = true;
                 showScreen('hostScreen');
                 listenForRoles();
-                
-            } catch (error) {
+            })
+            .catch(error => {
+                alert(error.message);
                 console.error("Errore:", error);
-                showCustomAlert("Errore diventando narratore. Riprova!");
-            }
+            });
         }
 
         function listenForRoles() {
@@ -454,16 +396,14 @@
             });
         }
 
-        async function startGame() {
-            try {
-                const snapshot = await playersRef.once('value');
+        function startGame() {
+            playersRef.once('value').then((snapshot) => {
                 const players = snapshot.val() || {};
                 const playerIds = Object.keys(players);
                 const playerCount = playerIds.length;
                 
                 if (playerCount < 3) {
-                    await showCustomAlert("Servono almeno 3 giocatori per iniziare!");
-                    return;
+                    throw new Error("Servono almeno 3 giocatori per iniziare!");
                 }
                 
                 // Filtra solo i giocatori (escludi il narratore)
@@ -481,47 +421,43 @@
                     updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
                 });
 
-                await database.ref().update(updates);
-                
+                return database.ref().update(updates);
+            })
+            .then(() => {
                 // Mostra il ruolo a tutti i giocatori (tranne al narratore)
                 if (!isHost) {
                     setTimeout(() => {
                         showPlayerRoles();
                     }, 1000);
                 }
-                
-            } catch (error) {
+            })
+            .catch(error => {
+                alert(error.message);
                 console.error("Errore:", error);
-                showCustomAlert("Errore nell'assegnazione dei ruoli. Riprova!");
-            }
+            });
         }
 
-        async function endGame() {
-            const confirm = await showCustomAlert(
-                "Sei sicuro di voler terminare la partita? Tutti torneranno alla schermata iniziale.", 
-                true
-            );
-            
-            if (!confirm) return;
-            
-            try {
-                const snapshot = await playersRef.once('value');
-                const players = snapshot.val() || {};
-                const updates = {};
-                
-                for (const id in players) {
-                    updates['players/' + id + '/role'] = '';
-                    updates['players/' + id + '/isHost'] = false;
-                }
-                
-                await database.ref().update(updates);
-                
-                showScreen('homeScreen');
-                isHost = false;
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nel resettare il gioco.");
+        function endGame() {
+            if (confirm("Sei sicuro di voler terminare la partita? Tutti torneranno alla schermata iniziale.")) {
+                playersRef.once('value').then((snapshot) => {
+                    const players = snapshot.val() || {};
+                    const updates = {};
+                    
+                    for (const id in players) {
+                        updates['players/' + id + '/role'] = '';
+                        updates['players/' + id + '/isHost'] = false;
+                    }
+                    
+                    return database.ref().update(updates);
+                })
+                .then(() => {
+                    showScreen('homeScreen');
+                    isHost = false;
+                })
+                .catch(error => {
+                    console.error("Errore:", error);
+                    alert("Errore nel resettare il gioco.");
+                });
             }
         }
 
@@ -537,7 +473,6 @@
                 }
             }).catch(error => {
                 console.error("Errore:", error);
-                showCustomAlert("Errore nel mostrare il ruolo.");
             });
         }
 
