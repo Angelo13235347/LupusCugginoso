@@ -14,7 +14,7 @@
             color: white;
             margin: 0;
             padding: 20px;
-            background-image: url('https://i.imgur.com/9E0QxVd.jpg');
+            background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
             background-size: cover;
             background-attachment: fixed;
             letter-spacing: 1px;
@@ -256,7 +256,7 @@
         const firebaseConfig = {
             apiKey: "AIzaSyAsTO8sYN1M7A1aK238RiYXDef4MQkw-AI",
             authDomain: "lupus-764f6.firebaseapp.com",
-            databaseURL: "https://lupus-764f6.firebaseio.com",
+            databaseURL: "https://lupus-764f6-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "lupus-764f6",
             storageBucket: "lupus-764f6.appspot.com",
             messagingSenderId: "695119804153",
@@ -287,7 +287,7 @@
             const playerName = document.getElementById('playerName').value.trim();
             if (!playerName) {
                 alert("Inserisci un nome cuggino!");
-                return;
+                return false;
             }
 
             playerId = Date.now().toString();
@@ -303,7 +303,7 @@
                 
                 if (nameExists) {
                     alert("Questo nome è già in uso! Scegline un altro.");
-                    return;
+                    return Promise.reject("Nome già in uso");
                 }
                 
                 // Aggiungi il giocatore al database
@@ -317,10 +317,14 @@
                 // Mostra la lobby dopo l'inserimento
                 showScreen('lobbyScreen');
                 listenForPlayers();
+                return true;
             })
             .catch(error => {
                 console.error("Errore durante l'aggiunta del giocatore:", error);
-                alert("Errore durante la connessione. Ricarica la pagina e riprova.");
+                if (error !== "Nome già in uso") {
+                    alert("Errore durante la connessione. Ricarica la pagina e riprova.");
+                }
+                return false;
             });
         }
 
@@ -350,7 +354,7 @@
                 
                 if (existingHost) {
                     alert(`${existingHost.name} è già il narratore!`);
-                    return;
+                    return Promise.reject("Narratore già esistente");
                 }
                 
                 isHost = true;
@@ -361,9 +365,11 @@
                 listenForRoles();
             })
             .catch(error => {
-                console.error("Errore diventando narratore:", error);
-                alert("Errore diventando narratore. Riprova!");
-                isHost = false;
+                if (error !== "Narratore già esistente") {
+                    console.error("Errore diventando narratore:", error);
+                    alert("Errore diventando narratore. Riprova!");
+                    isHost = false;
+                }
             });
         }
 
@@ -389,7 +395,7 @@
                 
                 if (playerCount < 3) {
                     alert("Servono almeno 3 giocatori per iniziare!");
-                    return;
+                    return Promise.reject("Troppo pochi giocatori");
                 }
                 
                 // Crea la lista dei ruoli
@@ -419,8 +425,10 @@
                 }, 1000);
             })
             .catch(error => {
-                console.error("Errore nell'assegnazione dei ruoli:", error);
-                alert("Errore nell'assegnazione dei ruoli. Riprova!");
+                if (error !== "Troppo pochi giocatori") {
+                    console.error("Errore nell'assegnazione dei ruoli:", error);
+                    alert("Errore nell'assegnazione dei ruoli. Riprova!");
+                }
             });
         }
 
@@ -446,7 +454,10 @@
                     isHost = false;
                     
                     // Rimuovi il giocatore corrente
-                    currentPlayerRef.remove();
+                    if (currentPlayerRef) {
+                        currentPlayerRef.remove()
+                            .catch(error => console.error("Errore rimuovendo giocatore:", error));
+                    }
                 })
                 .catch(error => {
                     console.error("Errore nel terminare il gioco:", error);
@@ -457,27 +468,35 @@
 
         // Mostra il ruolo al giocatore
         function showPlayerRoles() {
+            if (!currentPlayerRef) return;
+            
             currentPlayerRef.once('value').then((snapshot) => {
                 const player = snapshot.val();
                 if (player && player.role) {
                     document.getElementById('playerRole').textContent = player.role;
                     showScreen('roleScreen');
                 }
+            }).catch(error => {
+                console.error("Errore mostrando ruolo:", error);
             });
         }
 
         // Mescola array (per ruoli casuali)
         function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
             }
-            return array;
+            return newArray;
         }
 
         // Pulisci i listener quando la pagina viene chiusa
         window.addEventListener('beforeunload', () => {
-            if (currentPlayerRef) currentPlayerRef.remove();
+            if (currentPlayerRef) {
+                currentPlayerRef.remove()
+                    .catch(error => console.error("Errore rimuovendo giocatore:", error));
+            }
         });
     </script>
 </body>
