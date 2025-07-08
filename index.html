@@ -278,7 +278,7 @@
     <div id="hostScreen" class="screen">
         <h1>SEI IL NARRATORE</h1>
         <div id="assignedRoles"></div>
-        <button onclick="startGame()">AVVIA PARTITA</button>
+        <button id="startGameButton" onclick="startGame()">AVVIA PARTITA</button>
         <button onclick="endGame()" style="background: linear-gradient(to bottom, #333, #111);">TERMINA GIOCO</button>
     </div>
 
@@ -309,6 +309,7 @@
         // Variabili globali
         let playerId;
         let isHost = false;
+        let gameStarted = false;
         const baseRoles = ["Lupo", "Puttana", "Investigatore", "Vanessa", "Sindaco", "Contadino"];
         const roleDescriptions = {
             "Lupo": "Sei un lupo mannaro! Di notte uccidi gli altri giocatori.",
@@ -407,13 +408,15 @@
                     name: playerName,
                     role: '',
                     isHost: false,
-                    showRole: false // Flag per mostrare il ruolo
+                    showRole: false, // Flag per mostrare il ruolo
+                    gameStarted: false // Flag per stato del gioco
                 });
 
                 // Mostra la lobby
                 showScreen('lobbyScreen');
                 listenForPlayers();
-                listenForRoleAssignment(); // Aggiunto listener per cambio ruolo
+                listenForRoleAssignment();
+                listenForGameStatus();
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -428,23 +431,49 @@
                 playersList.innerHTML = '';
 
                 let hostExists = false;
+                let gameInProgress = false;
+                
                 for (const [id, player] of Object.entries(players)) {
                     playersList.innerHTML += `<div>${player.name} ${player.isHost ? '(NARRATORE)' : ''}</div>`;
                     if (player.isHost) hostExists = true;
+                    if (player.gameStarted) gameInProgress = true;
                 }
 
-                document.getElementById('hostButton').style.display = hostExists ? 'none' : 'block';
+                document.getElementById('hostButton').style.display = hostExists || gameInProgress ? 'none' : 'block';
             });
         }
 
         function listenForRoleAssignment() {
             currentPlayerRef.on('value', (snapshot) => {
                 const player = snapshot.val();
-                if (player && player.role && player.showRole) {
+                if (!player) return;
+                
+                if (player.role && player.showRole) {
                     // Mostra il ruolo al giocatore
                     document.getElementById('playerRole').textContent = player.role;
                     document.getElementById('roleDescription').textContent = roleDescriptions[player.role] || '';
                     showScreen('roleScreen');
+                }
+                
+                if (player.gameStarted && !player.isHost && !player.role) {
+                    // Se il gioco è iniziato ma non ho ancora un ruolo, torno alla home
+                    showScreen('homeScreen');
+                }
+            });
+        }
+
+        function listenForGameStatus() {
+            currentPlayerRef.on('value', (snapshot) => {
+                const player = snapshot.val();
+                if (!player) return;
+                
+                if (player.gameStarted && !player.isHost) {
+                    // Se il gioco è iniziato e non sono il narratore
+                    if (player.role && player.showRole) {
+                        showScreen('roleScreen');
+                    } else {
+                        showScreen('homeScreen');
+                    }
                 }
             });
         }
@@ -463,7 +492,8 @@
                 await currentPlayerRef.update({ 
                     isHost: true,
                     role: 'Narratore',
-                    showRole: false
+                    showRole: false,
+                    gameStarted: false
                 });
                 
                 isHost = true;
@@ -482,10 +512,21 @@
                 const assignedRolesDiv = document.getElementById('assignedRoles');
                 assignedRolesDiv.innerHTML = '<h2>RUOLI ASSEGNATI:</h2>';
 
+                let gameInProgress = false;
+                
                 for (const [id, player] of Object.entries(players)) {
+                    if (player.gameStarted) gameInProgress = true;
                     if (!player.isHost) {
                         assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role || '...in attesa...'}</strong></div>`;
                     }
+                }
+
+                // Disabilita il pulsante se il gioco è già iniziato
+                const startButton = document.getElementById('startGameButton');
+                if (startButton) {
+                    startButton.disabled = gameInProgress;
+                    startButton.style.opacity = gameInProgress ? 0.5 : 1;
+                    startButton.style.cursor = gameInProgress ? 'not-allowed' : 'pointer';
                 }
             });
         }
@@ -513,6 +554,12 @@
                 const shuffledRoles = shuffleArray(rolesToAssign);
                 const updates = {};
                 
+                // Imposta gameStarted a true per tutti i giocatori
+                playerIds.forEach(id => {
+                    updates['players/' + id + '/gameStarted'] = true;
+                });
+                
+                // Assegna i ruoli solo ai giocatori (non al narratore)
                 playerIdsToAssign.forEach((id, index) => {
                     updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
                     updates['players/' + id + '/showRole'] = false; // Inizialmente non mostrare
@@ -552,12 +599,14 @@
                     updates['players/' + id + '/role'] = '';
                     updates['players/' + id + '/isHost'] = false;
                     updates['players/' + id + '/showRole'] = false;
+                    updates['players/' + id + '/gameStarted'] = false;
                 }
                 
                 await database.ref().update(updates);
                 
                 showScreen('homeScreen');
                 isHost = false;
+                gameStarted = false;
                 
             } catch (error) {
                 console.error("Errore:", error);
