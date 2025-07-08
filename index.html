@@ -5,98 +5,196 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LUPUS CUGGINOSO</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+        
         body {
-            font-family: 'Arial Black', sans-serif;
+            font-family: 'Bangers', cursive;
             text-align: center;
-            background-color: #1a1a1a;
+            background-color: #0a0a0a;
             color: white;
             margin: 0;
             padding: 20px;
-            background-image: url('https://i.imgur.com/9X6JbZS.jpg');
+            background-image: url('https://i.imgur.com/JQ9qy0N.jpg');
             background-size: cover;
+            background-attachment: fixed;
+            letter-spacing: 1px;
+            min-height: 100vh;
         }
+        
         .screen {
             display: none;
             max-width: 600px;
             margin: 20px auto;
             padding: 30px;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.85);
             border-radius: 15px;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-            border: 2px solid #ff0000;
+            box-shadow: 0 0 30px rgba(255, 50, 50, 0.6);
+            border: 3px solid #ff3232;
+            animation: pulse 2s infinite alternate;
         }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 30px rgba(255, 50, 50, 0.6); }
+            100% { box-shadow: 0 0 50px rgba(255, 80, 80, 0.8); }
+        }
+        
         .active {
             display: block;
         }
+        
         h1 {
-            color: #ff0000;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
-            font-size: 2.5em;
+            color: #ff3232;
+            text-shadow: 0 0 15px rgba(255, 50, 50, 0.8), 
+                         0 0 5px #000;
+            font-size: 3em;
             margin-bottom: 30px;
+            letter-spacing: 3px;
         }
+        
         button {
-            background-color: #ff0000;
+            background: linear-gradient(to bottom, #ff3232, #cc0000);
             color: white;
             border: none;
-            padding: 15px 30px;
-            margin: 15px;
-            border-radius: 8px;
+            padding: 18px 35px;
+            margin: 20px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             transition: all 0.3s;
             text-transform: uppercase;
+            font-family: 'Bangers', cursive;
+            letter-spacing: 2px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
         }
+        
         button:hover {
-            background-color: #cc0000;
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 50, 50, 0.6);
         }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                45deg,
+                transparent 25%,
+                rgba(255,255,255,0.1) 25%,
+                rgba(255,255,255,0.1) 50%,
+                transparent 50%,
+                transparent 75%,
+                rgba(255,255,255,0.1) 75%,
+                rgba(255,255,255,0.1)
+            );
+            background-size: 5px 5px;
+            opacity: 0.3;
+        }
+        
         input {
-            padding: 12px;
-            margin: 15px;
+            padding: 15px;
+            margin: 20px;
             width: 80%;
-            max-width: 300px;
-            border-radius: 8px;
-            border: 2px solid #ff0000;
-            background-color: #333;
-            color: white;
-            font-size: 16px;
-        }
-        #playersList {
-            margin: 25px 0;
-            text-align: left;
-            font-size: 18px;
-        }
-        #playersList div {
-            padding: 10px;
-            margin: 5px 0;
-            background-color: rgba(255, 0, 0, 0.2);
-            border-left: 4px solid #ff0000;
-        }
-        .role-display {
-            font-size: 32px;
-            margin: 30px;
-            padding: 30px;
+            max-width: 350px;
+            border-radius: 10px;
+            border: 3px solid #ff3232;
             background-color: rgba(0, 0, 0, 0.7);
-            color: #ff0000;
-            border-radius: 15px;
-            border: 3px solid #ff0000;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+            color: white;
+            font-size: 18px;
+            font-family: 'Bangers', cursive;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+        
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(255, 50, 50, 0.6);
+        }
+        
+        #playersList {
+            margin: 30px 0;
+            text-align: left;
+            font-size: 22px;
+        }
+        
+        #playersList div {
+            padding: 12px;
+            margin: 8px 0;
+            background-color: rgba(255, 50, 50, 0.2);
+            border-left: 5px solid #ff3232;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        #playersList div:hover {
+            background-color: rgba(255, 50, 50, 0.3);
+            transform: translateX(5px);
+        }
+        
+        .role-display {
+            font-size: 42px;
+            margin: 40px;
+            padding: 40px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #ff3232;
+            border-radius: 20px;
+            border: 4px solid #ff3232;
+            text-shadow: 0 0 15px rgba(255, 50, 50, 0.8);
             font-weight: bold;
+            animation: glow 1.5s infinite alternate;
         }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(255, 50, 50, 0.6); }
+            to { box-shadow: 0 0 40px rgba(255, 80, 80, 0.9); }
+        }
+        
         #hostButton {
-            background-color: #990000;
+            background: linear-gradient(to bottom, #990000, #660000);
         }
+        
+        #assignedRoles {
+            margin: 30px 0;
+        }
+        
         #assignedRoles div {
-            padding: 10px;
-            margin: 10px 0;
-            background-color: rgba(255, 0, 0, 0.3);
-            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            background-color: rgba(255, 50, 50, 0.25);
+            border-radius: 10px;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+        
+        #assignedRoles div:hover {
+            background-color: rgba(255, 50, 50, 0.4);
+            transform: scale(1.02);
+        }
+        
+        .blood-splatter {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            opacity: 0.1;
+            z-index: -1;
         }
     </style>
 </head>
 <body>
+    <div class="blood-splatter"></div>
+    
     <!-- Schermata iniziale -->
     <div id="homeScreen" class="screen active">
         <h1>LUPUS CUGGINOSO</h1>
@@ -106,7 +204,7 @@
     <!-- Schermata inserimento nome -->
     <div id="joinScreen" class="screen">
         <h1>COME TI CHIAMI?</h1>
-        <input type="text" id="playerName" placeholder="Il tuo nome">
+        <input type="text" id="playerName" placeholder="Il tuo nome" maxlength="20">
         <button onclick="joinGame()">ENTRA IN PARTITA</button>
     </div>
 
@@ -122,7 +220,7 @@
         <h1>SEI IL NARRATORE</h1>
         <div id="assignedRoles"></div>
         <button onclick="startGame()">AVVIA PARTITA</button>
-        <button onclick="endGame()" style="background-color: #333;">TERMINA GIOCO</button>
+        <button onclick="endGame()" style="background: linear-gradient(to bottom, #333, #111);">TERMINA GIOCO</button>
     </div>
 
     <!-- Schermata ruolo assegnato -->
@@ -145,6 +243,8 @@
             messagingSenderId: "695119804153",
             appId: "1:695119804153:web:d5cdcf9adbf633adb25428"
         };
+        
+        // Inizializza Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
@@ -152,6 +252,8 @@
         let playerId;
         let isHost = false;
         const baseRoles = ["Lupo", "Puttana", "Investigatore", "Vanessa", "Sindaco", "Contadino"];
+        let playersRef;
+        let currentPlayerRef;
 
         // Mostra una schermata e nascondi le altre
         function showScreen(screenId) {
@@ -164,24 +266,33 @@
         // Unisciti al gioco
         function joinGame() {
             const playerName = document.getElementById('playerName').value.trim();
-            if (!playerName) return alert("Inserisci un nome!");
+            if (!playerName) {
+                alert("Inserisci un nome cuggino!");
+                return;
+            }
 
             playerId = Date.now().toString();
-            const playerRef = database.ref('players/' + playerId);
-            playerRef.set({
+            currentPlayerRef = database.ref('players/' + playerId);
+            playersRef = database.ref('players');
+            
+            // Aggiungi il giocatore al database
+            currentPlayerRef.set({
                 name: playerName,
                 role: '',
                 isHost: false
+            }).then(() => {
+                // Mostra la lobby dopo l'inserimento
+                showScreen('lobbyScreen');
+                listenForPlayers();
+            }).catch(error => {
+                console.error("Errore durante l'aggiunta del giocatore:", error);
+                alert("Errore durante la connessione. Ricarica la pagina e riprova.");
             });
-
-            // Mostra la lobby
-            showScreen('lobbyScreen');
-            listenForPlayers();
         }
 
         // Ascolta i giocatori connessi
         function listenForPlayers() {
-            database.ref('players').on('value', (snapshot) => {
+            playersRef.on('value', (snapshot) => {
                 const players = snapshot.val() || {};
                 const playersList = document.getElementById('playersList');
                 playersList.innerHTML = '';
@@ -200,14 +311,21 @@
         // Diventa narratore
         function becomeHost() {
             isHost = true;
-            database.ref('players/' + playerId).update({ isHost: true });
-            showScreen('hostScreen');
-            listenForRoles();
+            currentPlayerRef.update({ isHost: true })
+                .then(() => {
+                    showScreen('hostScreen');
+                    listenForRoles();
+                })
+                .catch(error => {
+                    console.error("Errore diventando narratore:", error);
+                    alert("Qualcuno è già diventato narratore!");
+                    isHost = false;
+                });
         }
 
         // Ascolta i ruoli assegnati (solo narratore)
         function listenForRoles() {
-            database.ref('players').on('value', (snapshot) => {
+            playersRef.on('value', (snapshot) => {
                 const players = snapshot.val() || {};
                 const assignedRolesDiv = document.getElementById('assignedRoles');
                 assignedRolesDiv.innerHTML = '<h2>RUOLI ASSEGNATI:</h2>';
@@ -220,7 +338,7 @@
 
         // Avvia il gioco (solo narratore)
         function startGame() {
-            database.ref('players').once('value').then((snapshot) => {
+            playersRef.once('value').then((snapshot) => {
                 const players = snapshot.val() || {};
                 const playerIds = Object.keys(players);
                 const playerCount = playerIds.length;
@@ -236,43 +354,63 @@
                 // Mescola i ruoli
                 const shuffledRoles = shuffleArray(rolesToAssign);
 
-                // Assegna ruoli
+                // Assegna ruoli a tutti i giocatori
+                const updates = {};
                 playerIds.forEach((id, index) => {
-                    const role = shuffledRoles[index] || "Contadino";
-                    database.ref('players/' + id).update({ role });
+                    updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
                 });
 
-                // Mostra il ruolo a tutti
-                setTimeout(() => {
-                    showPlayerRoles();
-                }, 1000);
+                // Esegui l'aggiornamento in blocco
+                database.ref().update(updates)
+                    .then(() => {
+                        // Mostra il ruolo a tutti
+                        setTimeout(() => {
+                            showPlayerRoles();
+                        }, 1000);
+                    })
+                    .catch(error => {
+                        console.error("Errore nell'assegnazione dei ruoli:", error);
+                        alert("Errore nell'assegnazione dei ruoli. Riprova!");
+                    });
             });
         }
 
         // Termina il gioco (solo narratore)
         function endGame() {
-            database.ref('players').once('value').then((snapshot) => {
-                const players = snapshot.val() || {};
-                
-                // Resetta tutti i giocatori
-                for (const [id, player] of Object.entries(players)) {
-                    database.ref('players/' + id).update({ 
-                        role: '',
-                        isHost: false 
-                    });
-                }
-                
-                // Torna alla schermata iniziale
-                showScreen('homeScreen');
-            });
+            if (confirm("Sei sicuro di voler terminare la partita? Tutti torneranno alla schermata iniziale.")) {
+                playersRef.once('value').then((snapshot) => {
+                    const players = snapshot.val() || {};
+                    
+                    // Prepara gli aggiornamenti per resettare tutti i giocatori
+                    const updates = {};
+                    for (const id in players) {
+                        updates['players/' + id + '/role'] = '';
+                        updates['players/' + id + '/isHost'] = false;
+                    }
+                    
+                    // Esegui l'aggiornamento in blocco
+                    database.ref().update(updates)
+                        .then(() => {
+                            // Torna alla schermata iniziale
+                            showScreen('homeScreen');
+                            isHost = false;
+                        })
+                        .catch(error => {
+                            console.error("Errore nel terminare il gioco:", error);
+                            alert("Errore nel resettare il gioco. Ricarica la pagina manualmente.");
+                        });
+                });
+            }
         }
 
         // Mostra il ruolo al giocatore
         function showPlayerRoles() {
-            database.ref('players/' + playerId).once('value').then((snapshot) => {
+            currentPlayerRef.once('value').then((snapshot) => {
                 const player = snapshot.val();
-                document.getElementById('playerRole').textContent = player.role;
-                showScreen('roleScreen');
+                if (player && player.role) {
+                    document.getElementById('playerRole').textContent = player.role;
+                    showScreen('roleScreen');
+                }
             });
         }
 
@@ -284,6 +422,12 @@
             }
             return array;
         }
+
+        // Pulisci i listener quando la pagina viene chiusa
+        window.addEventListener('beforeunload', () => {
+            if (playersRef) playersRef.off();
+            if (currentPlayerRef) currentPlayerRef.remove();
+        });
     </script>
 </body>
 </html>
