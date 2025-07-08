@@ -314,7 +314,7 @@
             "Lupo": "Sei un lupo mannaro! Di notte uccidi gli altri giocatori.",
             "Puttana": "Ogni notte puoi scegliere di proteggere un giocatore dai lupi.",
             "Investigatore": "Puoi scoprire il ruolo di un giocatore ogni notte.",
-            "Vanessa": "Puoi aprire un occhio per spiare gli altri.",
+            "Vanessa": "Sei immune ai lupi la prima notte.",
             "Sindaco": "Hai un voto doppio durante le votazioni.",
             "Contadino": "Sei un semplice villico senza poteri speciali."
         };
@@ -406,12 +406,14 @@
                 await currentPlayerRef.set({
                     name: playerName,
                     role: '',
-                    isHost: false
+                    isHost: false,
+                    showRole: false // Flag per mostrare il ruolo
                 });
 
                 // Mostra la lobby
                 showScreen('lobbyScreen');
                 listenForPlayers();
+                listenForRoleAssignment(); // Aggiunto listener per cambio ruolo
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -435,6 +437,18 @@
             });
         }
 
+        function listenForRoleAssignment() {
+            currentPlayerRef.on('value', (snapshot) => {
+                const player = snapshot.val();
+                if (player && player.role && player.showRole) {
+                    // Mostra il ruolo al giocatore
+                    document.getElementById('playerRole').textContent = player.role;
+                    document.getElementById('roleDescription').textContent = roleDescriptions[player.role] || '';
+                    showScreen('roleScreen');
+                }
+            });
+        }
+
         async function becomeHost() {
             try {
                 const snapshot = await playersRef.once('value');
@@ -448,7 +462,8 @@
                 
                 await currentPlayerRef.update({ 
                     isHost: true,
-                    role: 'Narratore' 
+                    role: 'Narratore',
+                    showRole: false
                 });
                 
                 isHost = true;
@@ -500,14 +515,19 @@
                 
                 playerIdsToAssign.forEach((id, index) => {
                     updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
+                    updates['players/' + id + '/showRole'] = false; // Inizialmente non mostrare
                 });
 
                 await database.ref().update(updates);
                 
-                // Mostra il ruolo a tutti i giocatori (tranne al narratore)
-                if (!isHost) {
-                    showPlayerRoles();
-                }
+                // Dopo 1 secondo, imposta showRole a true per tutti i giocatori
+                setTimeout(async () => {
+                    const showRoleUpdates = {};
+                    playerIdsToAssign.forEach(id => {
+                        showRoleUpdates['players/' + id + '/showRole'] = true;
+                    });
+                    await database.ref().update(showRoleUpdates);
+                }, 1000);
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -531,6 +551,7 @@
                 for (const id in players) {
                     updates['players/' + id + '/role'] = '';
                     updates['players/' + id + '/isHost'] = false;
+                    updates['players/' + id + '/showRole'] = false;
                 }
                 
                 await database.ref().update(updates);
@@ -542,19 +563,6 @@
                 console.error("Errore:", error);
                 showCustomAlert("Errore nel resettare il gioco.");
             }
-        }
-
-        function showPlayerRoles() {
-            if (!currentPlayerRef) return;
-            
-            currentPlayerRef.on('value', (snapshot) => {
-                const player = snapshot.val();
-                if (player && player.role && player.role !== 'Narratore') {
-                    document.getElementById('playerRole').textContent = player.role;
-                    document.getElementById('roleDescription').textContent = roleDescriptions[player.role] || '';
-                    showScreen('roleScreen');
-                }
-            });
         }
 
         function shuffleArray(array) {
