@@ -279,7 +279,7 @@
         <h1>SEI IL NARRATORE</h1>
         <div id="assignedRoles"></div>
         <button id="startGameButton" onclick="startGame()">AVVIA PARTITA</button>
-        <button onclick="endGame()" style="background: linear-gradient(to bottom, #333, #111);">TERMINA GIOCO</button>
+        <button id="endGameButton" onclick="endGame()" style="background: linear-gradient(to bottom, #333, #111);">TERMINA GIOCO</button>
     </div>
 
     <div id="roleScreen" class="screen">
@@ -591,22 +591,26 @@
             if (!confirm) return;
             
             try {
-                const snapshot = await playersRef.once('value');
-                const players = snapshot.val() || {};
-                const updates = {};
+                // Rimuovi tutti i giocatori dal database
+                await playersRef.remove();
                 
-                for (const id in players) {
-                    updates['players/' + id + '/role'] = '';
-                    updates['players/' + id + '/isHost'] = false;
-                    updates['players/' + id + '/showRole'] = false;
-                    updates['players/' + id + '/gameStarted'] = false;
-                }
-                
-                await database.ref().update(updates);
-                
+                // Resetta le variabili locali
                 showScreen('homeScreen');
                 isHost = false;
                 gameStarted = false;
+                
+                // Ricrea il riferimento al giocatore corrente se esiste ancora
+                if (playerId && playerName) {
+                    currentPlayerRef = database.ref('players/' + playerId);
+                    await currentPlayerRef.set({
+                        name: playerName,
+                        role: '',
+                        isHost: false,
+                        showRole: false,
+                        gameStarted: false
+                    });
+                    showScreen('lobbyScreen');
+                }
                 
             } catch (error) {
                 console.error("Errore:", error);
