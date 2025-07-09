@@ -26,7 +26,7 @@
             max-width: 800px;
             margin: 20px auto;
             padding: 30px;
-            background-color: rgba(26, 26, 46, 0.9);
+            background-color: rgba(26, 26, 46, 0.95); /* Aumentato l'opacità */
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
             border: 2px solid #4a4a6a;
@@ -88,8 +88,8 @@
             max-width: 350px;
             border-radius: 8px;
             border: 2px solid #4a4a6a;
-            background-color: rgba(26, 26, 46, 0.8);
-            color: #e6e6e6;
+            background-color: rgba(255, 255, 255, 0.9); /* Sfondo più chiaro */
+            color: #1a1a2e; /* Testo più scuro */
             font-size: 16px;
             font-family: 'MedievalSharp', cursive;
             text-align: center;
@@ -104,7 +104,7 @@
         #playersList div {
             padding: 10px 15px;
             margin: 8px 0;
-            background-color: rgba(74, 74, 106, 0.3);
+            background-color: rgba(74, 74, 106, 0.5); /* Aumentato contrasto */
             border-left: 4px solid #f8bb22;
             border-radius: 5px;
             display: flex;
@@ -139,7 +139,7 @@
             font-size: 20px;
             margin-top: 15px;
             color: #e6e6e6;
-            background-color: rgba(26, 26, 46, 0.7);
+            background-color: rgba(26, 26, 46, 0.9); /* Aumentato contrasto */
             padding: 15px;
             border-radius: 10px;
             border-left: 4px solid #f8bb22;
@@ -150,7 +150,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: rgba(26, 26, 46, 0.95);
+            background-color: rgba(26, 26, 46, 0.98);
             color: #e6e6e6;
             padding: 25px;
             border-radius: 15px;
@@ -182,7 +182,7 @@
         #assignedRoles div {
             padding: 12px;
             margin: 12px 0;
-            background-color: rgba(74, 74, 106, 0.3);
+            background-color: rgba(74, 74, 106, 0.5); /* Aumentato contrasto */
             border-radius: 8px;
             font-size: 18px;
             display: flex;
@@ -203,6 +203,18 @@
             font-size: 18px;
             margin-bottom: 20px;
             color: #f8bb22;
+        }
+        
+        .make-host-btn {
+            background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+            color: white;
+            padding: 5px 10px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        
+        .make-host-btn:hover {
+            background: linear-gradient(to bottom, #66BB6A, #388E3C);
         }
         
         @media (max-width: 600px) {
@@ -268,7 +280,8 @@
             <div class="player-count" id="hostPlayerCount">0 giocatori in lobby</div>
         </div>
         <button id="startGameButton" onclick="startGame()">AVVIA PARTITA</button>
-        <button onclick="endGame()" style="background: linear-gradient(to bottom, #a52a2a, #8b0000);">TERMINA GIOCO</button>
+        <button onclick="resetGame()" style="background: linear-gradient(to bottom, #a52a2a, #8b0000);">RESETTA PARTITA</button>
+        <button onclick="transferHost()" style="background: linear-gradient(to bottom, #2196F3, #0b7dda);">TRASFERISCI NARRATORE</button>
     </div>
 
     <div id="roleScreen" class="screen">
@@ -397,6 +410,7 @@
                 showScreen('lobbyScreen');
                 listenForPlayers();
                 listenForRoleAssignment();
+                listenForGameReset();
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -421,7 +435,20 @@
                 let playerCount = 0;
                 
                 for (const [id, player] of Object.entries(players)) {
-                    playersList.innerHTML += `<div>${player.name} ${player.isHost ? '<span style="color:#f8bb22">(NARRATORE)</span>' : ''}</div>`;
+                    const playerDiv = document.createElement('div');
+                    playerDiv.innerHTML = `${player.name} ${player.isHost ? '<span style="color:#f8bb22">(NARRATORE)</span>' : ''}`;
+                    
+                    // Aggiungi pulsante "Rendi narratore" solo per l'host e se non è già narratore
+                    if (isHost && !player.isHost) {
+                        const makeHostBtn = document.createElement('button');
+                        makeHostBtn.className = 'make-host-btn';
+                        makeHostBtn.textContent = 'Rendi narratore';
+                        makeHostBtn.onclick = () => makePlayerHost(id);
+                        playerDiv.appendChild(makeHostBtn);
+                    }
+                    
+                    playersList.appendChild(playerDiv);
+                    
                     if (player.isHost) hostExists = true;
                     playerCount++;
                 }
@@ -441,6 +468,18 @@
                     document.getElementById('roleDescription').textContent = roles[player.role]?.description || '';
                     document.getElementById('roleImage').src = roles[player.role]?.image || '';
                     showScreen('roleScreen');
+                }
+            });
+        }
+
+        function listenForGameReset() {
+            currentPlayerRef.on('value', (snapshot) => {
+                const player = snapshot.val();
+                if (!player) return;
+                
+                // Se il giocatore non ha più un ruolo (reset del gioco)
+                if (!player.role && player.role !== 'Narratore') {
+                    showScreen('lobbyScreen');
                 }
             });
         }
@@ -468,6 +507,45 @@
             } catch (error) {
                 console.error("Errore:", error);
                 showCustomAlert("Errore diventando narratore. Riprova!");
+            }
+        }
+
+        async function makePlayerHost(playerIdToMakeHost) {
+            if (!isHost) return;
+            
+            try {
+                // Rimuovi lo stato di host da tutti i giocatori
+                const snapshot = await playersRef.once('value');
+                const players = snapshot.val() || {};
+                
+                const updates = {};
+                
+                // Resetta tutti gli host
+                for (const id in players) {
+                    if (players[id].isHost) {
+                        updates['players/' + id + '/isHost'] = false;
+                        updates['players/' + id + '/role'] = '';
+                    }
+                }
+                
+                // Imposta il nuovo host
+                updates['players/' + playerIdToMakeHost + '/isHost'] = true;
+                updates['players/' + playerIdToMakeHost + '/role'] = 'Narratore';
+                
+                await database.ref().update(updates);
+                
+                // Se ero io l'host precedente, torno alla lobby
+                if (currentPlayerRef.key === playerIdToMakeHost) {
+                    isHost = true;
+                    showScreen('hostScreen');
+                } else {
+                    isHost = false;
+                    showScreen('lobbyScreen');
+                }
+                
+            } catch (error) {
+                console.error("Errore:", error);
+                showCustomAlert("Errore nel trasferimento del ruolo di narratore.");
             }
         }
 
@@ -536,33 +614,49 @@
             }
         }
 
-        async function endGame() {
+        async function resetGame() {
+            if (!isHost) return;
+            
             try {
-                // Rimuovi tutti i giocatori tranne il narratore
+                const updates = {};
                 const snapshot = await playersRef.once('value');
                 const players = snapshot.val() || {};
-                const updates = {};
                 
                 for (const id in players) {
-                    if (players[id].isHost) {
-                        // Resetta solo il narratore
-                        updates['players/' + id + '/role'] = '';
-                        updates['players/' + id + '/showRole'] = false;
-                    } else {
-                        // Rimuovi tutti gli altri giocatori
-                        updates['players/' + id] = null;
-                    }
+                    updates['players/' + id + '/role'] = '';
+                    updates['players/' + id + '/showRole'] = false;
                 }
                 
                 await database.ref().update(updates);
                 
-                // Mostra la lobby al narratore
-                showScreen('lobbyScreen');
-                isHost = false;
+                showCustomAlert("Partita resettata! Tutti i giocatori tornano alla lobby.");
                 
             } catch (error) {
                 console.error("Errore:", error);
                 showCustomAlert("Errore nel resettare il gioco.");
+            }
+        }
+
+        async function transferHost() {
+            if (!isHost) return;
+            
+            try {
+                const snapshot = await playersRef.once('value');
+                const players = snapshot.val() || {};
+                
+                // Trova un giocatore che non sia l'host attuale
+                const otherPlayerId = Object.keys(players).find(id => !players[id].isHost);
+                
+                if (!otherPlayerId) {
+                    showCustomAlert("Non ci sono altri giocatori a cui trasferire il ruolo di narratore!");
+                    return;
+                }
+                
+                await makePlayerHost(otherPlayerId);
+                
+            } catch (error) {
+                console.error("Errore:", error);
+                showCustomAlert("Errore nel trasferimento del ruolo di narratore.");
             }
         }
 
