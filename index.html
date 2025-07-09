@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LUPUS CUGGINOSO</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Creepster&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
         
         body {
             font-family: 'Bangers', cursive;
@@ -19,7 +19,6 @@
             background-attachment: fixed;
             letter-spacing: 1px;
             min-height: 100vh;
-            overflow-x: hidden;
         }
         
         .screen {
@@ -32,8 +31,6 @@
             box-shadow: 0 0 30px rgba(255, 50, 50, 0.6);
             border: 3px solid #ff3232;
             animation: pulse 2s infinite alternate;
-            position: relative;
-            overflow: hidden;
         }
         
         @keyframes pulse {
@@ -48,8 +45,7 @@
         h1 {
             color: #ff3232;
             text-shadow: 0 0 15px rgba(255, 50, 50, 0.8), 
-                         0 0 5px #000,
-                         0 0 10px #000;
+                         0 0 5px #000;
             font-size: 3em;
             margin-bottom: 30px;
             letter-spacing: 3px;
@@ -70,12 +66,10 @@
             font-family: 'Bangers', cursive;
             letter-spacing: 2px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-            position: relative;
-            overflow: hidden;
         }
         
         button:hover {
-            transform: translateY(-3px) scale(1.05);
+            transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(255, 50, 50, 0.6);
         }
         
@@ -118,7 +112,6 @@
             border: 4px solid #ff3232;
             text-shadow: 0 0 15px rgba(255, 50, 50, 0.8);
             font-weight: bold;
-            animation: glow 1.5s infinite alternate;
         }
         
         .role-description {
@@ -231,6 +224,7 @@
         <h1>IL TUO RUOLO È:</h1>
         <div id="playerRole" class="role-display">...</div>
         <div id="roleDescription" class="role-description"></div>
+        <button onclick="returnToLobby()" style="background: linear-gradient(to bottom, #333, #111);">TORNA ALLA LOBBY</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -320,7 +314,8 @@
                     name: playerName,
                     role: '',
                     isHost: false,
-                    showRole: false
+                    showRole: false,
+                    inGame: false
                 });
 
                 // Mostra la lobby
@@ -341,13 +336,15 @@
                 playersList.innerHTML = '';
 
                 let hostExists = false;
+                let gameInProgress = false;
                 
                 for (const [id, player] of Object.entries(players)) {
                     playersList.innerHTML += `<div>${player.name} ${player.isHost ? '(NARRATORE)' : ''}</div>`;
                     if (player.isHost) hostExists = true;
+                    if (player.inGame) gameInProgress = true;
                 }
 
-                document.getElementById('hostButton').style.display = hostExists ? 'none' : 'block';
+                document.getElementById('hostButton').style.display = (hostExists || gameInProgress) ? 'none' : 'block';
             });
         }
 
@@ -377,7 +374,8 @@
                 
                 await currentPlayerRef.update({ 
                     isHost: true,
-                    role: 'Narratore'
+                    role: 'Narratore',
+                    inGame: false
                 });
                 
                 isHost = true;
@@ -427,6 +425,11 @@
                 const shuffledRoles = shuffleArray(rolesToAssign);
                 const updates = {};
                 
+                // Imposta tutti i giocatori come in partita
+                playerIds.forEach(id => {
+                    updates['players/' + id + '/inGame'] = true;
+                });
+                
                 // Assegna i ruoli solo ai giocatori (non al narratore)
                 playerIdsToAssign.forEach((id, index) => {
                     updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
@@ -435,7 +438,7 @@
 
                 await database.ref().update(updates);
                 
-                // Dopo 0.5 secondi, imposta showRole a true per tutti i giocatori (più veloce)
+                // Dopo 0.5 secondi, imposta showRole a true per tutti i giocatori
                 setTimeout(async () => {
                     const showRoleUpdates = {};
                     playerIdsToAssign.forEach(id => {
@@ -443,6 +446,9 @@
                     });
                     await database.ref().update(showRoleUpdates);
                 }, 500);
+                
+                // Nascondi il pulsante "Avvia Partita" dopo l'inizio
+                document.getElementById('startGameButton').style.display = 'none';
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -452,31 +458,35 @@
 
         async function endGame() {
             try {
-                // Rimuovi tutti i giocatori tranne il narratore
-                const snapshot = await playersRef.once('value');
-                const players = snapshot.val() || {};
-                const updates = {};
+                // Rimuovi TUTTI i giocatori, incluso il narratore
+                await playersRef.remove();
                 
-                for (const id in players) {
-                    if (players[id].isHost) {
-                        // Resetta solo il narratore
-                        updates['players/' + id + '/role'] = '';
-                        updates['players/' + id + '/showRole'] = false;
-                    } else {
-                        // Rimuovi tutti gli altri giocatori
-                        updates['players/' + id] = null;
-                    }
-                }
-                
-                await database.ref().update(updates);
-                
-                // Mostra la lobby al narratore
-                showScreen('lobbyScreen');
+                // Resetta le variabili locali
                 isHost = false;
+                currentPlayerRef = null;
+                
+                // Mostra la schermata iniziale
+                showScreen('homeScreen');
                 
             } catch (error) {
                 console.error("Errore:", error);
                 showCustomAlert("Errore nel resettare il gioco.");
+            }
+        }
+
+        async function returnToLobby() {
+            try {
+                // Aggiorna solo il giocatore corrente
+                await currentPlayerRef.update({
+                    showRole: false
+                });
+                
+                // Torna alla lobby
+                showScreen('lobbyScreen');
+                
+            } catch (error) {
+                console.error("Errore:", error);
+                showCustomAlert("Errore nel tornare alla lobby.");
             }
         }
 
