@@ -219,15 +219,6 @@
             background: linear-gradient(to bottom, #66BB6A, #388E3C);
         }
         
-        .transfer-host-btn {
-            background: linear-gradient(to bottom, #2196F3, #0b7dda);
-            color: white;
-        }
-        
-        .transfer-host-btn:hover {
-            background: linear-gradient(to bottom, #42A5F5, #1E88E5);
-        }
-        
         .reset-btn {
             background: linear-gradient(to bottom, #a52a2a, #8b0000);
             color: white;
@@ -306,7 +297,6 @@
         </div>
         <button id="startGameButton" onclick="startGame()">AVVIA PARTITA</button>
         <button onclick="resetGame()" class="reset-btn">RESETTA PARTITA</button>
-        <button onclick="transferHost()" class="transfer-host-btn">TRASFERISCI NARRATORE</button>
     </div>
 
     <div id="roleScreen" class="screen">
@@ -568,6 +558,8 @@
                     showScreen('lobbyScreen');
                 }
                 
+                showCustomAlert(`Hai trasferito il ruolo di narratore a ${players[playerIdToMakeHost].name}. Ora può avviare la partita.`);
+                
             } catch (error) {
                 console.error("Errore:", error);
                 showCustomAlert("Errore nel trasferimento del ruolo di narratore.");
@@ -659,30 +651,6 @@
             } catch (error) {
                 console.error("Errore:", error);
                 showCustomAlert("Errore nel resettare il gioco.");
-            }
-        }
-
-        async function transferHost() {
-            if (!isHost) return;
-            
-            try {
-                const snapshot = await playersRef.once('value');
-                const players = snapshot.val() || {};
-                
-                // Trova un giocatore che non sia l'host attuale
-                const otherPlayerId = Object.keys(players).find(id => !players[id].isHost);
-                
-                if (!otherPlayerId) {
-                    showCustomAlert("Non ci sono altri giocatori a cui trasferire il ruolo di narratore!");
-                    return;
-                }
-                
-                await makePlayerHost(otherPlayerId);
-                showCustomAlert(`Hai trasferito il ruolo di narratore a ${players[otherPlayerId].name}.`);
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nel trasferimento del ruolo di narratore.");
             }
         }
 
