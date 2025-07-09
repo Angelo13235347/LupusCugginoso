@@ -228,6 +228,19 @@
             background: linear-gradient(to bottom, #c52d2d, #a00000);
         }
         
+        .assign-host-btn {
+            background: linear-gradient(to bottom, #3f51b5, #303f9f);
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px;
+            margin-left: 10px;
+            border-radius: 6px;
+        }
+        
+        .assign-host-btn:hover {
+            background: linear-gradient(to bottom, #5c6bc0, #3949ab);
+        }
+        
         @media (max-width: 600px) {
             h1 {
                 font-size: 2em;
@@ -256,7 +269,7 @@
                 height: 120px;
             }
             
-            .make-host-btn {
+            .make-host-btn, .assign-host-btn {
                 padding: 6px 10px;
                 font-size: 12px;
             }
@@ -455,11 +468,11 @@
                     
                     // Aggiungi pulsante "Rendi narratore" solo per l'host e se non è già narratore
                     if (isHost && !player.isHost) {
-                        const makeHostBtn = document.createElement('button');
-                        makeHostBtn.className = 'make-host-btn';
-                        makeHostBtn.textContent = 'Rendi narratore';
-                        makeHostBtn.onclick = () => makePlayerHost(id);
-                        playerDiv.appendChild(makeHostBtn);
+                        const assignHostBtn = document.createElement('button');
+                        assignHostBtn.className = 'assign-host-btn';
+                        assignHostBtn.textContent = 'Assegna narratore';
+                        assignHostBtn.onclick = () => assignNewHost(id);
+                        playerDiv.appendChild(assignHostBtn);
                     }
                     
                     playersList.appendChild(playerDiv);
@@ -529,13 +542,17 @@
             }
         }
 
-        async function makePlayerHost(playerIdToMakeHost) {
+        async function assignNewHost(newHostId) {
             if (!isHost) return;
             
             try {
-                // Rimuovi lo stato di host da tutti i giocatori
                 const snapshot = await playersRef.once('value');
                 const players = snapshot.val() || {};
+                
+                if (!players[newHostId]) {
+                    showCustomAlert("Giocatore non trovato!");
+                    return;
+                }
                 
                 const updates = {};
                 
@@ -547,26 +564,26 @@
                 }
                 
                 // Imposta il nuovo host
-                updates['players/' + playerIdToMakeHost + '/isHost'] = true;
-                updates['players/' + playerIdToMakeHost + '/role'] = 'Narratore';
+                updates['players/' + newHostId + '/isHost'] = true;
+                updates['players/' + newHostId + '/role'] = 'Narratore';
                 
                 await database.ref().update(updates);
                 
                 // Se ero io l'host precedente, torno alla lobby
-                if (currentPlayerRef.key === playerIdToMakeHost) {
+                if (currentPlayerRef.key === newHostId) {
                     isHost = true;
                     showScreen('hostScreen');
-                    listenForRoles(); // Ricarica i ruoli per il nuovo host
+                    listenForRoles();
                 } else {
                     isHost = false;
                     showScreen('lobbyScreen');
                 }
                 
-                showCustomAlert(`Hai trasferito il ruolo di narratore a ${players[playerIdToMakeHost].name}. Ora può avviare la partita.`);
+                showCustomAlert(`Hai assegnato il ruolo di narratore a ${players[newHostId].name}.`);
                 
             } catch (error) {
                 console.error("Errore:", error);
-                showCustomAlert("Errore nel trasferimento del ruolo di narratore.");
+                showCustomAlert("Errore nell'assegnazione del nuovo narratore.");
             }
         }
 
