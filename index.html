@@ -26,7 +26,7 @@
             max-width: 800px;
             margin: 20px auto;
             padding: 30px;
-            background-color: rgba(26, 26, 46, 0.95); /* Aumentato l'opacità */
+            background-color: rgba(26, 26, 46, 0.95);
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
             border: 2px solid #4a4a6a;
@@ -88,8 +88,8 @@
             max-width: 350px;
             border-radius: 8px;
             border: 2px solid #4a4a6a;
-            background-color: rgba(255, 255, 255, 0.9); /* Sfondo più chiaro */
-            color: #1a1a2e; /* Testo più scuro */
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #1a1a2e;
             font-size: 16px;
             font-family: 'MedievalSharp', cursive;
             text-align: center;
@@ -104,11 +104,12 @@
         #playersList div {
             padding: 10px 15px;
             margin: 8px 0;
-            background-color: rgba(74, 74, 106, 0.5); /* Aumentato contrasto */
+            background-color: rgba(74, 74, 106, 0.5);
             border-left: 4px solid #f8bb22;
             border-radius: 5px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
         
         .role-container {
@@ -139,7 +140,7 @@
             font-size: 20px;
             margin-top: 15px;
             color: #e6e6e6;
-            background-color: rgba(26, 26, 46, 0.9); /* Aumentato contrasto */
+            background-color: rgba(26, 26, 46, 0.9);
             padding: 15px;
             border-radius: 10px;
             border-left: 4px solid #f8bb22;
@@ -182,7 +183,7 @@
         #assignedRoles div {
             padding: 12px;
             margin: 12px 0;
-            background-color: rgba(74, 74, 106, 0.5); /* Aumentato contrasto */
+            background-color: rgba(74, 74, 106, 0.5);
             border-radius: 8px;
             font-size: 18px;
             display: flex;
@@ -208,13 +209,32 @@
         .make-host-btn {
             background: linear-gradient(to bottom, #4CAF50, #2E7D32);
             color: white;
-            padding: 5px 10px;
+            padding: 8px 15px;
             font-size: 14px;
             margin-left: 10px;
+            border-radius: 6px;
         }
         
         .make-host-btn:hover {
             background: linear-gradient(to bottom, #66BB6A, #388E3C);
+        }
+        
+        .transfer-host-btn {
+            background: linear-gradient(to bottom, #2196F3, #0b7dda);
+            color: white;
+        }
+        
+        .transfer-host-btn:hover {
+            background: linear-gradient(to bottom, #42A5F5, #1E88E5);
+        }
+        
+        .reset-btn {
+            background: linear-gradient(to bottom, #a52a2a, #8b0000);
+            color: white;
+        }
+        
+        .reset-btn:hover {
+            background: linear-gradient(to bottom, #c52d2d, #a00000);
         }
         
         @media (max-width: 600px) {
@@ -243,6 +263,11 @@
             .role-image {
                 width: 120px;
                 height: 120px;
+            }
+            
+            .make-host-btn {
+                padding: 6px 10px;
+                font-size: 12px;
             }
         }
     </style>
@@ -280,8 +305,8 @@
             <div class="player-count" id="hostPlayerCount">0 giocatori in lobby</div>
         </div>
         <button id="startGameButton" onclick="startGame()">AVVIA PARTITA</button>
-        <button onclick="resetGame()" style="background: linear-gradient(to bottom, #a52a2a, #8b0000);">RESETTA PARTITA</button>
-        <button onclick="transferHost()" style="background: linear-gradient(to bottom, #2196F3, #0b7dda);">TRASFERISCI NARRATORE</button>
+        <button onclick="resetGame()" class="reset-btn">RESETTA PARTITA</button>
+        <button onclick="transferHost()" class="transfer-host-btn">TRASFERISCI NARRATORE</button>
     </div>
 
     <div id="roleScreen" class="screen">
@@ -653,6 +678,7 @@
                 }
                 
                 await makePlayerHost(otherPlayerId);
+                showCustomAlert(`Hai trasferito il ruolo di narratore a ${players[otherPlayerId].name}.`);
                 
             } catch (error) {
                 console.error("Errore:", error);
