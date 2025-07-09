@@ -478,7 +478,11 @@
                 const player = snapshot.val();
                 if (!player) return;
                 
-                if (player.role && player.showRole) {
+                if (player.isHost) {
+                    isHost = true;
+                    showScreen('hostScreen');
+                    listenForRoles();
+                } else if (player.role && player.showRole) {
                     document.getElementById('playerRole').textContent = player.role;
                     document.getElementById('roleDescription').textContent = roles[player.role]?.description || '';
                     document.getElementById('roleImage').src = roles[player.role]?.image || '';
@@ -493,7 +497,7 @@
                 if (!player) return;
                 
                 // Se il giocatore non ha più un ruolo (reset del gioco)
-                if (!player.role && player.role !== 'Narratore') {
+                if (!player.role && !player.isHost) {
                     showScreen('lobbyScreen');
                 }
             });
@@ -535,12 +539,11 @@
                 
                 const updates = {};
                 
-                // Resetta tutti gli host
+                // Resetta tutti gli host e i ruoli
                 for (const id in players) {
-                    if (players[id].isHost) {
-                        updates['players/' + id + '/isHost'] = false;
-                        updates['players/' + id + '/role'] = '';
-                    }
+                    updates['players/' + id + '/isHost'] = false;
+                    updates['players/' + id + '/role'] = '';
+                    updates['players/' + id + '/showRole'] = false;
                 }
                 
                 // Imposta il nuovo host
@@ -553,6 +556,7 @@
                 if (currentPlayerRef.key === playerIdToMakeHost) {
                     isHost = true;
                     showScreen('hostScreen');
+                    listenForRoles(); // Ricarica i ruoli per il nuovo host
                 } else {
                     isHost = false;
                     showScreen('lobbyScreen');
@@ -642,6 +646,10 @@
                 for (const id in players) {
                     updates['players/' + id + '/role'] = '';
                     updates['players/' + id + '/showRole'] = false;
+                    // Mantieni solo lo stato di host per il narratore corrente
+                    if (players[id].isHost) {
+                        updates['players/' + id + '/isHost'] = true;
+                    }
                 }
                 
                 await database.ref().update(updates);
