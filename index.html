@@ -5,37 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LUPUS CUGGINOSO</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
         
         body {
-            font-family: 'Bangers', cursive;
+            font-family: 'MedievalSharp', cursive;
             text-align: center;
-            background-color: #0a0a0a;
-            color: white;
+            background-color: #1a0a0a;
+            color: #e0d0a0;
             margin: 0;
             padding: 20px;
-            background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-image: url('https://images.unsplash.com/photo-1511499767150-a48a237f0083?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
             background-size: cover;
             background-attachment: fixed;
-            letter-spacing: 1px;
             min-height: 100vh;
         }
         
         .screen {
             display: none;
-            max-width: 600px;
+            max-width: 800px;
             margin: 20px auto;
             padding: 30px;
-            background-color: rgba(0, 0, 0, 0.85);
+            background-color: rgba(10, 5, 0, 0.9);
             border-radius: 15px;
-            box-shadow: 0 0 30px rgba(255, 50, 50, 0.6);
-            border: 3px solid #ff3232;
-            animation: pulse 2s infinite alternate;
+            border: 2px solid #8b4513;
+            box-shadow: 0 0 20px rgba(139, 69, 19, 0.7);
+            position: relative;
+            overflow: hidden;
         }
         
-        @keyframes pulse {
-            0% { box-shadow: 0 0 30px rgba(255, 50, 50, 0.6); }
-            100% { box-shadow: 0 0 50px rgba(255, 80, 80, 0.8); }
+        .screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://www.transparenttextures.com/patterns/old-map.png');
+            opacity: 0.3;
+            pointer-events: none;
         }
         
         .active {
@@ -43,81 +50,120 @@
         }
         
         h1 {
-            color: #ff3232;
-            text-shadow: 0 0 15px rgba(255, 50, 50, 0.8), 
-                         0 0 5px #000;
-            font-size: 3em;
+            color: #d4af37;
+            text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+            font-size: 3.5em;
             margin-bottom: 30px;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
         }
         
         button {
-            background: linear-gradient(to bottom, #ff3232, #cc0000);
-            color: white;
+            background: linear-gradient(to bottom, #8b4513, #5e2c04);
+            color: #f5deb3;
             border: none;
-            padding: 18px 35px;
-            margin: 20px;
-            border-radius: 10px;
+            padding: 15px 30px;
+            margin: 15px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 1.2em;
             font-weight: bold;
             transition: all 0.3s;
-            text-transform: uppercase;
-            font-family: 'Bangers', cursive;
-            letter-spacing: 2px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            font-family: 'MedievalSharp', cursive;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            border: 1px solid #d4af37;
+            position: relative;
+            overflow: hidden;
         }
         
         button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 50, 50, 0.6);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+            background: linear-gradient(to bottom, #9b5513, #6e3c04);
+        }
+        
+        button:active {
+            transform: translateY(1px);
         }
         
         input {
-            padding: 15px;
+            padding: 12px;
             margin: 20px;
             width: 80%;
-            max-width: 350px;
-            border-radius: 10px;
-            border: 3px solid #ff3232;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            font-size: 18px;
-            font-family: 'Bangers', cursive;
+            max-width: 400px;
+            border-radius: 8px;
+            border: 2px solid #8b4513;
+            background-color: rgba(30, 15, 0, 0.8);
+            color: #f5deb3;
+            font-size: 1.1em;
+            font-family: 'MedievalSharp', cursive;
             text-align: center;
-            letter-spacing: 1px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 15px rgba(210, 180, 60, 0.6);
         }
         
         #playersList {
             margin: 30px 0;
             text-align: left;
-            font-size: 22px;
+            font-size: 1.3em;
         }
         
         #playersList div {
             padding: 12px;
-            margin: 8px 0;
-            background-color: rgba(255, 50, 50, 0.2);
-            border-left: 5px solid #ff3232;
+            margin: 10px 0;
+            background-color: rgba(139, 69, 19, 0.3);
+            border-left: 4px solid #d4af37;
             border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        #playersList div:hover {
+            background-color: rgba(139, 69, 19, 0.5);
+            transform: translateX(5px);
+        }
+        
+        .role-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 30px 0;
+        }
+        
+        .role-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #d4af37;
+            box-shadow: 0 0 20px rgba(210, 180, 60, 0.7);
+            margin-bottom: 20px;
         }
         
         .role-display {
-            font-size: 42px;
-            margin: 40px;
-            padding: 40px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #ff3232;
-            border-radius: 20px;
-            border: 4px solid #ff3232;
-            text-shadow: 0 0 15px rgba(255, 50, 50, 0.8);
-            font-weight: bold;
+            font-size: 2.5em;
+            color: #d4af37;
+            text-shadow: 2px 2px 0 #000;
+            margin: 10px 0;
+            padding: 10px 20px;
+            background-color: rgba(30, 15, 0, 0.7);
+            border-radius: 10px;
+            border: 2px solid #8b4513;
         }
         
         .role-description {
-            font-size: 24px;
+            font-size: 1.3em;
             margin-top: 20px;
-            color: #fff;
+            color: #f5deb3;
+            max-width: 600px;
+            padding: 15px;
+            background-color: rgba(30, 15, 0, 0.7);
+            border-radius: 10px;
+            border: 1px solid #8b4513;
         }
         
         .custom-alert {
@@ -125,55 +171,67 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.9);
-            color: white;
+            background-color: rgba(20, 10, 0, 0.95);
+            color: #f5deb3;
             padding: 30px;
             border-radius: 15px;
-            border: 3px solid #ff3232;
-            box-shadow: 0 0 30px rgba(255, 50, 50, 0.8);
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 30px rgba(210, 180, 60, 0.8);
             z-index: 1000;
             max-width: 80%;
             text-align: center;
-            font-size: 20px;
+            font-size: 1.2em;
+        }
+        
+        .custom-alert button {
+            margin-top: 20px;
         }
         
         #hostButton {
-            background: linear-gradient(to bottom, #990000, #660000);
+            background: linear-gradient(to bottom, #5e2c04, #3e1c02);
         }
         
         #assignedRoles {
             margin: 30px 0;
         }
         
-        #assignedRoles div {
-            padding: 15px;
-            margin: 15px 0;
-            background-color: rgba(255, 50, 50, 0.25);
-            border-radius: 10px;
-            font-size: 20px;
+        #assignedRoles h2 {
+            color: #d4af37;
+            font-size: 1.8em;
+            margin-bottom: 20px;
         }
         
-        .blood-splatter {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            opacity: 0.1;
-            z-index: -1;
-            background-image: url('https://www.transparenttextures.com/patterns/blood.png');
-            background-size: cover;
+        #assignedRoles div {
+            padding: 12px;
+            margin: 12px 0;
+            background-color: rgba(139, 69, 19, 0.3);
+            border-radius: 8px;
+            border: 1px solid #8b4513;
+            font-size: 1.2em;
+        }
+        
+        #assignedRoles div strong {
+            color: #d4af37;
+        }
+        
+        .parchment-effect {
+            background-image: url('https://www.transparenttextures.com/patterns/paper.png');
+            background-color: #f5e7d0;
+            color: #3a2c1a;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid #8b4513;
         }
 
         @media (max-width: 600px) {
             h1 {
-                font-size: 2em;
+                font-size: 2.2em;
             }
             
             button {
-                padding: 15px 25px;
-                font-size: 18px;
+                padding: 12px 25px;
+                font-size: 1em;
             }
             
             .screen {
@@ -182,49 +240,62 @@
             }
             
             .role-display {
-                font-size: 28px;
-                padding: 20px;
-                margin: 20px 0;
+                font-size: 1.8em;
             }
             
             .role-description {
-                font-size: 18px;
+                font-size: 1.1em;
+            }
+            
+            .role-image {
+                width: 120px;
+                height: 120px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="blood-splatter"></div>
-    
     <div id="homeScreen" class="screen active">
         <h1>LUPUS CUGGINOSO</h1>
+        <div class="parchment-effect">
+            <p>Un gioco di intrighi e mistero nel villaggio</p>
+        </div>
         <button onclick="showScreen('joinScreen')">ENTRA NEL GIOCO</button>
     </div>
 
     <div id="joinScreen" class="screen">
         <h1>COME TI CHIAMI?</h1>
-        <input type="text" id="playerName" placeholder="Il tuo nome" maxlength="20">
+        <div class="parchment-effect" style="max-width: 400px; margin: 0 auto;">
+            <input type="text" id="playerName" placeholder="Il tuo nome" maxlength="20">
+        </div>
         <button onclick="joinGame()">ENTRA IN PARTITA</button>
     </div>
 
     <div id="lobbyScreen" class="screen">
         <h1>IN ATTESA DI GIOCATORI...</h1>
-        <div id="playersList"></div>
+        <div class="parchment-effect">
+            <div id="playersList"></div>
+        </div>
         <button id="hostButton" onclick="becomeHost()">DIVENTA NARRATORE</button>
     </div>
 
     <div id="hostScreen" class="screen">
         <h1>SEI IL NARRATORE</h1>
-        <div id="assignedRoles"></div>
+        <div class="parchment-effect">
+            <div id="assignedRoles"></div>
+        </div>
         <button id="startGameButton" onclick="startGame()">AVVIA PARTITA</button>
-        <button onclick="endGame()" style="background: linear-gradient(to bottom, #333, #111);">TERMINA GIOCO</button>
+        <button onclick="endGame()" style="background: linear-gradient(to bottom, #3a2c1a, #1a1208);">TERMINA GIOCO</button>
     </div>
 
     <div id="roleScreen" class="screen">
         <h1>IL TUO RUOLO È:</h1>
-        <div id="playerRole" class="role-display">...</div>
-        <div id="roleDescription" class="role-description"></div>
-        <button onclick="returnToLobby()" style="background: linear-gradient(to bottom, #333, #111);">TORNA ALLA LOBBY</button>
+        <div class="role-container">
+            <img id="roleImage" class="role-image" src="" alt="Immagine ruolo">
+            <div id="playerRole" class="role-display parchment-effect">...</div>
+            <div id="roleDescription" class="role-description parchment-effect"></div>
+        </div>
+        <button onclick="returnToLobby()" style="background: linear-gradient(to bottom, #3a2c1a, #1a1208);">TORNA ALLA LOBBY</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -249,27 +320,58 @@
         let playerId;
         let isHost = false;
         const baseRoles = ["Lupo", "Puttana", "Investigatore", "Vanessa", "Sindaco", "Contadino"];
-        const roleDescriptions = {
-            "Lupo": "Sei un lupo mannaro! Di notte uccidi gli altri giocatori.",
-            "Puttana": "Ogni notte puoi scegliere di proteggere un giocatore dai lupi.",
-            "Investigatore": "Puoi scoprire il ruolo di un giocatore ogni notte.",
-            "Vanessa": "Sei immune ai lupi la prima notte.",
-            "Sindaco": "Hai un voto doppio durante le votazioni.",
-            "Contadino": "Sei un semplice villico senza poteri speciali."
+        
+        // Immagini per ogni ruolo
+        const roleImages = {
+            "Lupo": "https://images.unsplash.com/photo-1547407139-3c921a66005c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+            "Puttana": "https://images.unsplash.com/photo-1592214534258-0067435006d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+            "Investigatore": "https://images.unsplash.com/photo-1589998059171-988d887df646?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+            "Vanessa": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+            "Sindaco": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+            "Contadino": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+            "Narratore": "https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
         };
+        
+        const roleDescriptions = {
+            "Lupo": "Sei un lupo mannaro! Di notte uccidi gli altri giocatori. Lavora con gli altri lupi per eliminare gli innocenti.",
+            "Puttana": "Ogni notte puoi scegliere di proteggere un giocatore dai lupi. La tua saggezza può salvare il villaggio.",
+            "Investigatore": "Puoi scoprire il ruolo di un giocatore ogni notte. Usa la tua abilità per smascherare i lupi.",
+            "Vanessa": "Sei immune ai lupi la prima notte. La tua purezza ti protegge dall'oscurità iniziale.",
+            "Sindaco": "Hai un voto doppio durante le votazioni. La tua leadership guida il villaggio.",
+            "Contadino": "Sei un semplice villico senza poteri speciali, ma il tuo istinto può essere fondamentale.",
+            "Narratore": "Sei il guardiano del gioco. Gestisci la partita e assicurati che le regole siano rispettate."
+        };
+        
         let playersRef;
         let currentPlayerRef;
         let playerName = "";
 
         // Mostra alert personalizzato
-        function showCustomAlert(message) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'custom-alert';
-            alertDiv.innerHTML = `
-                <p>${message}</p>
-                <button onclick="this.parentNode.remove()">OK</button>
-            `;
-            document.body.appendChild(alertDiv);
+        function showCustomAlert(message, isConfirm = false) {
+            return new Promise((resolve) => {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'custom-alert';
+                alertDiv.innerHTML = `
+                    <p>${message}</p>
+                    <button onclick="this.parentNode.remove(); ${isConfirm ? 'resolve(true)' : 'resolve()'}">
+                        ${isConfirm ? 'CONFERMA' : 'OK'}
+                    </button>
+                `;
+                
+                if (isConfirm) {
+                    const cancelBtn = document.createElement('button');
+                    cancelBtn.textContent = 'ANNULLA';
+                    cancelBtn.style.background = 'linear-gradient(to bottom, #3a2c1a, #1a1208)';
+                    cancelBtn.style.marginLeft = '10px';
+                    cancelBtn.onclick = () => {
+                        alertDiv.remove();
+                        resolve(false);
+                    };
+                    alertDiv.querySelector('button').after(cancelBtn);
+                }
+                
+                document.body.appendChild(alertDiv);
+            });
         }
 
         function showScreen(screenId) {
@@ -284,7 +386,7 @@
             playerName = nameInput.value.trim();
             
             if (!playerName) {
-                showCustomAlert("Inserisci un nome cuggino!");
+                await showCustomAlert("Inserisci un nome, viandante!");
                 return;
             }
 
@@ -304,7 +406,7 @@
                 
                 for (const [id, player] of Object.entries(players)) {
                     if (player.name.toLowerCase() === playerName.toLowerCase()) {
-                        showCustomAlert("Nome già in uso! Scegli un altro nome.");
+                        await showCustomAlert("Nome già in uso! Scegli un altro nome.");
                         return;
                     }
                 }
@@ -322,10 +424,11 @@
                 showScreen('lobbyScreen');
                 listenForPlayers();
                 listenForRoleAssignment();
+                listenForGameEnd();
                 
             } catch (error) {
                 console.error("Errore:", error);
-                showCustomAlert("Errore di connessione. Ricarica e riprova.");
+                await showCustomAlert("Errore di connessione. Ricarica e riprova.");
             }
         }
 
@@ -356,7 +459,23 @@
                 if (player.role && player.showRole) {
                     document.getElementById('playerRole').textContent = player.role;
                     document.getElementById('roleDescription').textContent = roleDescriptions[player.role] || '';
+                    document.getElementById('roleImage').src = roleImages[player.role] || '';
                     showScreen('roleScreen');
+                }
+            });
+        }
+
+        function listenForGameEnd() {
+            database.ref('gameEnded').on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    // Resetta lo stato locale
+                    isHost = false;
+                    if (currentPlayerRef) {
+                        currentPlayerRef.remove();
+                        currentPlayerRef = null;
+                    }
+                    // Mostra la schermata iniziale
+                    showScreen('homeScreen');
                 }
             });
         }
@@ -368,7 +487,7 @@
                 const existingHost = Object.values(players).find(player => player.isHost);
                 
                 if (existingHost) {
-                    showCustomAlert(`${existingHost.name} è già il narratore!`);
+                    await showCustomAlert(`${existingHost.name} è già il narratore!`);
                     return;
                 }
                 
@@ -384,7 +503,7 @@
                 
             } catch (error) {
                 console.error("Errore:", error);
-                showCustomAlert("Errore diventando narratore. Riprova!");
+                await showCustomAlert("Errore diventando narratore. Riprova!");
             }
         }
 
@@ -410,7 +529,7 @@
                 const playerCount = playerIds.length;
                 
                 if (playerCount < 3) {
-                    showCustomAlert("Servono almeno 3 giocatori per iniziare!");
+                    await showCustomAlert("Servono almeno 3 giocatori per iniziare!");
                     return;
                 }
                 
@@ -452,16 +571,29 @@
                 
             } catch (error) {
                 console.error("Errore:", error);
-                showCustomAlert("Errore nell'assegnazione dei ruoli. Riprova!");
+                await showCustomAlert("Errore nell'assegnazione dei ruoli. Riprova!");
             }
         }
 
         async function endGame() {
+            const confirm = await showCustomAlert(
+                "Sei sicuro di voler terminare la partita? Tutti torneranno alla schermata iniziale.", 
+                true
+            );
+            
+            if (!confirm) return;
+            
             try {
-                // Rimuovi TUTTI i giocatori, incluso il narratore
+                // Segnala a tutti i giocatori che la partita è finita
+                await database.ref('gameEnded').set(true);
+                
+                // Rimuovi tutti i giocatori
                 await playersRef.remove();
                 
-                // Resetta le variabili locali
+                // Resetta il flag di fine partita
+                await database.ref('gameEnded').remove();
+                
+                // Resetta lo stato locale
                 isHost = false;
                 currentPlayerRef = null;
                 
@@ -470,7 +602,7 @@
                 
             } catch (error) {
                 console.error("Errore:", error);
-                showCustomAlert("Errore nel resettare il gioco.");
+                await showCustomAlert("Errore nel resettare il gioco.");
             }
         }
 
@@ -486,7 +618,7 @@
                 
             } catch (error) {
                 console.error("Errore:", error);
-                showCustomAlert("Errore nel tornare alla lobby.");
+                await showCustomAlert("Errore nel tornare alla lobby.");
             }
         }
 
