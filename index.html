@@ -426,27 +426,27 @@
         let isHost = false;
         const roles = {
             "Lupo": {
-                description: "Sei un lupo mannaro! Di notte uccidi gli altri giocatori.",
+                description: "Il tuo scopo è eliminare tutti i Villici.",
                 image: "https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Puttana": {
-                description: "Ogni notte puoi scegliere di proteggere un giocatore dai lupi.",
+                description: "Il tuo ruolo è salvare un giocatore ogni notte, impedendo al Lupo di ucciderlo.",
                 image: "https://images.unsplash.com/photo-1593104547489-5cfb3839a3b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Investigatore": {
-                description: "Puoi scoprire il ruolo di un giocatore ogni notte.",
+                description: "Il tuo ruolo è capire chi è il lupo.",
                 image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Vanessa": {
-                description: "Sei immune ai lupi la prima notte.",
+                description: "Il tuo ruolo è sbirciare durante la notte per scoprire qualche info in più.",
                 image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Sindaco": {
-                description: "Hai un voto doppio durante le votazioni.",
+                description: "Il tuo ruolo è votare due volte durante le votazioni.",
                 image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Contadino": {
-                description: "Sei un semplice villico senza poteri speciali.",
+                description: "Il tuo ruolo è zappare la vigna.",
                 image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Narratore": {
@@ -747,25 +747,29 @@
             if (!isHost) return;
             
             try {
-                const confirmReset = confirm("Sei sicuro di voler resettare la partita?");
-                if (!confirmReset) return;
+                const alertDiv = showCustomAlert("Vuoi resettare la partita e assegnare un nuovo narratore?", false);
+                alertDiv.innerHTML = `
+                    <p>Vuoi resettare la partita e assegnare un nuovo narratore?</p>
+                    <button onclick="confirmReset()">CONFERMA</button>
+                    <button onclick="this.parentNode.remove()">ANNULLA</button>
+                `;
                 
-                const updates = {};
-                const snapshot = await playersRef.once('value');
-                const players = snapshot.val() || {};
-                
-                for (const id in players) {
-                    updates['players/' + id + '/role'] = '';
-                    updates['players/' + id + '/showRole'] = false;
-                    // Mantieni solo lo stato di host per il narratore corrente
-                    if (players[id].isHost) {
-                        updates['players/' + id + '/isHost'] = true;
+                window.confirmReset = async function() {
+                    const updates = {};
+                    const snapshot = await playersRef.once('value');
+                    const players = snapshot.val() || {};
+                    
+                    for (const id in players) {
+                        updates['players/' + id + '/role'] = '';
+                        updates['players/' + id + '/showRole'] = false;
+                        updates['players/' + id + '/isHost'] = false;
                     }
-                }
-                
-                await database.ref().update(updates);
-                
-                showCustomAlert("Partita resettata! Tutti i giocatori tornano alla lobby.");
+                    
+                    await database.ref().update(updates);
+                    
+                    document.querySelector('.custom-alert')?.remove();
+                    showCustomAlert("Partita resettata! Ora puoi assegnare un nuovo narratore.");
+                };
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -791,26 +795,6 @@
                     console.error("Errore nella pulizia:", error);
                 }
             }
-        });
-
-        // Pulsante per tornare indietro
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.screen').forEach(screen => {
-                if (screen.id !== 'homeScreen' && screen.id !== 'joinScreen') {
-                    const backButton = document.createElement('button');
-                    backButton.textContent = 'INDIETRO';
-                    backButton.style.marginTop = '20px';
-                    backButton.style.background = 'linear-gradient(to bottom, #666, #444)';
-                    backButton.onclick = () => {
-                        if (isHost) {
-                            showScreen('hostScreen');
-                        } else {
-                            showScreen('lobbyScreen');
-                        }
-                    };
-                    screen.appendChild(backButton);
-                }
-            });
         });
     </script>
 </body>
