@@ -7,18 +7,36 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=UnifrakturMaguntia&display=swap');
         
+        :root {
+            --primary-color: #f8bb22;
+            --secondary-color: #1a1a2e;
+            --accent-color: #4a4a6a;
+            --text-color: #e6e6e6;
+            --parchment-color: #f0e6d2;
+            --success-color: #4CAF50;
+            --danger-color: #a52a2a;
+            --info-color: #3f51b5;
+        }
+        
+        * {
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+        
         body {
             font-family: 'MedievalSharp', cursive;
             text-align: center;
-            background-color: #1a1a2e;
-            color: #e6e6e6;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
             margin: 0;
             padding: 20px;
             background-image: url('https://images.unsplash.com/photo-1518562180175-34a163b1a9a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
             background-size: cover;
             background-attachment: fixed;
+            background-position: center;
             min-height: 100vh;
             overflow-x: hidden;
+            line-height: 1.6;
         }
         
         .screen {
@@ -29,9 +47,15 @@
             background-color: rgba(26, 26, 46, 0.95);
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-            border: 2px solid #4a4a6a;
+            border: 2px solid var(--accent-color);
             position: relative;
             overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .screen::before {
@@ -50,66 +74,92 @@
         }
         
         h1 {
-            color: #f8bb22;
+            color: var(--primary-color);
             text-shadow: 2px 2px 4px #000;
-            font-size: 3em;
+            font-size: clamp(2em, 5vw, 3em);
             margin-bottom: 30px;
             letter-spacing: 2px;
             font-family: 'UnifrakturMaguntia', cursive;
         }
         
         button {
-            background: linear-gradient(to bottom, #f8bb22, #d89e1a);
-            color: #1a1a2e;
+            background: linear-gradient(to bottom, var(--primary-color), #d89e1a);
+            color: var(--secondary-color);
             border: none;
             padding: 15px 30px;
             margin: 15px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 1.1rem;
             font-weight: bold;
-            transition: all 0.3s;
             font-family: 'MedievalSharp', cursive;
             letter-spacing: 1px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
         }
         
         button:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
             background: linear-gradient(to bottom, #ffcc33, #e6b020);
+        }
+        
+        button:hover::after {
+            transform: translateX(0);
         }
         
         input {
             padding: 12px;
             margin: 15px;
-            width: 80%;
-            max-width: 350px;
+            width: min(80%, 350px);
             border-radius: 8px;
-            border: 2px solid #4a4a6a;
+            border: 2px solid var(--accent-color);
             background-color: rgba(255, 255, 255, 0.9);
-            color: #1a1a2e;
-            font-size: 16px;
+            color: var(--secondary-color);
+            font-size: 1rem;
             font-family: 'MedievalSharp', cursive;
             text-align: center;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(248, 187, 34, 0.5);
         }
         
         #playersList {
             margin: 25px 0;
             text-align: left;
-            font-size: 20px;
+            font-size: 1.1rem;
         }
         
         #playersList div {
-            padding: 10px 15px;
-            margin: 8px 0;
+            padding: 12px 15px;
+            margin: 10px 0;
             background-color: rgba(74, 74, 106, 0.5);
-            border-left: 4px solid #f8bb22;
+            border-left: 4px solid var(--primary-color);
             border-radius: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .role-container {
@@ -120,30 +170,37 @@
         }
         
         .role-image {
-            width: 150px;
-            height: 150px;
+            width: clamp(120px, 25vw, 180px);
+            height: clamp(120px, 25vw, 180px);
             border-radius: 50%;
             object-fit: cover;
-            border: 5px solid #f8bb22;
+            border: 5px solid var(--primary-color);
             box-shadow: 0 0 20px rgba(248, 187, 34, 0.5);
             margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .role-image:hover {
+            transform: scale(1.05);
         }
         
         .role-display {
-            font-size: 36px;
-            color: #f8bb22;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            color: var(--primary-color);
             margin: 10px 0;
             text-shadow: 2px 2px 4px #000;
+            font-weight: bold;
         }
         
         .role-description {
-            font-size: 20px;
+            font-size: clamp(1rem, 3vw, 1.2rem);
             margin-top: 15px;
-            color: #e6e6e6;
+            color: var(--text-color);
             background-color: rgba(26, 26, 46, 0.9);
             padding: 15px;
             border-radius: 10px;
-            border-left: 4px solid #f8bb22;
+            border-left: 4px solid var(--primary-color);
+            text-align: left;
         }
         
         .custom-alert {
@@ -152,15 +209,22 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: rgba(26, 26, 46, 0.98);
-            color: #e6e6e6;
+            color: var(--text-color);
             padding: 25px;
             border-radius: 15px;
-            border: 2px solid #f8bb22;
+            border: 2px solid var(--primary-color);
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
             z-index: 1000;
-            max-width: 80%;
+            max-width: 90%;
+            width: min(400px, 90vw);
             text-align: center;
-            font-size: 18px;
+            font-size: 1.1rem;
+            animation: popIn 0.3s ease-out;
+        }
+        
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
         
         .custom-alert button {
@@ -169,7 +233,7 @@
         
         #hostButton {
             background: linear-gradient(to bottom, #6a4c93, #4a2c7a);
-            color: #e6e6e6;
+            color: var(--text-color);
         }
         
         #hostButton:hover {
@@ -185,34 +249,38 @@
             margin: 12px 0;
             background-color: rgba(74, 74, 106, 0.5);
             border-radius: 8px;
-            font-size: 18px;
+            font-size: 1rem;
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
         }
         
         .parchment-effect {
             background-image: url('https://www.transparenttextures.com/patterns/old-paper.png');
-            background-color: #f0e6d2;
+            background-color: var(--parchment-color);
             color: #3a3a3a;
             padding: 20px;
             border-radius: 10px;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
             border: 1px solid #c9b7a2;
+            margin: 20px 0;
         }
         
         .player-count {
-            font-size: 18px;
+            font-size: 1.1rem;
             margin-bottom: 20px;
-            color: #f8bb22;
+            color: var(--primary-color);
+            font-weight: bold;
         }
         
         .make-host-btn {
-            background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+            background: linear-gradient(to bottom, var(--success-color), #2E7D32);
             color: white;
             padding: 8px 15px;
-            font-size: 14px;
+            font-size: 0.9rem;
             margin-left: 10px;
             border-radius: 6px;
+            flex-shrink: 0;
         }
         
         .make-host-btn:hover {
@@ -220,7 +288,7 @@
         }
         
         .reset-btn {
-            background: linear-gradient(to bottom, #a52a2a, #8b0000);
+            background: linear-gradient(to bottom, var(--danger-color), #8b0000);
             color: white;
         }
         
@@ -229,49 +297,63 @@
         }
         
         .assign-host-btn {
-            background: linear-gradient(to bottom, #3f51b5, #303f9f);
+            background: linear-gradient(to bottom, var(--info-color), #303f9f);
             color: white;
             padding: 8px 15px;
-            font-size: 14px;
+            font-size: 0.9rem;
             margin-left: 10px;
             border-radius: 6px;
+            flex-shrink: 0;
         }
         
         .assign-host-btn:hover {
             background: linear-gradient(to bottom, #5c6bc0, #3949ab);
         }
         
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 2em;
-            }
-            
-            button {
-                padding: 12px 20px;
-                font-size: 16px;
-            }
-            
+        /* Animazioni e effetti aggiuntivi */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        
+        /* Ottimizzazione per mobile */
+        @media (max-width: 768px) {
             .screen {
                 padding: 20px;
                 margin: 10px;
             }
             
-            .role-display {
-                font-size: 28px;
+            button {
+                padding: 12px 20px;
+                font-size: 1rem;
+                min-width: 160px;
             }
             
-            .role-description {
-                font-size: 16px;
-            }
-            
-            .role-image {
-                width: 120px;
-                height: 120px;
+            #playersList div, #assignedRoles div {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
             }
             
             .make-host-btn, .assign-host-btn {
-                padding: 6px 10px;
-                font-size: 12px;
+                margin-left: 0;
+                margin-top: 8px;
+                align-self: flex-end;
             }
         }
     </style>
@@ -282,13 +364,13 @@
         <div class="parchment-effect">
             <p>Il gioco del lupo mannaro in versione cugginese</p>
         </div>
-        <button onclick="showScreen('joinScreen')">ENTRA NEL GIOCO</button>
+        <button onclick="showScreen('joinScreen')" class="pulse">ENTRA NEL GIOCO</button>
     </div>
 
     <div id="joinScreen" class="screen">
         <h1>COME TI CHIAMI?</h1>
         <div class="parchment-effect">
-            <input type="text" id="playerName" placeholder="Il tuo nome" maxlength="20">
+            <input type="text" id="playerName" placeholder="Il tuo nome" maxlength="20" autocomplete="off">
         </div>
         <button onclick="joinGame()">ENTRA IN PARTITA</button>
     </div>
@@ -308,14 +390,14 @@
             <div id="assignedRoles"></div>
             <div class="player-count" id="hostPlayerCount">0 giocatori in lobby</div>
         </div>
-        <button id="startGameButton" onclick="startGame()">AVVIA PARTITA</button>
+        <button id="startGameButton" onclick="startGame()" class="pulse">AVVIA PARTITA</button>
         <button onclick="resetGame()" class="reset-btn">RESETTA PARTITA</button>
     </div>
 
     <div id="roleScreen" class="screen">
         <h1>IL TUO RUOLO È:</h1>
         <div class="role-container">
-            <img id="roleImage" class="role-image" src="" alt="Ruolo">
+            <img id="roleImage" class="role-image" src="" alt="Ruolo" loading="lazy">
             <div id="playerRole" class="role-display">...</div>
             <div id="roleDescription" class="role-description parchment-effect"></div>
         </div>
@@ -379,14 +461,16 @@
         let playerName = "";
 
         // Mostra alert personalizzato
-        function showCustomAlert(message) {
+        function showCustomAlert(message, isError = false) {
             const alertDiv = document.createElement('div');
             alertDiv.className = 'custom-alert';
+            if (isError) alertDiv.classList.add('shake');
             alertDiv.innerHTML = `
                 <p>${message}</p>
                 <button onclick="this.parentNode.remove()">OK</button>
             `;
             document.body.appendChild(alertDiv);
+            return alertDiv;
         }
 
         function showScreen(screenId) {
@@ -394,6 +478,7 @@
                 screen.classList.remove('active');
             });
             document.getElementById(screenId).classList.add('active');
+            window.scrollTo(0, 0);
         }
 
         async function joinGame() {
@@ -401,7 +486,8 @@
             playerName = nameInput.value.trim();
             
             if (!playerName) {
-                showCustomAlert("Inserisci un nome cuggino!");
+                showCustomAlert("Inserisci un nome cuggino!", true);
+                nameInput.focus();
                 return;
             }
 
@@ -421,7 +507,8 @@
                 
                 for (const [id, player] of Object.entries(players)) {
                     if (player.name.toLowerCase() === playerName.toLowerCase()) {
-                        showCustomAlert("Nome già in uso! Scegli un altro nome.");
+                        showCustomAlert("Nome già in uso! Scegli un altro nome.", true);
+                        nameInput.focus();
                         return;
                     }
                 }
@@ -431,7 +518,8 @@
                     name: playerName,
                     role: '',
                     isHost: false,
-                    showRole: false
+                    showRole: false,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
 
                 // Mostra la lobby
@@ -442,19 +530,20 @@
                 
             } catch (error) {
                 console.error("Errore:", error);
-                showCustomAlert("Errore di connessione. Ricarica e riprova.");
+                showCustomAlert("Errore di connessione. Ricarica e riprova.", true);
             }
         }
 
         function updatePlayerCount(count) {
-            document.getElementById('playerCount').textContent = `${count} giocatori in lobby`;
+            const countText = count === 1 ? "1 giocatore in lobby" : `${count} giocatori in lobby`;
+            document.getElementById('playerCount').textContent = countText;
             if (document.getElementById('hostPlayerCount')) {
-                document.getElementById('hostPlayerCount').textContent = `${count} giocatori in lobby`;
+                document.getElementById('hostPlayerCount').textContent = countText;
             }
         }
 
         function listenForPlayers() {
-            playersRef.on('value', (snapshot) => {
+            playersRef.orderByChild('timestamp').on('value', (snapshot) => {
                 const players = snapshot.val() || {};
                 const playersList = document.getElementById('playersList');
                 playersList.innerHTML = '';
@@ -464,7 +553,7 @@
                 
                 for (const [id, player] of Object.entries(players)) {
                     const playerDiv = document.createElement('div');
-                    playerDiv.innerHTML = `${player.name} ${player.isHost ? '<span style="color:#f8bb22">(NARRATORE)</span>' : ''}`;
+                    playerDiv.innerHTML = `${player.name} ${player.isHost ? '<span style="color:var(--primary-color)">(NARRATORE)</span>' : ''}`;
                     
                     // Aggiungi pulsante "Rendi narratore" solo per l'host e se non è già narratore
                     if (isHost && !player.isHost) {
@@ -523,13 +612,14 @@
                 const existingHost = Object.values(players).find(player => player.isHost);
                 
                 if (existingHost) {
-                    showCustomAlert(`${existingHost.name} è già il narratore!`);
+                    showCustomAlert(`${existingHost.name} è già il narratore!`, true);
                     return;
                 }
                 
                 await currentPlayerRef.update({ 
                     isHost: true,
-                    role: 'Narratore'
+                    role: 'Narratore',
+                    showRole: true
                 });
                 
                 isHost = true;
@@ -538,7 +628,7 @@
                 
             } catch (error) {
                 console.error("Errore:", error);
-                showCustomAlert("Errore diventando narratore. Riprova!");
+                showCustomAlert("Errore diventando narratore. Riprova!", true);
             }
         }
 
@@ -550,7 +640,7 @@
                 const players = snapshot.val() || {};
                 
                 if (!players[newHostId]) {
-                    showCustomAlert("Giocatore non trovato!");
+                    showCustomAlert("Giocatore non trovato!", true);
                     return;
                 }
                 
@@ -566,6 +656,7 @@
                 // Imposta il nuovo host
                 updates['players/' + newHostId + '/isHost'] = true;
                 updates['players/' + newHostId + '/role'] = 'Narratore';
+                updates['players/' + newHostId + '/showRole'] = true;
                 
                 await database.ref().update(updates);
                 
@@ -583,7 +674,7 @@
                 
             } catch (error) {
                 console.error("Errore:", error);
-                showCustomAlert("Errore nell'assegnazione del nuovo narratore.");
+                showCustomAlert("Errore nell'assegnazione del nuovo narratore.", true);
             }
         }
 
@@ -614,7 +705,7 @@
                 const playerCount = playerIds.length;
                 
                 if (playerCount < 3) {
-                    showCustomAlert("Servono almeno 3 giocatori per iniziare!");
+                    showCustomAlert("Servono almeno 3 giocatori per iniziare!", true);
                     return;
                 }
                 
@@ -648,7 +739,7 @@
                 
             } catch (error) {
                 console.error("Errore:", error);
-                showCustomAlert("Errore nell'assegnazione dei ruoli. Riprova!");
+                showCustomAlert("Errore nell'assegnazione dei ruoli. Riprova!", true);
             }
         }
 
@@ -656,6 +747,9 @@
             if (!isHost) return;
             
             try {
+                const confirmReset = confirm("Sei sicuro di voler resettare la partita?");
+                if (!confirmReset) return;
+                
                 const updates = {};
                 const snapshot = await playersRef.once('value');
                 const players = snapshot.val() || {};
@@ -675,7 +769,7 @@
                 
             } catch (error) {
                 console.error("Errore:", error);
-                showCustomAlert("Errore nel resettare il gioco.");
+                showCustomAlert("Errore nel resettare il gioco.", true);
             }
         }
 
@@ -688,10 +782,35 @@
             return newArray;
         }
 
-        window.addEventListener('beforeunload', () => {
+        // Gestione della disconnessione
+        window.addEventListener('beforeunload', async () => {
             if (currentPlayerRef) {
-                currentPlayerRef.remove();
+                try {
+                    await currentPlayerRef.remove();
+                } catch (error) {
+                    console.error("Errore nella pulizia:", error);
+                }
             }
+        });
+
+        // Pulsante per tornare indietro
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.screen').forEach(screen => {
+                if (screen.id !== 'homeScreen' && screen.id !== 'joinScreen') {
+                    const backButton = document.createElement('button');
+                    backButton.textContent = 'INDIETRO';
+                    backButton.style.marginTop = '20px';
+                    backButton.style.background = 'linear-gradient(to bottom, #666, #444)';
+                    backButton.onclick = () => {
+                        if (isHost) {
+                            showScreen('hostScreen');
+                        } else {
+                            showScreen('lobbyScreen');
+                        }
+                    };
+                    screen.appendChild(backButton);
+                }
+            });
         });
     </script>
 </body>
