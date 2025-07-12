@@ -16,6 +16,7 @@
             --success-color: #4CAF50;
             --danger-color: #a52a2a;
             --info-color: #3f51b5;
+            --warning-color: #ff9800;
         }
         
         * {
@@ -80,6 +81,12 @@
             margin-bottom: 30px;
             letter-spacing: 2px;
             font-family: 'UnifrakturMaguntia', cursive;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            font-size: 1.5em;
         }
         
         button {
@@ -310,6 +317,20 @@
             background: linear-gradient(to bottom, #5c6bc0, #3949ab);
         }
         
+        .reconnect-btn {
+            background: linear-gradient(to bottom, var(--warning-color), #e68a00);
+            color: white;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        
+        .reconnect-btn:hover {
+            background: linear-gradient(to bottom, #ffad33, #ff9900);
+        }
+        
         /* Animazioni e effetti aggiuntivi */
         .pulse {
             animation: pulse 2s infinite;
@@ -331,6 +352,22 @@
             40%, 80% { transform: translateX(5px); }
         }
         
+        .glow {
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 5px rgba(248, 187, 34, 0.5); }
+            to { box-shadow: 0 0 20px rgba(248, 187, 34, 0.8); }
+        }
+        
+        /* Stile per il footer */
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+        }
+        
         /* Ottimizzazione per mobile */
         @media (max-width: 768px) {
             .screen {
@@ -350,7 +387,7 @@
                 gap: 8px;
             }
             
-            .make-host-btn, .assign-host-btn {
+            .make-host-btn, .assign-host-btn, .reconnect-btn {
                 margin-left: 0;
                 margin-top: 8px;
                 align-self: flex-end;
@@ -365,6 +402,9 @@
             <p>Il gioco del lupo mannaro in versione cugginese</p>
         </div>
         <button onclick="showScreen('joinScreen')" class="pulse">ENTRA NEL GIOCO</button>
+        <div class="footer">
+            <p>Gioca con i tuoi cugini in questa versione speciale!</p>
+        </div>
     </div>
 
     <div id="joinScreen" class="screen">
@@ -373,6 +413,11 @@
             <input type="text" id="playerName" placeholder="Il tuo nome" maxlength="20" autocomplete="off">
         </div>
         <button onclick="joinGame()">ENTRA IN PARTITA</button>
+        <div id="reconnectOptions" style="display:none;">
+            <p class="parchment-effect">Hai già una partita in corso!</p>
+            <button onclick="reconnectToGame()" class="reconnect-btn">RICONNETTI PARTITA</button>
+            <button onclick="startNewGame()" class="reset-btn">NUOVA PARTITA</button>
+        </div>
     </div>
 
     <div id="lobbyScreen" class="screen">
@@ -382,6 +427,7 @@
             <div class="player-count" id="playerCount">0 giocatori in lobby</div>
         </div>
         <button id="hostButton" onclick="becomeHost()">DIVENTA NARRATORE</button>
+        <button onclick="leaveGame()" class="reset-btn">ESCI DAL GIOCO</button>
     </div>
 
     <div id="hostScreen" class="screen">
@@ -389,8 +435,17 @@
         <div class="parchment-effect">
             <div id="assignedRoles"></div>
             <div class="player-count" id="hostPlayerCount">0 giocatori in lobby</div>
+            <div id="gameRules" class="role-description" style="display:none;">
+                <h3>COME GIOCARE:</h3>
+                <p>1. Il narratore gestisce il gioco e guida i giocatori</p>
+                <p>2. Di notte, i lupi scelgono una vittima</p>
+                <p>3. Di giorno, tutti discutono e votano per eliminare un sospetto</p>
+                <p>4. Vince il villaggio se tutti i lupi sono eliminati</p>
+                <p>5. Vincono i lupi se sono in maggioranza</p>
+            </div>
         </div>
         <button id="startGameButton" onclick="startGame()" class="pulse">AVVIA PARTITA</button>
+        <button onclick="toggleRules()" id="rulesButton">MOSTRA REGOLE</button>
         <button onclick="resetGame()" class="reset-btn">RESETTA PARTITA</button>
     </div>
 
@@ -400,6 +455,7 @@
             <img id="roleImage" class="role-image" src="" alt="Ruolo" loading="lazy">
             <div id="playerRole" class="role-display">...</div>
             <div id="roleDescription" class="role-description parchment-effect"></div>
+            <button onclick="showScreen('lobbyScreen')" class="glow">TORNA IN LOBBY</button>
         </div>
     </div>
 
@@ -424,33 +480,35 @@
         // Variabili globali
         let playerId;
         let isHost = false;
+        let playerName = "";
+        let previousGameData = null;
         const roles = {
             "Lupo": {
-                description: "Il tuo scopo è eliminare tutti i Villici.",
+                description: "Il tuo scopo è eliminare tutti i Villici. Di notte, insieme agli altri lupi, scegliete una vittima da uccidere.",
                 image: "https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Puttana": {
-                description: "Il tuo ruolo è salvare un giocatore ogni notte, impedendo al Lupo di ucciderlo.",
+                description: "Il tuo ruolo è salvare un giocatore ogni notte, impedendo al Lupo di ucciderlo. Scegli saggiamente chi proteggere!",
                 image: "https://images.unsplash.com/photo-1593104547489-5cfb3839a3b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Investigatore": {
-                description: "Il tuo ruolo è capire chi è il lupo.",
+                description: "Il tuo ruolo è capire chi è il lupo. Di notte puoi scoprire il ruolo di un giocatore a tua scelta.",
                 image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Vanessa": {
-                description: "Il tuo ruolo è sbirciare durante la notte per scoprire qualche info in più.",
+                description: "Il tuo ruolo è sbirciare durante la notte per scoprire qualche info in più. Sei curiosa e vuoi sapere tutto!",
                 image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Sindaco": {
-                description: "Il tuo ruolo è votare due volte durante le votazioni.",
+                description: "Il tuo ruolo è votare due volte durante le votazioni. La tua opinione conta doppio nel decidere chi eliminare!",
                 image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Contadino": {
-                description: "Il tuo ruolo è zappare la vigna.",
+                description: "Il tuo ruolo è zappare la vigna. Sei un semplice abitante del villaggio, ma la tua astuzia può fare la differenza!",
                 image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Narratore": {
-                description: "Sei il narratore e controlli il gioco.",
+                description: "Sei il narratore e controlli il gioco. Guida i giocatori attraverso la notte e il giorno, e assicurati che tutti seguano le regole!",
                 image: "https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             }
         };
@@ -458,7 +516,7 @@
         const baseRoles = ["Lupo", "Puttana", "Investigatore", "Vanessa", "Sindaco", "Contadino"];
         let playersRef;
         let currentPlayerRef;
-        let playerName = "";
+        let gameRef;
 
         // Mostra alert personalizzato
         function showCustomAlert(message, isError = false) {
@@ -481,6 +539,32 @@
             window.scrollTo(0, 0);
         }
 
+        function toggleRules() {
+            const rulesDiv = document.getElementById('gameRules');
+            const rulesButton = document.getElementById('rulesButton');
+            
+            if (rulesDiv.style.display === 'none') {
+                rulesDiv.style.display = 'block';
+                rulesButton.textContent = 'NASCONDI REGOLE';
+            } else {
+                rulesDiv.style.display = 'none';
+                rulesButton.textContent = 'MOSTRA REGOLE';
+            }
+        }
+
+        async function checkExistingPlayer(name) {
+            const snapshot = await playersRef.once('value');
+            const players = snapshot.val() || {};
+            
+            for (const [id, player] of Object.entries(players)) {
+                if (player.name.toLowerCase() === name.toLowerCase()) {
+                    return { exists: true, playerData: player, playerId: id };
+                }
+            }
+            
+            return { exists: false };
+        }
+
         async function joinGame() {
             const nameInput = document.getElementById('playerName');
             playerName = nameInput.value.trim();
@@ -492,46 +576,99 @@
             }
 
             try {
-                // Rimuovi il giocatore esistente se c'è
-                if (currentPlayerRef) {
-                    await currentPlayerRef.remove();
-                }
-
-                playerId = Date.now().toString();
                 playersRef = database.ref('players');
-                currentPlayerRef = database.ref('players/' + playerId);
+                const { exists, playerData, playerId: existingId } = await checkExistingPlayer(playerName);
                 
-                // Controlla se il nome esiste già
-                const snapshot = await playersRef.once('value');
-                const players = snapshot.val() || {};
-                
-                for (const [id, player] of Object.entries(players)) {
-                    if (player.name.toLowerCase() === playerName.toLowerCase()) {
-                        showCustomAlert("Nome già in uso! Scegli un altro nome.", true);
-                        nameInput.focus();
-                        return;
-                    }
+                if (exists) {
+                    // Mostra opzioni per riconnettersi o iniziare nuova partita
+                    previousGameData = { playerData, playerId: existingId };
+                    document.getElementById('reconnectOptions').style.display = 'block';
+                    showCustomAlert(`C'è già un giocatore con nome "${playerName}". Vuoi riconnetterti o iniziare una nuova partita?`);
+                    return;
                 }
                 
-                // Aggiungi il nuovo giocatore
-                await currentPlayerRef.set({
-                    name: playerName,
-                    role: '',
-                    isHost: false,
-                    showRole: false,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
-
-                // Mostra la lobby
-                showScreen('lobbyScreen');
-                listenForPlayers();
-                listenForRoleAssignment();
-                listenForGameReset();
+                // Se non esiste, procedi con la creazione di un nuovo giocatore
+                await createNewPlayer();
                 
             } catch (error) {
                 console.error("Errore:", error);
                 showCustomAlert("Errore di connessione. Ricarica e riprova.", true);
             }
+        }
+
+        async function createNewPlayer() {
+            playerId = Date.now().toString();
+            currentPlayerRef = database.ref('players/' + playerId);
+            
+            await currentPlayerRef.set({
+                name: playerName,
+                role: '',
+                isHost: false,
+                showRole: false,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                lastActive: firebase.database.ServerValue.TIMESTAMP
+            });
+
+            // Mostra la lobby
+            showScreen('lobbyScreen');
+            setupGameListeners();
+        }
+
+        async function reconnectToGame() {
+            if (!previousGameData) return;
+            
+            playerId = previousGameData.playerId;
+            playerName = previousGameData.playerData.name;
+            currentPlayerRef = database.ref('players/' + playerId);
+            
+            // Aggiorna il timestamp per mostrare che il giocatore è attivo
+            await currentPlayerRef.update({
+                lastActive: firebase.database.ServerValue.TIMESTAMP,
+                showRole: previousGameData.playerData.showRole || false
+            });
+
+            // Se il giocatore aveva già un ruolo assegnato, vai direttamente alla schermata del ruolo
+            if (previousGameData.playerData.role && previousGameData.playerData.showRole) {
+                showScreen('roleScreen');
+                updateRoleDisplay(previousGameData.playerData.role);
+            } else if (previousGameData.playerData.isHost) {
+                isHost = true;
+                showScreen('hostScreen');
+            } else {
+                showScreen('lobbyScreen');
+            }
+            
+            setupGameListeners();
+            document.getElementById('reconnectOptions').style.display = 'none';
+        }
+
+        async function startNewGame() {
+            if (!previousGameData) return;
+            
+            // Rimuovi il vecchio giocatore se esiste
+            try {
+                await database.ref('players/' + previousGameData.playerId).remove();
+            } catch (error) {
+                console.log("Nessun giocatore esistente da rimuovere");
+            }
+            
+            // Crea un nuovo giocatore
+            previousGameData = null;
+            document.getElementById('reconnectOptions').style.display = 'none';
+            await createNewPlayer();
+        }
+
+        function setupGameListeners() {
+            listenForPlayers();
+            listenForRoleAssignment();
+            listenForGameReset();
+            listenForInactivePlayers();
+        }
+
+        function updateRoleDisplay(role) {
+            document.getElementById('playerRole').textContent = role;
+            document.getElementById('roleDescription').textContent = roles[role]?.description || '';
+            document.getElementById('roleImage').src = roles[role]?.image || '';
         }
 
         function updatePlayerCount(count) {
@@ -543,7 +680,7 @@
         }
 
         function listenForPlayers() {
-            playersRef.orderByChild('timestamp').on('value', (snapshot) => {
+            playersRef.orderByChild('lastActive').on('value', (snapshot) => {
                 const players = snapshot.val() || {};
                 const playersList = document.getElementById('playersList');
                 playersList.innerHTML = '';
@@ -551,7 +688,17 @@
                 let hostExists = false;
                 let playerCount = 0;
                 
+                // Pulisci giocatori inattivi (non attivi da più di 30 secondi)
+                const now = Date.now();
+                const updates = {};
+                
                 for (const [id, player] of Object.entries(players)) {
+                    // Se il giocatore non è attivo da più di 30 secondi, rimuovilo
+                    if (player.lastActive && (now - player.lastActive) > 30000 && id !== playerId) {
+                        updates['players/' + id] = null;
+                        continue;
+                    }
+                    
                     const playerDiv = document.createElement('div');
                     playerDiv.innerHTML = `${player.name} ${player.isHost ? '<span style="color:var(--primary-color)">(NARRATORE)</span>' : ''}`;
                     
@@ -570,9 +717,25 @@
                     playerCount++;
                 }
 
+                // Applica gli aggiornamenti per rimuovere i giocatori inattivi
+                if (Object.keys(updates).length > 0) {
+                    database.ref().update(updates);
+                }
+
                 updatePlayerCount(playerCount);
                 document.getElementById('hostButton').style.display = hostExists ? 'none' : 'block';
             });
+        }
+
+        function listenForInactivePlayers() {
+            // Aggiorna periodicamente il timestamp per mostrare che il giocatore è attivo
+            setInterval(() => {
+                if (currentPlayerRef) {
+                    currentPlayerRef.update({
+                        lastActive: firebase.database.ServerValue.TIMESTAMP
+                    });
+                }
+            }, 15000); // Ogni 15 secondi
         }
 
         function listenForRoleAssignment() {
@@ -585,9 +748,7 @@
                     showScreen('hostScreen');
                     listenForRoles();
                 } else if (player.role && player.showRole) {
-                    document.getElementById('playerRole').textContent = player.role;
-                    document.getElementById('roleDescription').textContent = roles[player.role]?.description || '';
-                    document.getElementById('roleImage').src = roles[player.role]?.image || '';
+                    updateRoleDisplay(player.role);
                     showScreen('roleScreen');
                 }
             });
@@ -777,6 +938,21 @@
             }
         }
 
+        async function leaveGame() {
+            try {
+                if (currentPlayerRef) {
+                    await currentPlayerRef.remove();
+                }
+                showScreen('homeScreen');
+                playerId = null;
+                currentPlayerRef = null;
+                isHost = false;
+            } catch (error) {
+                console.error("Errore uscendo dal gioco:", error);
+                showCustomAlert("Errore uscendo dal gioco. Ricarica la pagina.", true);
+            }
+        }
+
         function shuffleArray(array) {
             const newArray = [...array];
             for (let i = newArray.length - 1; i > 0; i--) {
@@ -795,6 +971,20 @@
                     console.error("Errore nella pulizia:", error);
                 }
             }
+        });
+
+        // Inizializza il gioco
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verifica se c'è un nome nel localStorage per un riconoscimento più rapido
+            const savedName = localStorage.getItem('lupusCugginosoPlayerName');
+            if (savedName) {
+                document.getElementById('playerName').value = savedName;
+            }
+            
+            // Salva il nome quando viene inserito
+            document.getElementById('playerName').addEventListener('change', function() {
+                localStorage.setItem('lupusCugginosoPlayerName', this.value.trim());
+            });
         });
     </script>
 </body>
