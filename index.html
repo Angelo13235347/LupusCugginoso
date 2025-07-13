@@ -467,7 +467,6 @@
             <img id="roleImage" class="role-image" src="" alt="Ruolo" loading="lazy">
             <div id="playerRole" class="role-display">...</div>
             <div id="roleDescription" class="role-description parchment-effect"></div>
-            <button onclick="showScreen('lobbyScreen')" class="glow">TORNA IN LOBBY</button>
         </div>
     </div>
 
@@ -479,7 +478,6 @@
             <div id="votingStatus">Seleziona un giocatore da eliminare</div>
         </div>
         <button onclick="submitVote()" id="submitVoteButton" disabled>CONFERMA VOTO</button>
-        <button onclick="cancelVoting()" class="reset-btn">ANNULLA</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -835,6 +833,16 @@
                 if (isHost && gameState === "voting") {
                     displayVoteResults(votes);
                 }
+                
+                // Se non sono l'host e ho votato, torno alla schermata del ruolo
+                if (!isHost && gameState === "voting" && currentPlayerRef) {
+                    currentPlayerRef.once('value').then((playerSnapshot) => {
+                        const player = playerSnapshot.val();
+                        if (player && player.votedFor) {
+                            showScreen('roleScreen');
+                        }
+                    });
+                }
             });
         }
 
@@ -902,11 +910,6 @@
             }
         }
 
-        function cancelVoting() {
-            selectedVote = null;
-            showScreen('roleScreen');
-        }
-
         async function displayVoteResults(votes) {
             // Trova il giocatore con più voti
             let maxVotes = 0;
@@ -930,34 +933,30 @@
                 const player = playerSnapshot.val();
                 
                 showCustomAlert(`${player.name} è stato eliminato con ${maxVotes} voti!`);
-                
-                // Resetta i voti
-                await votesRef.remove();
-                
-                // Resetta lo stato del gioco
-                await gameRef.update({
-                    phase: "game"
-                });
-                
-                // Resetta i voti dei giocatori
-                const playersSnapshot = await playersRef.once('value');
-                const players = playersSnapshot.val() || {};
-                const updates = {};
-                
-                for (const id in players) {
-                    updates['players/' + id + '/votedFor'] = '';
-                }
-                
-                await database.ref().update(updates);
-                
-                document.getElementById('startVotingButton').style.display = 'block';
             } else {
                 showCustomAlert("Nessun giocatore è stato eliminato nella votazione.");
-                await votesRef.remove();
-                await gameRef.update({
-                    phase: "game"
-                });
             }
+            
+            // Resetta i voti
+            await votesRef.remove();
+            
+            // Resetta lo stato del gioco
+            await gameRef.update({
+                phase: "game"
+            });
+            
+            // Resetta i voti dei giocatori
+            const playersSnapshot = await playersRef.once('value');
+            const players = playersSnapshot.val() || {};
+            const updates = {};
+            
+            for (const id in players) {
+                updates['players/' + id + '/votedFor'] = '';
+            }
+            
+            await database.ref().update(updates);
+            
+            document.getElementById('startVotingButton').style.display = 'block';
         }
 
         async function becomeHost() {
@@ -1094,7 +1093,7 @@
                 // Assegna i ruoli solo ai giocatori (non al narratore)
                 playerIdsToAssign.forEach((id, index) => {
                     updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
-                    updates['players/' + id + '/showRole'] = false; // Inizialmente non mostrare
+                    updates['players/' + id + '/showRole'] = true; // Mostra subito il ruolo
                     updates['players/' + id + '/isAlive'] = true;
                     updates['players/' + id + '/votedFor'] = '';
                     updates['players/' + id + '/voteWeight'] = shuffledRoles[index] === "Sindaco" ? 2 : 1;
@@ -1106,15 +1105,6 @@
                 await gameRef.set({
                     phase: "game"
                 });
-                
-                // Dopo 0.5 secondi, imposta showRole a true per tutti i giocatori (più veloce)
-                setTimeout(async () => {
-                    const showRoleUpdates = {};
-                    playerIdsToAssign.forEach(id => {
-                        showRoleUpdates['players/' + id + '/showRole'] = true;
-                    });
-                    await database.ref().update(showRoleUpdates);
-                }, 500);
                 
                 document.getElementById('startVotingButton').style.display = 'block';
                 
