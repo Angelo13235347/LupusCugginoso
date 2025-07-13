@@ -501,26 +501,60 @@
                 playersRef = database.ref('players');
                 currentPlayerRef = database.ref('players/' + playerId);
                 
-                // Controlla se il nome esiste già
+                // Controlla se il nome esiste già tra i giocatori attivi
                 const snapshot = await playersRef.once('value');
                 const players = snapshot.val() || {};
                 
+                let existingPlayer = null;
                 for (const [id, player] of Object.entries(players)) {
                     if (player.name.toLowerCase() === playerName.toLowerCase()) {
-                        showCustomAlert("Nome già in uso! Scegli un altro nome.", true);
-                        nameInput.focus();
-                        return;
+                        existingPlayer = { id, ...player };
+                        break;
                     }
                 }
                 
-                // Aggiungi il nuovo giocatore
-                await currentPlayerRef.set({
-                    name: playerName,
-                    role: '',
-                    isHost: false,
-                    showRole: false,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
+                if (existingPlayer) {
+                    // Se il giocatore esiste ma non ha un ruolo assegnato (non è ancora iniziata la partita)
+                    if (!existingPlayer.role) {
+                        // Permetti di rientrare con lo stesso nome
+                        await currentPlayerRef.set({
+                            name: playerName,
+                            role: '',
+                            isHost: existingPlayer.isHost,
+                            showRole: false,
+                            timestamp: firebase.database.ServerValue.TIMESTAMP
+                        });
+                    } 
+                    // Se il giocatore esiste e ha già un ruolo assegnato (partita in corso)
+                    else {
+                        // Verifica se il giocatore è ancora attivo
+                        const isActive = await checkPlayerActivity(existingPlayer.id);
+                        
+                        if (!isActive) {
+                            // Se non è attivo, permette di riprendere il ruolo
+                            await currentPlayerRef.set({
+                                name: playerName,
+                                role: existingPlayer.role,
+                                isHost: existingPlayer.isHost,
+                                showRole: existingPlayer.showRole,
+                                timestamp: firebase.database.ServerValue.TIMESTAMP
+                            });
+                        } else {
+                            showCustomAlert("Nome già in uso da un giocatore attivo! Scegli un altro nome.", true);
+                            nameInput.focus();
+                            return;
+                        }
+                    }
+                } else {
+                    // Aggiungi il nuovo giocatore
+                    await currentPlayerRef.set({
+                        name: playerName,
+                        role: '',
+                        isHost: false,
+                        showRole: false,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                }
 
                 // Mostra la lobby
                 showScreen('lobbyScreen');
@@ -531,6 +565,18 @@
             } catch (error) {
                 console.error("Errore:", error);
                 showCustomAlert("Errore di connessione. Ricarica e riprova.", true);
+            }
+        }
+
+        // Funzione per verificare se un giocatore è ancora attivo
+        async function checkPlayerActivity(playerId) {
+            try {
+                const playerRef = database.ref('players/' + playerId);
+                const snapshot = await playerRef.once('value');
+                return snapshot.exists();
+            } catch (error) {
+                console.error("Errore nel verificare l'attività del giocatore:", error);
+                return false;
             }
         }
 
