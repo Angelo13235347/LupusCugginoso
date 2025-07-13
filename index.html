@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUPUS CUGGINOSO</title>
+    <title>LUPUS</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=UnifrakturMaguntia&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
         
         :root {
-            --primary-color: #f8bb22;
+            --primary-color: #8B0000;
             --secondary-color: #1a1a2e;
             --accent-color: #4a4a6a;
             --text-color: #e6e6e6;
@@ -25,7 +25,7 @@
         }
         
         body {
-            font-family: 'MedievalSharp', cursive;
+            font-family: 'Roboto', sans-serif;
             text-align: center;
             background-color: var(--secondary-color);
             color: var(--text-color);
@@ -80,7 +80,6 @@
             font-size: clamp(2em, 5vw, 3em);
             margin-bottom: 30px;
             letter-spacing: 2px;
-            font-family: 'UnifrakturMaguntia', cursive;
         }
         
         h2 {
@@ -90,8 +89,8 @@
         }
         
         button {
-            background: linear-gradient(to bottom, var(--primary-color), #d89e1a);
-            color: var(--secondary-color);
+            background: linear-gradient(to bottom, var(--primary-color), #6B0000);
+            color: white;
             border: none;
             padding: 15px 30px;
             margin: 15px;
@@ -99,7 +98,6 @@
             cursor: pointer;
             font-size: 1.1rem;
             font-weight: bold;
-            font-family: 'MedievalSharp', cursive;
             letter-spacing: 1px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -123,7 +121,7 @@
         button:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-            background: linear-gradient(to bottom, #ffcc33, #e6b020);
+            background: linear-gradient(to bottom, #A00000, #8B0000);
         }
         
         button:hover::after {
@@ -139,7 +137,6 @@
             background-color: rgba(255, 255, 255, 0.9);
             color: var(--secondary-color);
             font-size: 1rem;
-            font-family: 'MedievalSharp', cursive;
             text-align: center;
             transition: all 0.3s;
         }
@@ -147,7 +144,7 @@
         input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 8px rgba(248, 187, 34, 0.5);
+            box-shadow: 0 0 8px rgba(139, 0, 0, 0.5);
         }
         
         #playersList {
@@ -182,7 +179,7 @@
             border-radius: 50%;
             object-fit: cover;
             border: 5px solid var(--primary-color);
-            box-shadow: 0 0 20px rgba(248, 187, 34, 0.5);
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
             margin-bottom: 20px;
             transition: transform 0.3s;
         }
@@ -239,12 +236,12 @@
         }
         
         #hostButton {
-            background: linear-gradient(to bottom, #6a4c93, #4a2c7a);
+            background: linear-gradient(to bottom, #4a4a6a, #3a3a5a);
             color: var(--text-color);
         }
         
         #hostButton:hover {
-            background: linear-gradient(to bottom, #7a5ca3, #5a3c8a);
+            background: linear-gradient(to bottom, #5a5a7a, #4a4a6a);
         }
         
         #assignedRoles {
@@ -331,6 +328,20 @@
             background: linear-gradient(to bottom, #ffad33, #ff9900);
         }
         
+        .vote-btn {
+            background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+            color: white;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        
+        .vote-btn:hover {
+            background: linear-gradient(to bottom, #66BB6A, #388E3C);
+        }
+        
         /* Animazioni e effetti aggiuntivi */
         .pulse {
             animation: pulse 2s infinite;
@@ -357,8 +368,8 @@
         }
         
         @keyframes glow {
-            from { box-shadow: 0 0 5px rgba(248, 187, 34, 0.5); }
-            to { box-shadow: 0 0 20px rgba(248, 187, 34, 0.8); }
+            from { box-shadow: 0 0 5px rgba(139, 0, 0, 0.5); }
+            to { box-shadow: 0 0 20px rgba(139, 0, 0, 0.8); }
         }
         
         /* Stile per il footer */
@@ -387,7 +398,7 @@
                 gap: 8px;
             }
             
-            .make-host-btn, .assign-host-btn, .reconnect-btn {
+            .make-host-btn, .assign-host-btn, .reconnect-btn, .vote-btn {
                 margin-left: 0;
                 margin-top: 8px;
                 align-self: flex-end;
@@ -397,13 +408,13 @@
 </head>
 <body>
     <div id="homeScreen" class="screen active">
-        <h1>LUPUS CUGGINOSO</h1>
+        <h1>LUPUS</h1>
         <div class="parchment-effect">
-            <p>Il gioco del lupo mannaro in versione cugginese</p>
+            <p>Il classico gioco del lupo mannaro</p>
         </div>
         <button onclick="showScreen('joinScreen')" class="pulse">ENTRA NEL GIOCO</button>
         <div class="footer">
-            <p>Gioca con i tuoi cugini in questa versione speciale!</p>
+            <p>Gioca con i tuoi amici in questa versione digitale!</p>
         </div>
     </div>
 
@@ -445,6 +456,7 @@
             </div>
         </div>
         <button id="startGameButton" onclick="startGame()" class="pulse">AVVIA PARTITA</button>
+        <button id="startVotingButton" onclick="startVoting()" style="display:none;">AVVIA VOTAZIONE</button>
         <button onclick="toggleRules()" id="rulesButton">MOSTRA REGOLE</button>
         <button onclick="resetGame()" class="reset-btn">RESETTA PARTITA</button>
     </div>
@@ -457,6 +469,17 @@
             <div id="roleDescription" class="role-description parchment-effect"></div>
             <button onclick="showScreen('lobbyScreen')" class="glow">TORNA IN LOBBY</button>
         </div>
+    </div>
+
+    <div id="votingScreen" class="screen">
+        <h1>VOTAZIONE</h1>
+        <div class="parchment-effect">
+            <div id="votingPlayersList"></div>
+            <div class="player-count" id="votingPlayerCount">0 giocatori in partita</div>
+            <div id="votingStatus">Seleziona un giocatore da eliminare</div>
+        </div>
+        <button onclick="submitVote()" id="submitVoteButton" disabled>CONFERMA VOTO</button>
+        <button onclick="cancelVoting()" class="reset-btn">ANNULLA</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -482,33 +505,36 @@
         let isHost = false;
         let playerName = "";
         let previousGameData = null;
+        let selectedVote = null;
+        let gameState = "lobby"; // lobby, game, voting
+        let myRole = "";
         const roles = {
             "Lupo": {
-                description: "Il tuo scopo è eliminare tutti i Villici. Di notte, insieme agli altri lupi, scegliete una vittima da uccidere.",
+                description: "Sei un Lupo Mannaro! Di notte, insieme agli altri lupi, scegliete una vittima da uccidere. Il tuo obiettivo è eliminare tutti gli abitanti del villaggio.",
                 image: "https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Puttana": {
-                description: "Il tuo ruolo è salvare un giocatore ogni notte, impedendo al Lupo di ucciderlo. Scegli saggiamente chi proteggere!",
+                description: "Sei la Puttana del villaggio. Ogni notte puoi proteggere un giocatore dai lupi mannari. Scegli saggiamente chi salvare!",
                 image: "https://images.unsplash.com/photo-1593104547489-5cfb3839a3b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Investigatore": {
-                description: "Il tuo ruolo è capire chi è il lupo. Di notte puoi scoprire il ruolo di un giocatore a tua scelta.",
+                description: "Sei l'Investigatore. Ogni notte puoi scoprire il ruolo di un giocatore. Usa questa informazione per smascherare i lupi!",
                 image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Vanessa": {
-                description: "Il tuo ruolo è sbirciare durante la notte per scoprire qualche info in più. Sei curiosa e vuoi sapere tutto!",
+                description: "Sei Vanessa. Ogni notte puoi sbirciare e scoprire informazioni aggiuntive sui giocatori. Usa la tua curiosità a vantaggio del villaggio!",
                 image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Sindaco": {
-                description: "Il tuo ruolo è votare due volte durante le votazioni. La tua opinione conta doppio nel decidere chi eliminare!",
+                description: "Sei il Sindaco del villaggio. Durante le votazioni il tuo voto conta doppio! Usa questo potere per guidare il villaggio alla vittoria.",
                 image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Contadino": {
-                description: "Il tuo ruolo è zappare la vigna. Sei un semplice abitante del villaggio, ma la tua astuzia può fare la differenza!",
+                description: "Sei un semplice Contadino. Non hai poteri speciali, ma la tua astuzia e le tue capacità deduttive possono fare la differenza!",
                 image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Narratore": {
-                description: "Sei il narratore e controlli il gioco. Guida i giocatori attraverso la notte e il giorno, e assicurati che tutti seguano le regole!",
+                description: "Sei il Narratore. Il tuo compito è guidare il gioco, gestire le fasi di notte e giorno, e assicurarti che tutti seguano le regole!",
                 image: "https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             }
         };
@@ -517,6 +543,7 @@
         let playersRef;
         let currentPlayerRef;
         let gameRef;
+        let votesRef;
 
         // Mostra alert personalizzato
         function showCustomAlert(message, isError = false) {
@@ -570,7 +597,7 @@
             playerName = nameInput.value.trim();
             
             if (!playerName) {
-                showCustomAlert("Inserisci un nome cuggino!", true);
+                showCustomAlert("Inserisci un nome!", true);
                 nameInput.focus();
                 return;
             }
@@ -606,7 +633,10 @@
                 isHost: false,
                 showRole: false,
                 timestamp: firebase.database.ServerValue.TIMESTAMP,
-                lastActive: firebase.database.ServerValue.TIMESTAMP
+                lastActive: firebase.database.ServerValue.TIMESTAMP,
+                isAlive: true,
+                votedFor: '',
+                voteWeight: 1
             });
 
             // Mostra la lobby
@@ -624,11 +654,13 @@
             // Aggiorna il timestamp per mostrare che il giocatore è attivo
             await currentPlayerRef.update({
                 lastActive: firebase.database.ServerValue.TIMESTAMP,
-                showRole: previousGameData.playerData.showRole || false
+                showRole: previousGameData.playerData.showRole || false,
+                isAlive: previousGameData.playerData.isAlive !== false
             });
 
             // Se il giocatore aveva già un ruolo assegnato, vai direttamente alla schermata del ruolo
             if (previousGameData.playerData.role && previousGameData.playerData.showRole) {
+                myRole = previousGameData.playerData.role;
                 showScreen('roleScreen');
                 updateRoleDisplay(previousGameData.playerData.role);
             } else if (previousGameData.playerData.isHost) {
@@ -663,6 +695,8 @@
             listenForRoleAssignment();
             listenForGameReset();
             listenForInactivePlayers();
+            listenForGameState();
+            listenForVotes();
         }
 
         function updateRoleDisplay(role) {
@@ -677,6 +711,9 @@
             if (document.getElementById('hostPlayerCount')) {
                 document.getElementById('hostPlayerCount').textContent = countText;
             }
+            if (document.getElementById('votingPlayerCount')) {
+                document.getElementById('votingPlayerCount').textContent = count === 1 ? "1 giocatore in partita" : `${count} giocatori in partita`;
+            }
         }
 
         function listenForPlayers() {
@@ -688,22 +725,22 @@
                 let hostExists = false;
                 let playerCount = 0;
                 
-                // Pulisci giocatori inattivi (non attivi da più di 30 secondi)
+                // Pulisci giocatori inattivi (non attivi da più di 2 minuti)
                 const now = Date.now();
                 const updates = {};
                 
                 for (const [id, player] of Object.entries(players)) {
-                    // Se il giocatore non è attivo da più di 30 secondi, rimuovilo
-                    if (player.lastActive && (now - player.lastActive) > 30000 && id !== playerId) {
+                    // Se il giocatore non è attivo da più di 2 minuti, rimuovilo
+                    if (player.lastActive && (now - player.lastActive) > 120000 && id !== playerId) {
                         updates['players/' + id] = null;
                         continue;
                     }
                     
                     const playerDiv = document.createElement('div');
-                    playerDiv.innerHTML = `${player.name} ${player.isHost ? '<span style="color:var(--primary-color)">(NARRATORE)</span>' : ''}`;
+                    playerDiv.innerHTML = `${player.name} ${player.isHost ? '<span style="color:var(--primary-color)">(NARRATORE)</span>' : ''} ${player.isAlive === false ? '<span style="color:var(--danger-color)">(ELIMINATO)</span>' : ''}`;
                     
                     // Aggiungi pulsante "Rendi narratore" solo per l'host e se non è già narratore
-                    if (isHost && !player.isHost) {
+                    if (isHost && !player.isHost && player.isAlive !== false) {
                         const assignHostBtn = document.createElement('button');
                         assignHostBtn.className = 'assign-host-btn';
                         assignHostBtn.textContent = 'Assegna narratore';
@@ -714,7 +751,7 @@
                     playersList.appendChild(playerDiv);
                     
                     if (player.isHost) hostExists = true;
-                    playerCount++;
+                    if (player.isAlive !== false) playerCount++;
                 }
 
                 // Applica gli aggiornamenti per rimuovere i giocatori inattivi
@@ -735,7 +772,7 @@
                         lastActive: firebase.database.ServerValue.TIMESTAMP
                     });
                 }
-            }, 15000); // Ogni 15 secondi
+            }, 30000); // Ogni 30 secondi
         }
 
         function listenForRoleAssignment() {
@@ -748,6 +785,7 @@
                     showScreen('hostScreen');
                     listenForRoles();
                 } else if (player.role && player.showRole) {
+                    myRole = player.role;
                     updateRoleDisplay(player.role);
                     showScreen('roleScreen');
                 }
@@ -766,6 +804,162 @@
             });
         }
 
+        function listenForGameState() {
+            if (!gameRef) {
+                gameRef = database.ref('gameState');
+            }
+            
+            gameRef.on('value', (snapshot) => {
+                const state = snapshot.val();
+                if (!state) return;
+                
+                gameState = state.phase || "lobby";
+                
+                if (gameState === "voting" && !isHost) {
+                    showVotingScreen();
+                } else if (gameState === "game" && isHost) {
+                    document.getElementById('startVotingButton').style.display = 'block';
+                } else if (gameState === "lobby") {
+                    document.getElementById('startVotingButton').style.display = 'none';
+                }
+            });
+        }
+
+        function listenForVotes() {
+            if (!votesRef) {
+                votesRef = database.ref('votes');
+            }
+            
+            votesRef.on('value', (snapshot) => {
+                const votes = snapshot.val() || {};
+                if (isHost && gameState === "voting") {
+                    displayVoteResults(votes);
+                }
+            });
+        }
+
+        function showVotingScreen() {
+            playersRef.once('value').then((snapshot) => {
+                const players = snapshot.val() || {};
+                const votingPlayersList = document.getElementById('votingPlayersList');
+                votingPlayersList.innerHTML = '<h2>VOTA PER ELIMINARE:</h2>';
+                
+                let playerCount = 0;
+                
+                for (const [id, player] of Object.entries(players)) {
+                    if (player.isAlive !== false && !player.isHost) {
+                        const playerDiv = document.createElement('div');
+                        playerDiv.innerHTML = player.name;
+                        
+                        if (id !== playerId) {
+                            const voteBtn = document.createElement('button');
+                            voteBtn.className = 'vote-btn';
+                            voteBtn.textContent = 'VOTA';
+                            voteBtn.onclick = () => selectVote(id, player.name);
+                            playerDiv.appendChild(voteBtn);
+                        } else {
+                            playerDiv.innerHTML += ' <em>(TU)</em>';
+                        }
+                        
+                        votingPlayersList.appendChild(playerDiv);
+                        playerCount++;
+                    }
+                }
+                
+                updatePlayerCount(playerCount);
+                showScreen('votingScreen');
+            });
+        }
+
+        function selectVote(playerIdToVote, playerName) {
+            selectedVote = playerIdToVote;
+            document.getElementById('votingStatus').textContent = `Hai votato per eliminare ${playerName}`;
+            document.getElementById('submitVoteButton').disabled = false;
+        }
+
+        async function submitVote() {
+            if (!selectedVote) return;
+            
+            try {
+                // Ottieni il peso del voto (2 per il sindaco, 1 per gli altri)
+                const snapshot = await currentPlayerRef.once('value');
+                const player = snapshot.val();
+                const voteWeight = player.role === "Sindaco" ? 2 : 1;
+                
+                await votesRef.child(selectedVote).transaction((currentVotes) => {
+                    return (currentVotes || 0) + voteWeight;
+                });
+                
+                await currentPlayerRef.update({
+                    votedFor: selectedVote
+                });
+                
+                showCustomAlert("Voto registrato! Attendi il risultato della votazione.");
+                showScreen('roleScreen');
+            } catch (error) {
+                console.error("Errore nel voto:", error);
+                showCustomAlert("Errore nel registrare il voto. Riprova!", true);
+            }
+        }
+
+        function cancelVoting() {
+            selectedVote = null;
+            showScreen('roleScreen');
+        }
+
+        async function displayVoteResults(votes) {
+            // Trova il giocatore con più voti
+            let maxVotes = 0;
+            let playerToEliminate = null;
+            
+            for (const [playerId, voteCount] of Object.entries(votes)) {
+                if (voteCount > maxVotes) {
+                    maxVotes = voteCount;
+                    playerToEliminate = playerId;
+                }
+            }
+            
+            if (playerToEliminate) {
+                // Elimina il giocatore
+                await database.ref('players/' + playerToEliminate).update({
+                    isAlive: false
+                });
+                
+                // Ottieni il nome del giocatore eliminato
+                const playerSnapshot = await database.ref('players/' + playerToEliminate).once('value');
+                const player = playerSnapshot.val();
+                
+                showCustomAlert(`${player.name} è stato eliminato con ${maxVotes} voti!`);
+                
+                // Resetta i voti
+                await votesRef.remove();
+                
+                // Resetta lo stato del gioco
+                await gameRef.update({
+                    phase: "game"
+                });
+                
+                // Resetta i voti dei giocatori
+                const playersSnapshot = await playersRef.once('value');
+                const players = playersSnapshot.val() || {};
+                const updates = {};
+                
+                for (const id in players) {
+                    updates['players/' + id + '/votedFor'] = '';
+                }
+                
+                await database.ref().update(updates);
+                
+                document.getElementById('startVotingButton').style.display = 'block';
+            } else {
+                showCustomAlert("Nessun giocatore è stato eliminato nella votazione.");
+                await votesRef.remove();
+                await gameRef.update({
+                    phase: "game"
+                });
+            }
+        }
+
         async function becomeHost() {
             try {
                 const snapshot = await playersRef.once('value');
@@ -781,6 +975,15 @@
                     isHost: true,
                     role: 'Narratore',
                     showRole: true
+                });
+                
+                // Crea lo stato del gioco se non esiste
+                if (!gameRef) {
+                    gameRef = database.ref('gameState');
+                }
+                
+                await gameRef.set({
+                    phase: "lobby"
                 });
                 
                 isHost = true;
@@ -812,6 +1015,8 @@
                     updates['players/' + id + '/isHost'] = false;
                     updates['players/' + id + '/role'] = '';
                     updates['players/' + id + '/showRole'] = false;
+                    updates['players/' + id + '/isAlive'] = true;
+                    updates['players/' + id + '/votedFor'] = '';
                 }
                 
                 // Imposta il nuovo host
@@ -820,6 +1025,11 @@
                 updates['players/' + newHostId + '/showRole'] = true;
                 
                 await database.ref().update(updates);
+                
+                // Resetta lo stato del gioco
+                await gameRef.set({
+                    phase: "lobby"
+                });
                 
                 // Se ero io l'host precedente, torno alla lobby
                 if (currentPlayerRef.key === newHostId) {
@@ -849,8 +1059,8 @@
                 
                 for (const [id, player] of Object.entries(players)) {
                     if (!player.isHost) {
-                        assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role || '...in attesa...'}</strong></div>`;
-                        playerCount++;
+                        assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role || '...in attesa...'}</strong> ${player.isAlive === false ? '<span style="color:var(--danger-color)">(ELIMINATO)</span>' : ''}</div>`;
+                        if (player.isAlive !== false) playerCount++;
                     }
                 }
                 
@@ -885,9 +1095,17 @@
                 playerIdsToAssign.forEach((id, index) => {
                     updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
                     updates['players/' + id + '/showRole'] = false; // Inizialmente non mostrare
+                    updates['players/' + id + '/isAlive'] = true;
+                    updates['players/' + id + '/votedFor'] = '';
+                    updates['players/' + id + '/voteWeight'] = shuffledRoles[index] === "Sindaco" ? 2 : 1;
                 });
 
                 await database.ref().update(updates);
+                
+                // Imposta lo stato del gioco
+                await gameRef.set({
+                    phase: "game"
+                });
                 
                 // Dopo 0.5 secondi, imposta showRole a true per tutti i giocatori (più veloce)
                 setTimeout(async () => {
@@ -898,9 +1116,43 @@
                     await database.ref().update(showRoleUpdates);
                 }, 500);
                 
+                document.getElementById('startVotingButton').style.display = 'block';
+                
             } catch (error) {
                 console.error("Errore:", error);
                 showCustomAlert("Errore nell'assegnazione dei ruoli. Riprova!", true);
+            }
+        }
+
+        async function startVoting() {
+            if (!isHost) return;
+            
+            try {
+                // Resetta eventuali voti precedenti
+                await votesRef.remove();
+                
+                // Resetta i voti dei giocatori
+                const playersSnapshot = await playersRef.once('value');
+                const players = playersSnapshot.val() || {};
+                const updates = {};
+                
+                for (const id in players) {
+                    updates['players/' + id + '/votedFor'] = '';
+                }
+                
+                await database.ref().update(updates);
+                
+                // Imposta lo stato di votazione
+                await gameRef.set({
+                    phase: "voting"
+                });
+                
+                document.getElementById('startVotingButton').style.display = 'none';
+                showCustomAlert("Votazione avviata! I giocatori stanno votando.");
+                
+            } catch (error) {
+                console.error("Errore:", error);
+                showCustomAlert("Errore nell'avviare la votazione. Riprova!", true);
             }
         }
 
@@ -924,9 +1176,19 @@
                         updates['players/' + id + '/role'] = '';
                         updates['players/' + id + '/showRole'] = false;
                         updates['players/' + id + '/isHost'] = false;
+                        updates['players/' + id + '/isAlive'] = true;
+                        updates['players/' + id + '/votedFor'] = '';
                     }
                     
                     await database.ref().update(updates);
+                    
+                    // Resetta lo stato del gioco
+                    await gameRef.set({
+                        phase: "lobby"
+                    });
+                    
+                    // Resetta i voti
+                    await votesRef.remove();
                     
                     document.querySelector('.custom-alert')?.remove();
                     showCustomAlert("Partita resettata! Ora puoi assegnare un nuovo narratore.");
@@ -976,14 +1238,14 @@
         // Inizializza il gioco
         document.addEventListener('DOMContentLoaded', () => {
             // Verifica se c'è un nome nel localStorage per un riconoscimento più rapido
-            const savedName = localStorage.getItem('lupusCugginosoPlayerName');
+            const savedName = localStorage.getItem('lupusPlayerName');
             if (savedName) {
                 document.getElementById('playerName').value = savedName;
             }
             
             // Salva il nome quando viene inserito
             document.getElementById('playerName').addEventListener('change', function() {
-                localStorage.setItem('lupusCugginosoPlayerName', this.value.trim());
+                localStorage.setItem('lupusPlayerName', this.value.trim());
             });
         });
     </script>
