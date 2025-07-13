@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUPUS</title>
+    <title>LUPUS CUGGINOSO</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=UnifrakturMaguntia&family=Cinzel+Decorative:wght@700&display=swap');
         
         :root {
-            --primary-color: #8B0000;
+            --primary-color: #f8bb22;
             --secondary-color: #1a1a2e;
             --accent-color: #4a4a6a;
             --text-color: #e6e6e6;
@@ -25,7 +25,7 @@
         }
         
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'MedievalSharp', cursive;
             text-align: center;
             background-color: var(--secondary-color);
             color: var(--text-color);
@@ -80,6 +80,7 @@
             font-size: clamp(2em, 5vw, 3em);
             margin-bottom: 30px;
             letter-spacing: 2px;
+            font-family: 'Cinzel Decorative', cursive;
         }
         
         h2 {
@@ -89,8 +90,8 @@
         }
         
         button {
-            background: linear-gradient(to bottom, var(--primary-color), #6B0000);
-            color: white;
+            background: linear-gradient(to bottom, var(--primary-color), #d89e1a);
+            color: var(--secondary-color);
             border: none;
             padding: 15px 30px;
             margin: 15px;
@@ -98,6 +99,7 @@
             cursor: pointer;
             font-size: 1.1rem;
             font-weight: bold;
+            font-family: 'MedievalSharp', cursive;
             letter-spacing: 1px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -121,7 +123,7 @@
         button:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-            background: linear-gradient(to bottom, #A00000, #8B0000);
+            background: linear-gradient(to bottom, #ffcc33, #e6b020);
         }
         
         button:hover::after {
@@ -137,6 +139,7 @@
             background-color: rgba(255, 255, 255, 0.9);
             color: var(--secondary-color);
             font-size: 1rem;
+            font-family: 'MedievalSharp', cursive;
             text-align: center;
             transition: all 0.3s;
         }
@@ -144,7 +147,7 @@
         input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 8px rgba(139, 0, 0, 0.5);
+            box-shadow: 0 0 8px rgba(248, 187, 34, 0.5);
         }
         
         #playersList {
@@ -179,7 +182,7 @@
             border-radius: 50%;
             object-fit: cover;
             border: 5px solid var(--primary-color);
-            box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(248, 187, 34, 0.5);
             margin-bottom: 20px;
             transition: transform 0.3s;
         }
@@ -236,12 +239,12 @@
         }
         
         #hostButton {
-            background: linear-gradient(to bottom, #4a4a6a, #3a3a5a);
+            background: linear-gradient(to bottom, #6a4c93, #4a2c7a);
             color: var(--text-color);
         }
         
         #hostButton:hover {
-            background: linear-gradient(to bottom, #5a5a7a, #4a4a6a);
+            background: linear-gradient(to bottom, #7a5ca3, #5a3c8a);
         }
         
         #assignedRoles {
@@ -328,18 +331,54 @@
             background: linear-gradient(to bottom, #ffad33, #ff9900);
         }
         
-        .vote-btn {
-            background: linear-gradient(to bottom, #4CAF50, #2E7D32);
-            color: white;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            margin-left: 10px;
-            border-radius: 6px;
-            flex-shrink: 0;
+        /* Stili per la schermata di votazione */
+        #votingScreen {
+            max-width: 600px;
         }
         
-        .vote-btn:hover {
-            background: linear-gradient(to bottom, #66BB6A, #388E3C);
+        #votingOptions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .voting-option {
+            padding: 12px;
+            background-color: rgba(74, 74, 106, 0.5);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .voting-option:hover {
+            background-color: rgba(74, 74, 106, 0.8);
+            transform: translateX(5px);
+        }
+        
+        .voting-option.selected {
+            border-left: 4px solid var(--primary-color);
+            background-color: rgba(248, 187, 34, 0.2);
+        }
+        
+        .voting-option.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        #voteResults {
+            margin-top: 20px;
+            text-align: left;
+        }
+        
+        .vote-result-item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: rgba(74, 74, 106, 0.5);
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
         }
         
         /* Animazioni e effetti aggiuntivi */
@@ -368,8 +407,8 @@
         }
         
         @keyframes glow {
-            from { box-shadow: 0 0 5px rgba(139, 0, 0, 0.5); }
-            to { box-shadow: 0 0 20px rgba(139, 0, 0, 0.8); }
+            from { box-shadow: 0 0 5px rgba(248, 187, 34, 0.5); }
+            to { box-shadow: 0 0 20px rgba(248, 187, 34, 0.8); }
         }
         
         /* Stile per il footer */
@@ -398,7 +437,7 @@
                 gap: 8px;
             }
             
-            .make-host-btn, .assign-host-btn, .reconnect-btn, .vote-btn {
+            .make-host-btn, .assign-host-btn, .reconnect-btn {
                 margin-left: 0;
                 margin-top: 8px;
                 align-self: flex-end;
@@ -408,13 +447,13 @@
 </head>
 <body>
     <div id="homeScreen" class="screen active">
-        <h1>LUPUS</h1>
+        <h1>LUPUS CUGGINOSO</h1>
         <div class="parchment-effect">
-            <p>Il classico gioco del lupo mannaro</p>
+            <p>Il gioco del lupo mannaro in versione cugginese</p>
         </div>
         <button onclick="showScreen('joinScreen')" class="pulse">ENTRA NEL GIOCO</button>
         <div class="footer">
-            <p>Gioca con i tuoi amici in questa versione digitale!</p>
+            <p>Gioca con i tuoi cugini in questa versione speciale!</p>
         </div>
     </div>
 
@@ -456,7 +495,7 @@
             </div>
         </div>
         <button id="startGameButton" onclick="startGame()" class="pulse">AVVIA PARTITA</button>
-        <button id="startVotingButton" onclick="startVoting()" style="display:none;">AVVIA VOTAZIONE</button>
+        <button id="startVotingButton" onclick="startVoting()" style="display:none;">AVVIA VOTAZIONI</button>
         <button onclick="toggleRules()" id="rulesButton">MOSTRA REGOLE</button>
         <button onclick="resetGame()" class="reset-btn">RESETTA PARTITA</button>
     </div>
@@ -467,17 +506,23 @@
             <img id="roleImage" class="role-image" src="" alt="Ruolo" loading="lazy">
             <div id="playerRole" class="role-display">...</div>
             <div id="roleDescription" class="role-description parchment-effect"></div>
+            <button onclick="showScreen('lobbyScreen')" class="glow">TORNA IN LOBBY</button>
         </div>
     </div>
 
     <div id="votingScreen" class="screen">
         <h1>VOTAZIONE</h1>
         <div class="parchment-effect">
-            <div id="votingPlayersList"></div>
-            <div class="player-count" id="votingPlayerCount">0 giocatori in partita</div>
-            <div id="votingStatus">Seleziona un giocatore da eliminare</div>
+            <p id="votingInstructions">Scegli il giocatore che vuoi eliminare:</p>
+            <div id="votingOptions"></div>
+            <div id="voteResults" style="display:none;">
+                <h3>RISULTATI VOTAZIONE:</h3>
+                <div id="votesList"></div>
+            </div>
         </div>
-        <button onclick="submitVote()" id="submitVoteButton" disabled>CONFERMA VOTO</button>
+        <button id="submitVoteButton" onclick="submitVote()">CONFERMA VOTO</button>
+        <button id="confirmEliminationButton" onclick="confirmElimination()" style="display:none;">CONFERMA ELIMINAZIONE</button>
+        <button id="returnToGameButton" onclick="returnToGameAfterVoting()" style="display:none;">TORNA AL GIOCO</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -503,36 +548,36 @@
         let isHost = false;
         let playerName = "";
         let previousGameData = null;
-        let selectedVote = null;
-        let gameState = "lobby"; // lobby, game, voting
-        let myRole = "";
+        let currentVote = null;
+        let gameState = "lobby"; // lobby, game, voting, results
+        let playerRole = "";
         const roles = {
             "Lupo": {
-                description: "Sei un Lupo Mannaro! Di notte, insieme agli altri lupi, scegliete una vittima da uccidere. Il tuo obiettivo è eliminare tutti gli abitanti del villaggio.",
+                description: "Il tuo scopo è eliminare tutti i Villici. Di notte, insieme agli altri lupi, scegliete una vittima da uccidere.",
                 image: "https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Puttana": {
-                description: "Sei la Puttana del villaggio. Ogni notte puoi proteggere un giocatore dai lupi mannari. Scegli saggiamente chi salvare!",
+                description: "Il tuo ruolo è salvare un giocatore ogni notte, impedendo al Lupo di ucciderlo. Scegli saggiamente chi proteggere!",
                 image: "https://images.unsplash.com/photo-1593104547489-5cfb3839a3b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Investigatore": {
-                description: "Sei l'Investigatore. Ogni notte puoi scoprire il ruolo di un giocatore. Usa questa informazione per smascherare i lupi!",
+                description: "Il tuo ruolo è capire chi è il lupo. Di notte puoi scoprire il ruolo di un giocatore a tua scelta.",
                 image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Vanessa": {
-                description: "Sei Vanessa. Ogni notte puoi sbirciare e scoprire informazioni aggiuntive sui giocatori. Usa la tua curiosità a vantaggio del villaggio!",
+                description: "Il tuo ruolo è sbirciare durante la notte per scoprire qualche info in più. Sei curiosa e vuoi sapere tutto!",
                 image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Sindaco": {
-                description: "Sei il Sindaco del villaggio. Durante le votazioni il tuo voto conta doppio! Usa questo potere per guidare il villaggio alla vittoria.",
+                description: "Il tuo ruolo è votare due volte durante le votazioni. La tua opinione conta doppio nel decidere chi eliminare!",
                 image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Contadino": {
-                description: "Sei un semplice Contadino. Non hai poteri speciali, ma la tua astuzia e le tue capacità deduttive possono fare la differenza!",
+                description: "Il tuo ruolo è zappare la vigna. Sei un semplice abitante del villaggio, ma la tua astuzia può fare la differenza!",
                 image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Narratore": {
-                description: "Sei il Narratore. Il tuo compito è guidare il gioco, gestire le fasi di notte e giorno, e assicurarti che tutti seguano le regole!",
+                description: "Sei il narratore e controlli il gioco. Guida i giocatori attraverso la notte e il giorno, e assicurati che tutti seguano le regole!",
                 image: "https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             }
         };
@@ -541,7 +586,7 @@
         let playersRef;
         let currentPlayerRef;
         let gameRef;
-        let votesRef;
+        let gameStateRef;
 
         // Mostra alert personalizzato
         function showCustomAlert(message, isError = false) {
@@ -595,13 +640,14 @@
             playerName = nameInput.value.trim();
             
             if (!playerName) {
-                showCustomAlert("Inserisci un nome!", true);
+                showCustomAlert("Inserisci un nome cuggino!", true);
                 nameInput.focus();
                 return;
             }
 
             try {
                 playersRef = database.ref('players');
+                gameStateRef = database.ref('gameState');
                 const { exists, playerData, playerId: existingId } = await checkExistingPlayer(playerName);
                 
                 if (exists) {
@@ -633,8 +679,8 @@
                 timestamp: firebase.database.ServerValue.TIMESTAMP,
                 lastActive: firebase.database.ServerValue.TIMESTAMP,
                 isAlive: true,
-                votedFor: '',
-                voteWeight: 1
+                votedFor: null,
+                votesReceived: 0
             });
 
             // Mostra la lobby
@@ -656,14 +702,27 @@
                 isAlive: previousGameData.playerData.isAlive !== false
             });
 
+            // Controlla lo stato del gioco
+            const gameStateSnapshot = await database.ref('gameState').once('value');
+            const currentGameState = gameStateSnapshot.val() || "lobby";
+            gameState = currentGameState;
+
             // Se il giocatore aveva già un ruolo assegnato, vai direttamente alla schermata del ruolo
             if (previousGameData.playerData.role && previousGameData.playerData.showRole) {
-                myRole = previousGameData.playerData.role;
-                showScreen('roleScreen');
-                updateRoleDisplay(previousGameData.playerData.role);
+                playerRole = previousGameData.playerData.role;
+                if (currentGameState === "voting") {
+                    showScreen('votingScreen');
+                    setupVotingScreen();
+                } else {
+                    showScreen('roleScreen');
+                    updateRoleDisplay(previousGameData.playerData.role);
+                }
             } else if (previousGameData.playerData.isHost) {
                 isHost = true;
                 showScreen('hostScreen');
+                if (currentGameState === "game") {
+                    document.getElementById('startVotingButton').style.display = 'block';
+                }
             } else {
                 showScreen('lobbyScreen');
             }
@@ -693,8 +752,7 @@
             listenForRoleAssignment();
             listenForGameReset();
             listenForInactivePlayers();
-            listenForGameState();
-            listenForVotes();
+            listenForGameStateChanges();
         }
 
         function updateRoleDisplay(role) {
@@ -709,9 +767,6 @@
             if (document.getElementById('hostPlayerCount')) {
                 document.getElementById('hostPlayerCount').textContent = countText;
             }
-            if (document.getElementById('votingPlayerCount')) {
-                document.getElementById('votingPlayerCount').textContent = count === 1 ? "1 giocatore in partita" : `${count} giocatori in partita`;
-            }
         }
 
         function listenForPlayers() {
@@ -723,13 +778,13 @@
                 let hostExists = false;
                 let playerCount = 0;
                 
-                // Pulisci giocatori inattivi (non attivi da più di 2 minuti)
+                // Pulisci giocatori inattivi (non attivi da più di 5 minuti)
                 const now = Date.now();
                 const updates = {};
                 
                 for (const [id, player] of Object.entries(players)) {
-                    // Se il giocatore non è attivo da più di 2 minuti, rimuovilo
-                    if (player.lastActive && (now - player.lastActive) > 120000 && id !== playerId) {
+                    // Se il giocatore non è attivo da più di 5 minuti, rimuovilo
+                    if (player.lastActive && (now - player.lastActive) > 300000 && id !== playerId) {
                         updates['players/' + id] = null;
                         continue;
                     }
@@ -749,7 +804,7 @@
                     playersList.appendChild(playerDiv);
                     
                     if (player.isHost) hostExists = true;
-                    if (player.isAlive !== false) playerCount++;
+                    playerCount++;
                 }
 
                 // Applica gli aggiornamenti per rimuovere i giocatori inattivi
@@ -783,9 +838,16 @@
                     showScreen('hostScreen');
                     listenForRoles();
                 } else if (player.role && player.showRole) {
-                    myRole = player.role;
+                    playerRole = player.role;
                     updateRoleDisplay(player.role);
-                    showScreen('roleScreen');
+                    
+                    // Se siamo in fase di votazione, mostra la schermata di voto
+                    if (gameState === "voting" && player.isAlive !== false) {
+                        showScreen('votingScreen');
+                        setupVotingScreen();
+                    } else {
+                        showScreen('roleScreen');
+                    }
                 }
             });
         }
@@ -797,166 +859,35 @@
                 
                 // Se il giocatore non ha più un ruolo (reset del gioco)
                 if (!player.role && !player.isHost) {
+                    gameState = "lobby";
                     showScreen('lobbyScreen');
                 }
             });
         }
 
-        function listenForGameState() {
-            if (!gameRef) {
-                gameRef = database.ref('gameState');
-            }
-            
-            gameRef.on('value', (snapshot) => {
+        function listenForGameStateChanges() {
+            gameStateRef.on('value', (snapshot) => {
                 const state = snapshot.val();
-                if (!state) return;
-                
-                gameState = state.phase || "lobby";
-                
-                if (gameState === "voting" && !isHost) {
-                    showVotingScreen();
-                } else if (gameState === "game" && isHost) {
-                    document.getElementById('startVotingButton').style.display = 'block';
-                } else if (gameState === "lobby") {
-                    document.getElementById('startVotingButton').style.display = 'none';
-                }
-            });
-        }
-
-        function listenForVotes() {
-            if (!votesRef) {
-                votesRef = database.ref('votes');
-            }
-            
-            votesRef.on('value', (snapshot) => {
-                const votes = snapshot.val() || {};
-                if (isHost && gameState === "voting") {
-                    displayVoteResults(votes);
-                }
-                
-                // Se non sono l'host e ho votato, torno alla schermata del ruolo
-                if (!isHost && gameState === "voting" && currentPlayerRef) {
-                    currentPlayerRef.once('value').then((playerSnapshot) => {
-                        const player = playerSnapshot.val();
-                        if (player && player.votedFor) {
-                            showScreen('roleScreen');
-                        }
-                    });
-                }
-            });
-        }
-
-        function showVotingScreen() {
-            playersRef.once('value').then((snapshot) => {
-                const players = snapshot.val() || {};
-                const votingPlayersList = document.getElementById('votingPlayersList');
-                votingPlayersList.innerHTML = '<h2>VOTA PER ELIMINARE:</h2>';
-                
-                let playerCount = 0;
-                
-                for (const [id, player] of Object.entries(players)) {
-                    if (player.isAlive !== false && !player.isHost) {
-                        const playerDiv = document.createElement('div');
-                        playerDiv.innerHTML = player.name;
-                        
-                        if (id !== playerId) {
-                            const voteBtn = document.createElement('button');
-                            voteBtn.className = 'vote-btn';
-                            voteBtn.textContent = 'VOTA';
-                            voteBtn.onclick = () => selectVote(id, player.name);
-                            playerDiv.appendChild(voteBtn);
-                        } else {
-                            playerDiv.innerHTML += ' <em>(TU)</em>';
-                        }
-                        
-                        votingPlayersList.appendChild(playerDiv);
-                        playerCount++;
+                if (state) {
+                    gameState = state;
+                    
+                    // Se siamo host e il gioco è iniziato, mostra il pulsante per avviare le votazioni
+                    if (isHost && state === "game") {
+                        document.getElementById('startVotingButton').style.display = 'block';
+                    }
+                    
+                    // Se siamo un giocatore normale e siamo in fase di votazione
+                    if (!isHost && state === "voting" && playerRole) {
+                        showScreen('votingScreen');
+                        setupVotingScreen();
+                    }
+                    
+                    // Se siamo tornati al gioco dopo le votazioni
+                    if (state === "game" && document.getElementById('votingScreen').classList.contains('active')) {
+                        showScreen('roleScreen');
                     }
                 }
-                
-                updatePlayerCount(playerCount);
-                showScreen('votingScreen');
             });
-        }
-
-        function selectVote(playerIdToVote, playerName) {
-            selectedVote = playerIdToVote;
-            document.getElementById('votingStatus').textContent = `Hai votato per eliminare ${playerName}`;
-            document.getElementById('submitVoteButton').disabled = false;
-        }
-
-        async function submitVote() {
-            if (!selectedVote) return;
-            
-            try {
-                // Ottieni il peso del voto (2 per il sindaco, 1 per gli altri)
-                const snapshot = await currentPlayerRef.once('value');
-                const player = snapshot.val();
-                const voteWeight = player.role === "Sindaco" ? 2 : 1;
-                
-                await votesRef.child(selectedVote).transaction((currentVotes) => {
-                    return (currentVotes || 0) + voteWeight;
-                });
-                
-                await currentPlayerRef.update({
-                    votedFor: selectedVote
-                });
-                
-                showCustomAlert("Voto registrato! Attendi il risultato della votazione.");
-                showScreen('roleScreen');
-            } catch (error) {
-                console.error("Errore nel voto:", error);
-                showCustomAlert("Errore nel registrare il voto. Riprova!", true);
-            }
-        }
-
-        async function displayVoteResults(votes) {
-            // Trova il giocatore con più voti
-            let maxVotes = 0;
-            let playerToEliminate = null;
-            
-            for (const [playerId, voteCount] of Object.entries(votes)) {
-                if (voteCount > maxVotes) {
-                    maxVotes = voteCount;
-                    playerToEliminate = playerId;
-                }
-            }
-            
-            if (playerToEliminate) {
-                // Elimina il giocatore
-                await database.ref('players/' + playerToEliminate).update({
-                    isAlive: false
-                });
-                
-                // Ottieni il nome del giocatore eliminato
-                const playerSnapshot = await database.ref('players/' + playerToEliminate).once('value');
-                const player = playerSnapshot.val();
-                
-                showCustomAlert(`${player.name} è stato eliminato con ${maxVotes} voti!`);
-            } else {
-                showCustomAlert("Nessun giocatore è stato eliminato nella votazione.");
-            }
-            
-            // Resetta i voti
-            await votesRef.remove();
-            
-            // Resetta lo stato del gioco
-            await gameRef.update({
-                phase: "game"
-            });
-            
-            // Resetta i voti dei giocatori
-            const playersSnapshot = await playersRef.once('value');
-            const players = playersSnapshot.val() || {};
-            const updates = {};
-            
-            for (const id in players) {
-                updates['players/' + id + '/votedFor'] = '';
-            }
-            
-            await database.ref().update(updates);
-            
-            document.getElementById('startVotingButton').style.display = 'block';
         }
 
         async function becomeHost() {
@@ -976,18 +907,12 @@
                     showRole: true
                 });
                 
-                // Crea lo stato del gioco se non esiste
-                if (!gameRef) {
-                    gameRef = database.ref('gameState');
-                }
-                
-                await gameRef.set({
-                    phase: "lobby"
-                });
-                
                 isHost = true;
                 showScreen('hostScreen');
                 listenForRoles();
+                
+                // Imposta lo stato iniziale del gioco
+                await gameStateRef.set("lobby");
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -1015,7 +940,8 @@
                     updates['players/' + id + '/role'] = '';
                     updates['players/' + id + '/showRole'] = false;
                     updates['players/' + id + '/isAlive'] = true;
-                    updates['players/' + id + '/votedFor'] = '';
+                    updates['players/' + id + '/votedFor'] = null;
+                    updates['players/' + id + '/votesReceived'] = 0;
                 }
                 
                 // Imposta il nuovo host
@@ -1024,11 +950,7 @@
                 updates['players/' + newHostId + '/showRole'] = true;
                 
                 await database.ref().update(updates);
-                
-                // Resetta lo stato del gioco
-                await gameRef.set({
-                    phase: "lobby"
-                });
+                await gameStateRef.set("lobby");
                 
                 // Se ero io l'host precedente, torno alla lobby
                 if (currentPlayerRef.key === newHostId) {
@@ -1059,7 +981,7 @@
                 for (const [id, player] of Object.entries(players)) {
                     if (!player.isHost) {
                         assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role || '...in attesa...'}</strong> ${player.isAlive === false ? '<span style="color:var(--danger-color)">(ELIMINATO)</span>' : ''}</div>`;
-                        if (player.isAlive !== false) playerCount++;
+                        playerCount++;
                     }
                 }
                 
@@ -1093,19 +1015,27 @@
                 // Assegna i ruoli solo ai giocatori (non al narratore)
                 playerIdsToAssign.forEach((id, index) => {
                     updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
-                    updates['players/' + id + '/showRole'] = true; // Mostra subito il ruolo
+                    updates['players/' + id + '/showRole'] = false; // Inizialmente non mostrare
                     updates['players/' + id + '/isAlive'] = true;
-                    updates['players/' + id + '/votedFor'] = '';
-                    updates['players/' + id + '/voteWeight'] = shuffledRoles[index] === "Sindaco" ? 2 : 1;
+                    updates['players/' + id + '/votedFor'] = null;
+                    updates['players/' + id + '/votesReceived'] = 0;
                 });
 
                 await database.ref().update(updates);
                 
-                // Imposta lo stato del gioco
-                await gameRef.set({
-                    phase: "game"
-                });
+                // Dopo 0.5 secondi, imposta showRole a true per tutti i giocatori (più veloce)
+                setTimeout(async () => {
+                    const showRoleUpdates = {};
+                    playerIdsToAssign.forEach(id => {
+                        showRoleUpdates['players/' + id + '/showRole'] = true;
+                    });
+                    await database.ref().update(showRoleUpdates);
+                }, 500);
                 
+                // Imposta lo stato del gioco a "game"
+                await gameStateRef.set("game");
+                
+                // Mostra il pulsante per avviare le votazioni
                 document.getElementById('startVotingButton').style.display = 'block';
                 
             } catch (error) {
@@ -1118,31 +1048,237 @@
             if (!isHost) return;
             
             try {
-                // Resetta eventuali voti precedenti
-                await votesRef.remove();
-                
-                // Resetta i voti dei giocatori
-                const playersSnapshot = await playersRef.once('value');
-                const players = playersSnapshot.val() || {};
+                // Resetta i voti precedenti
+                const snapshot = await playersRef.once('value');
+                const players = snapshot.val() || {};
                 const updates = {};
                 
                 for (const id in players) {
-                    updates['players/' + id + '/votedFor'] = '';
+                    updates['players/' + id + '/votedFor'] = null;
+                    updates['players/' + id + '/votesReceived'] = 0;
                 }
                 
                 await database.ref().update(updates);
                 
-                // Imposta lo stato di votazione
-                await gameRef.set({
-                    phase: "voting"
-                });
+                // Imposta lo stato del gioco a "voting"
+                await gameStateRef.set("voting");
                 
-                document.getElementById('startVotingButton').style.display = 'none';
-                showCustomAlert("Votazione avviata! I giocatori stanno votando.");
+                showCustomAlert("La votazione è iniziata! I giocatori stanno votando.");
                 
             } catch (error) {
                 console.error("Errore:", error);
-                showCustomAlert("Errore nell'avviare la votazione. Riprova!", true);
+                showCustomAlert("Errore nell'avviare la votazione.", true);
+            }
+        }
+
+        async function setupVotingScreen() {
+            const votingOptionsDiv = document.getElementById('votingOptions');
+            votingOptionsDiv.innerHTML = '';
+            
+            const snapshot = await playersRef.once('value');
+            const players = snapshot.val() || {};
+            
+            // Filtra solo i giocatori vivi (escluso se stessi e il narratore)
+            const alivePlayers = Object.entries(players).filter(([id, player]) => 
+                player.isAlive !== false && !player.isHost && id !== playerId
+            );
+            
+            if (alivePlayers.length === 0) {
+                votingOptionsDiv.innerHTML = '<p>Nessun giocatore disponibile per la votazione</p>';
+                document.getElementById('submitVoteButton').style.display = 'none';
+                return;
+            }
+            
+            // Aggiungi opzione per astenersi
+            const abstainOption = document.createElement('div');
+            abstainOption.className = 'voting-option' + (currentVote === 'abstain' ? ' selected' : '');
+            abstainOption.textContent = 'Mi astengo';
+            abstainOption.onclick = () => selectVote('abstain');
+            votingOptionsDiv.appendChild(abstainOption);
+            
+            // Aggiungi i giocatori vivi come opzioni di voto
+            alivePlayers.forEach(([id, player]) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'voting-option' + (currentVote === id ? ' selected' : '');
+                optionDiv.textContent = player.name;
+                optionDiv.onclick = () => selectVote(id);
+                votingOptionsDiv.appendChild(optionDiv);
+            });
+            
+            // Se sei il sindaco, aggiungi un secondo voto
+            if (playerRole === "Sindaco") {
+                document.getElementById('votingInstructions').textContent = "Scegli il giocatore che vuoi eliminare (hai diritto a 2 voti):";
+            } else {
+                document.getElementById('votingInstructions').textContent = "Scegli il giocatore che vuoi eliminare:";
+            }
+            
+            document.getElementById('submitVoteButton').style.display = 'block';
+            document.getElementById('voteResults').style.display = 'none';
+            document.getElementById('confirmEliminationButton').style.display = 'none';
+            document.getElementById('returnToGameButton').style.display = 'none';
+        }
+
+        function selectVote(playerId) {
+            currentVote = playerId;
+            const options = document.querySelectorAll('.voting-option');
+            options.forEach(option => {
+                option.classList.remove('selected');
+                if (option.textContent === (playerId === 'abstain' ? 'Mi astengo' : getPlayerName(playerId))) {
+                    option.classList.add('selected');
+                }
+            });
+        }
+
+        function getPlayerName(playerId) {
+            // Questa funzione verrà implementata con i dati reali quando necessario
+            return playerId;
+        }
+
+        async function submitVote() {
+            if (!currentVote) {
+                showCustomAlert("Seleziona un giocatore o scegli di astenerti!", true);
+                return;
+            }
+            
+            try {
+                // Se sei il sindaco, conta il voto doppio
+                const voteValue = playerRole === "Sindaco" ? 2 : 1;
+                
+                // Aggiorna il tuo voto
+                await currentPlayerRef.update({
+                    votedFor: currentVote === 'abstain' ? null : currentVote
+                });
+                
+                // Se non ti stai astenendo, aggiorna i voti ricevuti dal giocatore scelto
+                if (currentVote !== 'abstain') {
+                    const playerRef = database.ref('players/' + currentVote);
+                    const snapshot = await playerRef.once('value');
+                    const player = snapshot.val();
+                    
+                    await playerRef.update({
+                        votesReceived: (player.votesReceived || 0) + voteValue
+                    });
+                }
+                
+                showCustomAlert("Il tuo voto è stato registrato! Attendi che tutti abbiano votato.");
+                
+                // Se sei l'host, mostra i risultati
+                if (isHost) {
+                    await showVoteResults();
+                }
+                
+            } catch (error) {
+                console.error("Errore:", error);
+                showCustomAlert("Errore nel registrare il voto. Riprova!", true);
+            }
+        }
+
+        async function showVoteResults() {
+            const snapshot = await playersRef.once('value');
+            const players = snapshot.val() || {};
+            
+            // Conta i voti
+            const votes = {};
+            let totalVotes = 0;
+            
+            for (const [id, player] of Object.entries(players)) {
+                if (player.votedFor) {
+                    votes[player.votedFor] = (votes[player.votedFor] || 0) + 1;
+                    totalVotes++;
+                }
+                
+                // Aggiungi i voti ricevuti (per gestire il sindaco)
+                if (player.votesReceived) {
+                    votes[id] = (votes[id] || 0) + player.votesReceived;
+                    totalVotes += player.votesReceived;
+                }
+            }
+            
+            // Ordina i risultati
+            const sortedResults = Object.entries(votes).sort((a, b) => b[1] - a[1]);
+            
+            // Mostra i risultati
+            const votesListDiv = document.getElementById('votesList');
+            votesListDiv.innerHTML = '';
+            
+            if (sortedResults.length === 0) {
+                votesListDiv.innerHTML = '<p>Nessun voto registrato</p>';
+            } else {
+                sortedResults.forEach(([playerId, count]) => {
+                    const playerName = players[playerId]?.name || playerId;
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'vote-result-item';
+                    resultItem.innerHTML = `<span>${playerName}</span> <strong>${count} voti</strong>`;
+                    votesListDiv.appendChild(resultItem);
+                });
+            }
+            
+            document.getElementById('voteResults').style.display = 'block';
+            document.getElementById('submitVoteButton').style.display = 'none';
+            document.getElementById('confirmEliminationButton').style.display = isHost ? 'block' : 'none';
+        }
+
+        async function confirmElimination() {
+            if (!isHost) return;
+            
+            try {
+                const snapshot = await playersRef.once('value');
+                const players = snapshot.val() || {};
+                
+                // Trova il giocatore con più voti
+                let maxVotes = 0;
+                let playersToEliminate = [];
+                
+                for (const [id, player] of Object.entries(players)) {
+                    if (player.votesReceived > maxVotes) {
+                        maxVotes = player.votesReceived;
+                        playersToEliminate = [id];
+                    } else if (player.votesReceived === maxVotes && maxVotes > 0) {
+                        playersToEliminate.push(id);
+                    }
+                }
+                
+                // Se c'è un solo giocatore con il massimo dei voti, eliminarlo
+                if (playersToEliminate.length === 1 && maxVotes > 0) {
+                    const playerId = playersToEliminate[0];
+                    await database.ref('players/' + playerId).update({
+                        isAlive: false
+                    });
+                    
+                    showCustomAlert(`${players[playerId].name} è stato eliminato con ${maxVotes} voti!`);
+                } else if (playersToEliminate.length > 1) {
+                    showCustomAlert("Pareggio! Nessun giocatore è stato eliminato.");
+                } else {
+                    showCustomAlert("Nessun giocatore è stato eliminato.");
+                }
+                
+                // Torna al gioco
+                await returnToGameAfterVoting();
+                
+            } catch (error) {
+                console.error("Errore:", error);
+                showCustomAlert("Errore nel confermare l'eliminazione.", true);
+            }
+        }
+
+        async function returnToGameAfterVoting() {
+            // Resetta i voti e torna alla schermata del gioco
+            const updates = {};
+            const snapshot = await playersRef.once('value');
+            const players = snapshot.val() || {};
+            
+            for (const id in players) {
+                updates['players/' + id + '/votedFor'] = null;
+                updates['players/' + id + '/votesReceived'] = 0;
+            }
+            
+            await database.ref().update(updates);
+            await gameStateRef.set("game");
+            
+            if (isHost) {
+                showScreen('hostScreen');
+            } else {
+                showScreen('roleScreen');
             }
         }
 
@@ -1167,18 +1303,12 @@
                         updates['players/' + id + '/showRole'] = false;
                         updates['players/' + id + '/isHost'] = false;
                         updates['players/' + id + '/isAlive'] = true;
-                        updates['players/' + id + '/votedFor'] = '';
+                        updates['players/' + id + '/votedFor'] = null;
+                        updates['players/' + id + '/votesReceived'] = 0;
                     }
                     
                     await database.ref().update(updates);
-                    
-                    // Resetta lo stato del gioco
-                    await gameRef.set({
-                        phase: "lobby"
-                    });
-                    
-                    // Resetta i voti
-                    await votesRef.remove();
+                    await gameStateRef.set("lobby");
                     
                     document.querySelector('.custom-alert')?.remove();
                     showCustomAlert("Partita resettata! Ora puoi assegnare un nuovo narratore.");
@@ -1228,14 +1358,14 @@
         // Inizializza il gioco
         document.addEventListener('DOMContentLoaded', () => {
             // Verifica se c'è un nome nel localStorage per un riconoscimento più rapido
-            const savedName = localStorage.getItem('lupusPlayerName');
+            const savedName = localStorage.getItem('lupusCugginosoPlayerName');
             if (savedName) {
                 document.getElementById('playerName').value = savedName;
             }
             
             // Salva il nome quando viene inserito
             document.getElementById('playerName').addEventListener('change', function() {
-                localStorage.setItem('lupusPlayerName', this.value.trim());
+                localStorage.setItem('lupusCugginosoPlayerName', this.value.trim());
             });
         });
     </script>
