@@ -1,388 +1,322 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LUPUS CUGGINOSO</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative:wght@700&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUPUS CUGGINOSO</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative:wght@700&display=swap');
 
-:root {
-    --primary-color: #f8bb22;
-    --secondary-color: #1a1a2e;
-    --accent-color: #4a4a6a;
-    --text-color: #e6e6e6;
-    --parchment-color: #f0e6d2;
-    --success-color: #4CAF50;
-    --danger-color: #a52a2a;
-    --info-color: #3f51b5;
-}
+        :root {
+            --primary-color: #ffb400;
+            --secondary-color: #121212;
+            --accent-color: #3e3e5e;
+            --text-color: #f5f5f5;
+            --parchment-color: #f8f1e4;
+            --success-color: #4CAF50;
+            --danger-color: #c62828;
+            --info-color: #3f51b5;
+        }
 
-* {
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-}
+        * { box-sizing: border-box; transition: all 0.2s ease; }
 
-body {
-    font-family: 'MedievalSharp', cursive;
-    text-align: center;
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-    margin: 0;
-    padding: 20px;
-    background-image: url('https://images.unsplash.com/photo-1518562180175-34a163b1a9a9?auto=format&fit=crop&w=1350&q=80');
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center;
-    min-height: 100vh;
-    overflow-x: hidden;
-    line-height: 1.6;
-}
+        body {
+            font-family: 'MedievalSharp', cursive;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            background-image: url('https://images.unsplash.com/photo-1518562180175-34a163b1a9a9?auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            min-height: 100vh;
+        }
 
-/* Schermate */
-.screen {
-    display: none;
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 30px;
-    background-color: rgba(26, 26, 46, 0.95);
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-    border: 2px solid var(--accent-color);
-    animation: fadeIn 0.5s ease-out;
-}
+        .screen {
+            display: none;
+            max-width: 850px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: rgba(20, 20, 30, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--accent-color);
+            animation: fadeIn 0.5s ease-out;
+        }
 
-.active { display: block; }
+        .active { display: block; }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-h1 {
-    color: var(--primary-color);
-    text-shadow: 2px 2px 4px #000;
-    font-size: clamp(2em, 5vw, 3em);
-    margin-bottom: 30px;
-    font-family: 'Cinzel Decorative', cursive;
-}
+        h1 {
+            color: var(--primary-color);
+            font-family: 'Cinzel Decorative', cursive;
+            text-shadow: 2px 2px 4px #000;
+            font-size: clamp(2rem, 4vw, 3rem);
+        }
 
-button {
-    background: linear-gradient(to bottom, var(--primary-color), #d89e1a);
-    color: var(--secondary-color);
-    border: none;
-    padding: 15px 30px;
-    margin: 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1.1rem;
-    font-weight: bold;
-    font-family: 'MedievalSharp', cursive;
-    letter-spacing: 1px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    min-width: 200px;
-    position: relative;
-    overflow: hidden;
-}
+        button {
+            background: linear-gradient(to bottom, var(--primary-color), #d68900);
+            color: var(--secondary-color);
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-family: 'MedievalSharp', cursive;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
 
-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-    background: linear-gradient(to bottom, #ffcc33, #e6b020);
-}
+        button:hover { background: linear-gradient(to bottom, #ffd54f, #ffb300); transform: translateY(-2px); }
 
-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
+        input {
+            padding: 12px;
+            width: min(80%, 350px);
+            border-radius: 8px;
+            border: 2px solid var(--accent-color);
+            background-color: rgba(255,255,255,0.95);
+            text-align: center;
+            font-family: 'MedievalSharp', cursive;
+        }
 
-input {
-    padding: 12px;
-    margin: 15px;
-    width: min(80%, 350px);
-    border-radius: 8px;
-    border: 2px solid var(--accent-color);
-    background-color: rgba(255, 255, 255, 0.9);
-    color: var(--secondary-color);
-    font-size: 1rem;
-    font-family: 'MedievalSharp', cursive;
-    text-align: center;
-}
+        .parchment-effect {
+            background: var(--parchment-color) url('https://www.transparenttextures.com/patterns/old-paper.png');
+            color: #3a3a3a;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.2);
+            margin: 20px 0;
+        }
 
-/* Lista giocatori */
-#playersList div, #assignedRoles div, #voteList div {
-    padding: 12px;
-    margin: 10px 0;
-    background-color: rgba(74, 74, 106, 0.5);
-    border-left: 4px solid var(--primary-color);
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-}
+        #playersList div, #assignedRoles div {
+            padding: 10px;
+            margin: 8px 0;
+            background-color: rgba(62, 62, 94, 0.6);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.vote-btn {
-    background: linear-gradient(to bottom, var(--danger-color), #8b0000);
-    color: white;
-    padding: 8px 15px;
-    font-size: 0.9rem;
-    border-radius: 6px;
-}
-.vote-btn:hover {
-    background: linear-gradient(to bottom, #c52d2d, #a00000);
-}
+        .vote-btn {
+            background: var(--info-color);
+            color: white;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            border-radius: 5px;
+        }
+        .vote-btn:hover { background: #5c6bc0; }
 
-/* Effetto pergamena */
-.parchment-effect {
-    background-image: url('https://www.transparenttextures.com/patterns/old-paper.png');
-    background-color: var(--parchment-color);
-    color: #3a3a3a;
-    padding: 20px;
-    border-radius: 10px;
-    border: 1px solid #c9b7a2;
-    margin: 20px 0;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-    button { padding: 12px 20px; font-size: 1rem; min-width: 160px; }
-    #playersList div, #assignedRoles div, #voteList div {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-}
-</style>
+        .eliminated { opacity: 0.6; text-decoration: line-through; color: #ff6f61; }
+    </style>
 </head>
 <body>
-
-<!-- HOME -->
-<div id="homeScreen" class="screen active">
-    <h1>LUPUS CUGGINOSO</h1>
-    <div class="parchment-effect">
-        <p>Il gioco del lupo mannaro in versione cugginese</p>
+    <!-- Home -->
+    <div id="homeScreen" class="screen active">
+        <h1>LUPUS CUGGINOSO</h1>
+        <div class="parchment-effect">Il gioco del lupo mannaro in versione cugginese</div>
+        <button onclick="showScreen('joinScreen')">ENTRA NEL GIOCO</button>
     </div>
-    <button onclick="showScreen('joinScreen')">ENTRA NEL GIOCO</button>
-</div>
 
-<!-- JOIN -->
-<div id="joinScreen" class="screen">
-    <h1>COME TI CHIAMI?</h1>
-    <div class="parchment-effect">
-        <input type="text" id="playerName" placeholder="Il tuo nome" maxlength="20">
+    <!-- Join -->
+    <div id="joinScreen" class="screen">
+        <h1>COME TI CHIAMI?</h1>
+        <div class="parchment-effect"><input type="text" id="playerName" maxlength="20"></div>
+        <button onclick="joinGame()">ENTRA IN PARTITA</button>
     </div>
-    <button onclick="joinGame()">ENTRA IN PARTITA</button>
-</div>
 
-<!-- LOBBY -->
-<div id="lobbyScreen" class="screen">
-    <h1>IN ATTESA DI GIOCATORI...</h1>
-    <div class="parchment-effect">
-        <div id="playersList"></div>
-        <div class="player-count" id="playerCount">0 giocatori in lobby</div>
+    <!-- Lobby -->
+    <div id="lobbyScreen" class="screen">
+        <h1>IN ATTESA DI GIOCATORI...</h1>
+        <div class="parchment-effect">
+            <div id="playersList"></div>
+            <div id="playerCount">0 giocatori in lobby</div>
+        </div>
+        <button id="hostButton" onclick="becomeHost()">DIVENTA NARRATORE</button>
     </div>
-    <button id="hostButton" onclick="becomeHost()">DIVENTA NARRATORE</button>
-</div>
 
-<!-- HOST -->
-<div id="hostScreen" class="screen">
-    <h1>SEI IL NARRATORE</h1>
-    <div class="parchment-effect">
-        <div id="assignedRoles"></div>
-        <div class="player-count" id="hostPlayerCount">0 giocatori in lobby</div>
+    <!-- Host -->
+    <div id="hostScreen" class="screen">
+        <h1>SEI IL NARRATORE</h1>
+        <div class="parchment-effect">
+            <div id="assignedRoles"></div>
+            <div id="hostPlayerCount">0 giocatori in lobby</div>
+        </div>
+        <button onclick="startGame()">AVVIA PARTITA</button>
+        <button id="startVoteButton" style="display:none;" onclick="startVoting()">AVVIA VOTAZIONI</button>
+        <button id="endVoteButton" style="display:none;" onclick="endVoting()">TERMINA VOTAZIONI</button>
+        <button onclick="resetGame()" style="background:var(--danger-color);color:white;">RESETTA PARTITA</button>
     </div>
-    <button id="startGameButton" onclick="startGame()">AVVIA PARTITA</button>
-    <button id="startVotingButton" onclick="startVoting()" style="display:none;">AVVIA VOTAZIONI</button>
-    <button onclick="resetGame()">RESETTA PARTITA</button>
-</div>
 
-<!-- ROLE -->
-<div id="roleScreen" class="screen">
-    <h1>IL TUO RUOLO È:</h1>
-    <div class="role-container">
-        <img id="roleImage" class="role-image" src="" alt="Ruolo">
-        <div id="playerRole" class="role-display">...</div>
-        <div id="roleDescription" class="role-description parchment-effect"></div>
+    <!-- Role -->
+    <div id="roleScreen" class="screen">
+        <h1>IL TUO RUOLO È:</h1>
+        <div class="parchment-effect" id="roleDescriptionContainer"></div>
     </div>
-</div>
 
-<!-- VOTING -->
-<div id="voteScreen" class="screen">
-    <h1>VOTA UN GIOCATORE</h1>
-    <div id="voteList" class="parchment-effect"></div>
-</div>
+    <!-- Voting -->
+    <div id="voteScreen" class="screen">
+        <h1>VOTA UN GIOCATORE</h1>
+        <div id="voteList" class="parchment-effect"></div>
+    </div>
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = { /* tu config qui */ };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-<script>
-// CONFIG FIREBASE
-const firebaseConfig = {
-    apiKey: "AIzaSyAsTO8sYN1M7A1aK238RiYXDef4MQkw-AI",
-    authDomain: "lupus-764f6.firebaseapp.com",
-    databaseURL: "https://lupus-764f6-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "lupus-764f6",
-    storageBucket: "lupus-764f6.appspot.com",
-    messagingSenderId: "695119804153",
-    appId: "1:695119804153:web:d5cdcf9adbf633adb25428"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+        let playerId, playerName, isHost = false;
+        let playersRef, currentPlayerRef;
 
-// VARIABILI
-let playerId, playerName = "", isHost = false;
-let playersRef, currentPlayerRef, votesRef;
-
-// MOSTRA SCHERMATA
-function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-}
-
-// ALERT
-function showCustomAlert(msg) { alert(msg); }
-
-// JOIN GAME
-async function joinGame() {
-    playerName = document.getElementById('playerName').value.trim();
-    if (!playerName) return showCustomAlert("Inserisci un nome!");
-    playerId = Date.now().toString();
-    playersRef = db.ref('players');
-    currentPlayerRef = db.ref('players/' + playerId);
-    await currentPlayerRef.set({ name: playerName, role: '', isHost: false, showRole: false });
-    showScreen('lobbyScreen');
-    listenForPlayers();
-    listenForRoleAssignment();
-}
-
-// LISTEN PLAYERS
-function listenForPlayers() {
-    playersRef.on('value', snap => {
-        const players = snap.val() || {};
-        let html = "";
-        let count = 0, hostExists = false;
-        for (let id in players) {
-            html += `<div>${players[id].name}${players[id].isHost ? ' (NARRATORE)' : ''}</div>`;
-            if (players[id].isHost) hostExists = true;
-            count++;
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
-        document.getElementById('playersList').innerHTML = html;
-        document.getElementById('playerCount').textContent = `${count} giocatori in lobby`;
-        document.getElementById('hostButton').style.display = hostExists ? 'none' : 'block';
-    });
-}
 
-// BECOME HOST
-async function becomeHost() {
-    await currentPlayerRef.update({ isHost: true, role: 'Narratore', showRole: true });
-    isHost = true;
-    showScreen('hostScreen');
-    listenForRoles();
-}
+        async function joinGame(){
+            const nameInput = document.getElementById('playerName');
+            playerName = nameInput.value.trim();
+            if(!playerName) return alert("Inserisci un nome!");
 
-// LISTEN ROLES
-function listenForRoles() {
-    playersRef.on('value', snap => {
-        const players = snap.val() || {};
-        let html = "<h3>RUOLI:</h3>";
-        for (let id in players) {
-            html += `<div>${players[id].name}: <strong>${players[id].role || '...'}</strong></div>`;
+            playerId = Date.now().toString();
+            playersRef = db.ref('players');
+            currentPlayerRef = db.ref('players/'+playerId);
+
+            await currentPlayerRef.set({name:playerName,role:'',isHost:false,showRole:false,eliminated:false});
+            showScreen('lobbyScreen');
+            listenForPlayers();
+            listenForRoleAssignment();
         }
-        document.getElementById('assignedRoles').innerHTML = html;
-    });
-}
 
-// START GAME
-async function startGame() {
-    const snap = await playersRef.once('value');
-    const players = snap.val() || {};
-    const ids = Object.keys(players).filter(id => !players[id].isHost);
-    if (ids.length < 3) return showCustomAlert("Minimo 3 giocatori!");
-    const roles = ["Lupo", "Puttana", "Investigatore", "Vanessa", "Sindaco", "Contadino"];
-    while (roles.length < ids.length) roles.push("Contadino");
-    ids.forEach((id, i) => {
-        db.ref('players/' + id).update({ role: roles[i], showRole: true });
-    });
-    document.getElementById('startVotingButton').style.display = "inline-block";
-}
-
-// VOTING SYSTEM
-function startVoting() {
-    db.ref('votes').remove();
-    db.ref('gameState').set({ voting: true });
-}
-
-function listenForVoting() {
-    db.ref('gameState/voting').on('value', snap => {
-        if (snap.val() === true) {
-            if (!isHost) showVotingScreen();
+        function listenForPlayers(){
+            playersRef.on('value', snap=>{
+                const players = snap.val()||{};
+                const list = document.getElementById('playersList');
+                list.innerHTML='';
+                let count=0, hostExists=false;
+                for(const [id,p] of Object.entries(players)){
+                    const div=document.createElement('div');
+                    div.textContent = p.name + (p.eliminated?' (Eliminato)':'') + (p.isHost?' [Narratore]':'');
+                    if(p.isHost) hostExists=true;
+                    list.appendChild(div);
+                    count++;
+                }
+                document.getElementById('playerCount').textContent = count+" giocatori in lobby";
+                document.getElementById('hostButton').style.display = hostExists?'none':'block';
+            });
         }
-    });
-}
 
-function showVotingScreen() {
-    playersRef.once('value', snap => {
-        const players = snap.val() || {};
-        let html = "";
-        for (let id in players) {
-            if (id !== playerId && !players[id].isHost) {
-                html += `<div>${players[id].name} <button class="vote-btn" onclick="votePlayer('${id}')">VOTA</button></div>`;
+        function listenForRoleAssignment(){
+            currentPlayerRef.on('value', snap=>{
+                const p=snap.val(); if(!p) return;
+                if(p.isHost){ isHost=true; showScreen('hostScreen'); listenForRoles(); }
+                else if(p.role && p.showRole){ document.getElementById('roleDescriptionContainer').textContent = p.role; showScreen('roleScreen'); }
+                if(p.voting){ showVoteScreen(); }
+            });
+        }
+
+        function listenForRoles(){
+            playersRef.on('value', snap=>{
+                const players=snap.val()||{};
+                const div=document.getElementById('assignedRoles');
+                div.innerHTML='<h2>RUOLI ASSEGNATI:</h2>';
+                let count=0;
+                for(const p of Object.values(players)){
+                    div.innerHTML+=`<div>${p.name}${p.eliminated?' (Eliminato)':''}: <b>${p.role||'...'}</b></div>`;
+                    count++;
+                }
+                document.getElementById('hostPlayerCount').textContent = count+" giocatori in lobby";
+            });
+        }
+
+        async function becomeHost(){
+            await currentPlayerRef.update({isHost:true,role:'Narratore',showRole:true});
+        }
+
+        async function startGame(){
+            const snap=await playersRef.once('value');
+            const players=snap.val()||{};
+            let ids=Object.keys(players).filter(id=>!players[id].isHost);
+            if(ids.length<3) return alert("Minimo 3 giocatori!");
+            let roles=["Lupo","Puttana","Investigatore","Vanessa","Sindaco","Contadino"];
+            while(roles.length<ids.length) roles.push("Contadino");
+            roles=shuffle(roles);
+            let updates={};
+            ids.forEach((id,i)=>{ updates['players/'+id+'/role']=roles[i]; updates['players/'+id+'/showRole']=true; });
+            await db.ref().update(updates);
+            if(isHost) document.getElementById('startVoteButton').style.display='inline-block';
+        }
+
+        function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a;}
+
+        async function startVoting(){
+            await db.ref('voting').set({active:true,votes:{}});
+            const snap=await playersRef.once('value');
+            for(const [id,p] of Object.entries(snap.val()||{})){
+                await db.ref('players/'+id).update({voting:!p.isHost && !p.eliminated});
             }
+            document.getElementById('endVoteButton').style.display='inline-block';
         }
-        document.getElementById('voteList').innerHTML = html;
-        showScreen('voteScreen');
-    });
-}
 
-function votePlayer(targetId) {
-    db.ref('votes/' + playerId).set(targetId);
-    showCustomAlert("Voto registrato!");
-    showScreen('roleScreen');
-}
-
-// END VOTING
-async function endVoting() {
-    const snap = await db.ref('votes').once('value');
-    const votes = snap.val() || {};
-    const tally = {};
-    for (let voter in votes) {
-        tally[votes[voter]] = (tally[votes[voter]] || 0) + 1;
-    }
-    let maxVotes = 0, eliminated = null;
-    for (let id in tally) {
-        if (tally[id] > maxVotes) {
-            maxVotes = tally[id];
-            eliminated = id;
+        function showVoteScreen(){
+            showScreen('voteScreen');
+            playersRef.once('value').then(snap=>{
+                const players=snap.val()||{};
+                const voteList=document.getElementById('voteList');
+                voteList.innerHTML='';
+                for(const [id,p] of Object.entries(players)){
+                    if(!p.isHost && !p.eliminated){
+                        const btn=document.createElement('button');
+                        btn.className='vote-btn';
+                        btn.textContent=p.name;
+                        btn.onclick=()=>castVote(id);
+                        voteList.appendChild(btn);
+                    }
+                }
+            });
         }
-    }
-    if (eliminated) {
-        await db.ref('players/' + eliminated).remove();
-        showCustomAlert("Giocatore eliminato!");
-    }
-    db.ref('gameState').set({ voting: false });
-}
 
-// RESET
-function resetGame() {
-    db.ref('players').remove();
-    db.ref('votes').remove();
-    db.ref('gameState').remove();
-    showScreen('lobbyScreen');
-}
+        async function castVote(targetId){
+            const snap=await db.ref('voting/votes/'+targetId).once('value');
+            const currentVotes=snap.val()||0;
+            await db.ref('voting/votes/'+targetId).set(currentVotes+1);
+            await currentPlayerRef.update({voting:false});
+            alert("Voto inviato!");
+        }
 
-// LISTEN ROLE ASSIGNMENT & VOTING
-function listenForRoleAssignment() {
-    currentPlayerRef.on('value', snap => {
-        const p = snap.val();
-        if (!p) return;
-        if (p.isHost) { isHost = true; showScreen('hostScreen'); listenForRoles(); }
-        else if (p.role && p.showRole) { document.getElementById('playerRole').textContent = p.role; showScreen('roleScreen'); }
-    });
-    listenForVoting();
-}
+        async function endVoting(){
+            const snap=await db.ref('voting/votes').once('value');
+            const votes=snap.val()||{};
+            let max=0, eliminatedId=null;
+            for(const [id,count] of Object.entries(votes)){
+                if(count>max){ max=count; eliminatedId=id; }
+            }
+            if(eliminatedId) await db.ref('players/'+eliminatedId).update({eliminated:true});
+            await db.ref('voting').set({active:false,votes:{}});
+            alert("Votazioni terminate!");
+            document.getElementById('endVoteButton').style.display='none';
+        }
 
-</script>
+        async function resetGame(){
+            const snap=await playersRef.once('value');
+            let updates={};
+            for(const id in snap.val()||{}){
+                updates['players/'+id] = null;
+            }
+            await db.ref().update(updates);
+        }
+
+        window.addEventListener('beforeunload',()=>{ if(currentPlayerRef) currentPlayerRef.remove(); });
+    </script>
 </body>
 </html>
