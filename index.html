@@ -310,26 +310,6 @@
             background: linear-gradient(to bottom, #5c6bc0, #3949ab);
         }
         
-        /* Stili per la votazione */
-        .vote-btn {
-            background: linear-gradient(to bottom, var(--warning-color), #e68a00);
-            color: var(--secondary-color);
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            margin-left: 10px;
-            border-radius: 6px;
-            flex-shrink: 0;
-        }
-        
-        .vote-btn:hover {
-            background: linear-gradient(to bottom, #ffa726, #f57c00);
-        }
-        
-        .voted-player {
-            background-color: rgba(165, 42, 42, 0.3);
-            border-left: 4px solid var(--danger-color);
-        }
-        
         /* Animazioni e effetti aggiuntivi */
         .pulse {
             animation: pulse 2s infinite;
@@ -370,7 +350,7 @@
                 gap: 8px;
             }
             
-            .make-host-btn, .assign-host-btn, .vote-btn {
+            .make-host-btn, .assign-host-btn {
                 margin-left: 0;
                 margin-top: 8px;
                 align-self: flex-end;
@@ -411,7 +391,6 @@
             <div class="player-count" id="hostPlayerCount">0 giocatori in lobby</div>
         </div>
         <button id="startGameButton" onclick="startGame()" class="pulse">AVVIA PARTITA</button>
-        <button id="startVotingButton" onclick="startVoting()" style="display:none;">AVVIA VOTAZIONI</button>
         <button onclick="resetGame()" class="reset-btn">RESETTA PARTITA</button>
     </div>
 
@@ -422,24 +401,6 @@
             <div id="playerRole" class="role-display">...</div>
             <div id="roleDescription" class="role-description parchment-effect"></div>
         </div>
-    </div>
-
-    <!-- Schermata di voto -->
-    <div id="voteScreen" class="screen">
-        <h1>VOTAZIONI</h1>
-        <div class="parchment-effect">
-            <p>Scegli il giocatore da eliminare:</p>
-            <div id="votePlayersList"></div>
-        </div>
-    </div>
-
-    <!-- Schermata risultati votazione (solo per narratore) -->
-    <div id="resultsScreen" class="screen">
-        <h1>RISULTATI VOTAZIONE</h1>
-        <div class="parchment-effect">
-            <div id="voteResults"></div>
-        </div>
-        <button onclick="endVoting()">TERMINA VOTAZIONI</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -463,7 +424,6 @@
         // Variabili globali
         let playerId;
         let isHost = false;
-        let gameStarted = false;
         const roles = {
             "Lupo": {
                 description: "Il tuo scopo è eliminare tutti i Villici.",
@@ -498,7 +458,6 @@
         const baseRoles = ["Lupo", "Puttana", "Investigatore", "Vanessa", "Sindaco", "Contadino"];
         let playersRef;
         let currentPlayerRef;
-        let votingRef;
         let playerName = "";
 
         // Mostra alert personalizzato
@@ -540,7 +499,6 @@
 
                 playerId = Date.now().toString();
                 playersRef = database.ref('players');
-                votingRef = database.ref('voting');
                 currentPlayerRef = database.ref('players/' + playerId);
                 
                 // Controlla se il nome esiste già tra i giocatori attivi
@@ -564,9 +522,7 @@
                             role: '',
                             isHost: existingPlayer.isHost,
                             showRole: false,
-                            timestamp: firebase.database.ServerValue.TIMESTAMP,
-                            votedFor: '',
-                            isEliminated: false
+                            timestamp: firebase.database.ServerValue.TIMESTAMP
                         });
                     } 
                     // Se il giocatore esiste e ha già un ruolo assegnato (partita in corso)
@@ -581,9 +537,7 @@
                                 role: existingPlayer.role,
                                 isHost: existingPlayer.isHost,
                                 showRole: existingPlayer.showRole,
-                                timestamp: firebase.database.ServerValue.TIMESTAMP,
-                                votedFor: '',
-                                isEliminated: existingPlayer.isEliminated
+                                timestamp: firebase.database.ServerValue.TIMESTAMP
                             });
                         } else {
                             showCustomAlert("Nome già in uso da un giocatore attivo! Scegli un altro nome.", true);
@@ -598,9 +552,7 @@
                         role: '',
                         isHost: false,
                         showRole: false,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP,
-                        votedFor: '',
-                        isEliminated: false
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
                     });
                 }
 
@@ -609,7 +561,6 @@
                 listenForPlayers();
                 listenForRoleAssignment();
                 listenForGameReset();
-                listenForVoting();
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -647,17 +598,11 @@
                 let playerCount = 0;
                 
                 for (const [id, player] of Object.entries(players)) {
-                    if (player.isEliminated) continue;
-                    
                     const playerDiv = document.createElement('div');
                     playerDiv.innerHTML = `${player.name} ${player.isHost ? '<span style="color:var(--primary-color)">(NARRATORE)</span>' : ''}`;
                     
-                    if (gameStarted && player.role) {
-                        playerDiv.innerHTML += ` <span style="color:var(--accent-color)">(${player.role})</span>`;
-                    }
-                    
                     // Aggiungi pulsante "Rendi narratore" solo per l'host e se non è già narratore
-                    if (isHost && !player.isHost && !gameStarted) {
+                    if (isHost && !player.isHost) {
                         const assignHostBtn = document.createElement('button');
                         assignHostBtn.className = 'assign-host-btn';
                         assignHostBtn.textContent = 'Assegna narratore';
@@ -672,7 +617,7 @@
                 }
 
                 updatePlayerCount(playerCount);
-                document.getElementById('hostButton').style.display = (hostExists || gameStarted) ? 'none' : 'block';
+                document.getElementById('hostButton').style.display = hostExists ? 'none' : 'block';
             });
         }
 
@@ -701,33 +646,7 @@
                 
                 // Se il giocatore non ha più un ruolo (reset del gioco)
                 if (!player.role && !player.isHost) {
-                    gameStarted = false;
                     showScreen('lobbyScreen');
-                }
-            });
-        }
-
-        function listenForVoting() {
-            votingRef.on('value', (snapshot) => {
-                const votingData = snapshot.val();
-                if (!votingData) return;
-                
-                if (votingData.active) {
-                    // Votazione attiva
-                    if (isHost) {
-                        // Mostra risultati al narratore
-                        updateVotingResults(votingData.votes || {});
-                        showScreen('resultsScreen');
-                    } else {
-                        // Mostra schermata di voto ai giocatori
-                        loadVotingPlayers();
-                        showScreen('voteScreen');
-                    }
-                } else {
-                    // Votazione terminata
-                    if (!isHost) {
-                        showScreen('roleScreen');
-                    }
                 }
             });
         }
@@ -778,8 +697,6 @@
                     updates['players/' + id + '/isHost'] = false;
                     updates['players/' + id + '/role'] = '';
                     updates['players/' + id + '/showRole'] = false;
-                    updates['players/' + id + '/votedFor'] = '';
-                    updates['players/' + id + '/isEliminated'] = false;
                 }
                 
                 // Imposta il nuovo host
@@ -789,21 +706,13 @@
                 
                 await database.ref().update(updates);
                 
-                // Resetta lo stato di votazione
-                await votingRef.set({
-                    active: false,
-                    votes: {}
-                });
-                
                 // Se ero io l'host precedente, torno alla lobby
                 if (currentPlayerRef.key === newHostId) {
                     isHost = true;
-                    gameStarted = false;
                     showScreen('hostScreen');
                     listenForRoles();
                 } else {
                     isHost = false;
-                    gameStarted = false;
                     showScreen('lobbyScreen');
                 }
                 
@@ -824,9 +733,7 @@
                 let playerCount = 0;
                 
                 for (const [id, player] of Object.entries(players)) {
-                    if (player.isEliminated) {
-                        assignedRolesDiv.innerHTML += `<div class="eliminated">${player.name}: <strong>${player.role || '...'} (ELIMINATO)</strong></div>`;
-                    } else if (!player.isHost) {
+                    if (!player.isHost) {
                         assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role || '...in attesa...'}</strong></div>`;
                         playerCount++;
                     }
@@ -863,24 +770,11 @@
                 playerIdsToAssign.forEach((id, index) => {
                     updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
                     updates['players/' + id + '/showRole'] = false; // Inizialmente non mostrare
-                    updates['players/' + id + '/votedFor'] = '';
-                    updates['players/' + id + '/isEliminated'] = false;
                 });
 
                 await database.ref().update(updates);
                 
-                // Resetta lo stato di votazione
-                await votingRef.set({
-                    active: false,
-                    votes: {}
-                });
-                
-                gameStarted = true;
-                
-                // Mostra il pulsante per avviare le votazioni
-                document.getElementById('startVotingButton').style.display = 'inline-block';
-                
-                // Dopo 0.5 secondi, imposta showRole a true per tutti i giocatori
+                // Dopo 0.5 secondi, imposta showRole a true per tutti i giocatori (più veloce)
                 setTimeout(async () => {
                     const showRoleUpdates = {};
                     playerIdsToAssign.forEach(id => {
@@ -895,189 +789,14 @@
             }
         }
 
-        async function startVoting() {
-            if (!isHost) return;
-            
-            try {
-                // Resetta i voti precedenti
-                await votingRef.set({
-                    active: true,
-                    votes: {}
-                });
-                
-                showCustomAlert("Votazioni avviate! I giocatori stanno votando.");
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nell'avvio delle votazioni.", true);
-            }
-        }
-
-        async function loadVotingPlayers() {
-            const snapshot = await playersRef.once('value');
-            const players = snapshot.val() || {};
-            const votePlayersList = document.getElementById('votePlayersList');
-            votePlayersList.innerHTML = '';
-            
-            for (const [id, player] of Object.entries(players)) {
-                if (!player.isEliminated && !player.isHost && id !== playerId) {
-                    const playerDiv = document.createElement('div');
-                    playerDiv.innerHTML = `${player.name} ${player.role ? `<span style="color:var(--accent-color)">(${player.role})</span>` : ''}`;
-                    
-                    const voteBtn = document.createElement('button');
-                    voteBtn.className = 'vote-btn';
-                    voteBtn.textContent = 'VOTA';
-                    voteBtn.onclick = () => castVote(id);
-                    playerDiv.appendChild(voteBtn);
-                    
-                    votePlayersList.appendChild(playerDiv);
-                }
-            }
-        }
-
-        async function castVote(targetId) {
-            try {
-                await currentPlayerRef.update({
-                    votedFor: targetId
-                });
-                
-                await votingRef.child('votes').update({
-                    [playerId]: targetId
-                });
-                
-                showCustomAlert("Hai votato con successo!");
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nel registrare il tuo voto.", true);
-            }
-        }
-
-        async function updateVotingResults(votes) {
-            const snapshot = await playersRef.once('value');
-            const players = snapshot.val() || {};
-            const voteResults = document.getElementById('voteResults');
-            voteResults.innerHTML = '';
-            
-            // Conta i voti
-            const voteCounts = {};
-            for (const voterId in votes) {
-                const votedId = votes[voterId];
-                if (voteCounts[votedId]) {
-                    voteCounts[votedId]++;
-                } else {
-                    voteCounts[votedId] = 1;
-                }
-            }
-            
-            // Mostra i risultati
-            for (const [id, player] of Object.entries(players)) {
-                if (!player.isEliminated && !player.isHost) {
-                    const voteDiv = document.createElement('div');
-                    voteDiv.innerHTML = `${player.name}: <strong>${voteCounts[id] || 0} voti</strong>`;
-                    voteResults.appendChild(voteDiv);
-                }
-            }
-        }
-
-        async function endVoting() {
-            if (!isHost) return;
-            
-            try {
-                // Ottieni i voti
-                const votesSnapshot = await votingRef.child('votes').once('value');
-                const votes = votesSnapshot.val() || {};
-                
-                // Conta i voti
-                const voteCounts = {};
-                for (const voterId in votes) {
-                    const votedId = votes[voterId];
-                    if (voteCounts[votedId]) {
-                        voteCounts[votedId]++;
-                    } else {
-                        voteCounts[votedId] = 1;
-                    }
-                }
-                
-                // Trova il giocatore con più voti
-                let maxVotes = 0;
-                let eliminatedId = null;
-                for (const id in voteCounts) {
-                    if (voteCounts[id] > maxVotes) {
-                        maxVotes = voteCounts[id];
-                        eliminatedId = id;
-                    }
-                }
-                
-                if (eliminatedId) {
-                    // Elimina il giocatore
-                    await database.ref('players/' + eliminatedId).update({
-                        isEliminated: true
-                    });
-                    
-                    const playerSnapshot = await database.ref('players/' + eliminatedId).once('value');
-                    const player = playerSnapshot.val();
-                    
-                    showCustomAlert(`${player.name} (${player.role}) è stato eliminato con ${maxVotes} voti!`);
-                } else {
-                    showCustomAlert("Nessun giocatore è stato votato.");
-                }
-                
-                // Termina la votazione
-                await votingRef.set({
-                    active: false,
-                    votes: {}
-                });
-                
-                // Torna alla schermata host
-                showScreen('hostScreen');
-                
-                // Controlla se il gioco è finito
-                checkGameEnd();
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nel terminare le votazioni.", true);
-            }
-        }
-
-        async function checkGameEnd() {
-            const snapshot = await playersRef.once('value');
-            const players = snapshot.val() || {};
-            
-            let wolves = 0;
-            let villagers = 0;
-            let totalActive = 0;
-            
-            for (const player of Object.values(players)) {
-                if (player.isEliminated) continue;
-                
-                totalActive++;
-                if (player.role === "Lupo") wolves++;
-                else villagers++;
-            }
-            
-            // Se tutti i lupi sono eliminati, i villici vincono
-            if (wolves === 0) {
-                showCustomAlert("I VILLICI HANNO VINTO! Tutti i lupi sono stati eliminati.");
-                return;
-            }
-            
-            // Se i lupi sono pari o più dei villici, i lupi vincono
-            if (wolves >= villagers) {
-                showCustomAlert("I LUPI HANNO VINTO! Hanno raggiunto la maggioranza.");
-            }
-        }
-
         async function resetGame() {
             if (!isHost) return;
             
             try {
-                const alertDiv = showCustomAlert("Vuoi resettare completamente la partita?", false);
+                const alertDiv = showCustomAlert("Vuoi resettare la partita e assegnare un nuovo narratore?", false);
                 alertDiv.innerHTML = `
-                    <p>Vuoi resettare completamente la partita?</p>
-                    <p><small>Tutti i ruoli e i progressi verranno cancellati.</small></p>
-                    <button onclick="confirmReset()">CONFERMA RESET</button>
+                    <p>Vuoi resettare la partita e assegnare un nuovo narratore?</p>
+                    <button onclick="confirmReset()">CONFERMA</button>
                     <button onclick="this.parentNode.remove()">ANNULLA</button>
                 `;
                 
@@ -1090,21 +809,12 @@
                         updates['players/' + id + '/role'] = '';
                         updates['players/' + id + '/showRole'] = false;
                         updates['players/' + id + '/isHost'] = false;
-                        updates['players/' + id + '/votedFor'] = '';
-                        updates['players/' + id + '/isEliminated'] = false;
                     }
                     
                     await database.ref().update(updates);
                     
-                    // Resetta lo stato di votazione
-                    await votingRef.set({
-                        active: false,
-                        votes: {}
-                    });
-                    
-                    gameStarted = false;
                     document.querySelector('.custom-alert')?.remove();
-                    showCustomAlert("Partita resettata completamente! Ora puoi iniziare una nuova partita.");
+                    showCustomAlert("Partita resettata! Ora puoi assegnare un nuovo narratore.");
                 };
                 
             } catch (error) {
