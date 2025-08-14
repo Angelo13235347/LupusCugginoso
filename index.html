@@ -16,7 +16,6 @@
             --success-color: #4CAF50;
             --danger-color: #a52a2a;
             --info-color: #3f51b5;
-            --night-color: #0a0a1a;
         }
         
         * {
@@ -81,13 +80,6 @@
             margin-bottom: 30px;
             letter-spacing: 2px;
             font-family: 'Cinzel Decorative', cursive;
-        }
-        
-        h2 {
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            margin: 20px 0;
-            text-shadow: 1px 1px 2px #000;
         }
         
         button {
@@ -318,61 +310,6 @@
             background: linear-gradient(to bottom, #5c6bc0, #3949ab);
         }
         
-        /* Stili per le votazioni */
-        .voting-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        
-        .voting-option {
-            padding: 12px;
-            background-color: rgba(74, 74, 106, 0.5);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .voting-option:hover {
-            background-color: rgba(74, 74, 106, 0.8);
-            transform: translateX(5px);
-        }
-        
-        .voting-option.selected {
-            background-color: rgba(248, 187, 34, 0.3);
-            border-left: 4px solid var(--primary-color);
-        }
-        
-        .vote-count {
-            background-color: var(--primary-color);
-            color: var(--secondary-color);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-        
-        .phase-indicator {
-            font-size: 1.2rem;
-            color: var(--primary-color);
-            margin: 15px 0;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px #000;
-        }
-        
-        .night-screen {
-            background-color: var(--night-color);
-            color: var(--text-color);
-        }
-        
-        .night-screen h1 {
-            color: #a0a0ff;
-        }
-        
         /* Animazioni e effetti aggiuntivi */
         .pulse {
             animation: pulse 2s infinite;
@@ -392,15 +329,6 @@
             0%, 100% { transform: translateX(0); }
             20%, 60% { transform: translateX(-5px); }
             40%, 80% { transform: translateX(5px); }
-        }
-        
-        .fade-out {
-            animation: fadeOut 0.5s ease-out forwards;
-        }
-        
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
         }
         
         /* Ottimizzazione per mobile */
@@ -426,10 +354,6 @@
                 margin-left: 0;
                 margin-top: 8px;
                 align-self: flex-end;
-            }
-            
-            .voting-options {
-                gap: 8px;
             }
         }
     </style>
@@ -479,44 +403,6 @@
         </div>
     </div>
 
-    <div id="nightScreen" class="screen night-screen">
-        <h1>NOTTE</h1>
-        <div class="phase-indicator">Tutti dormono...</div>
-        <div id="nightActions" class="parchment-effect">
-            <div id="nightInstructions"></div>
-            <div class="voting-options" id="nightOptions"></div>
-        </div>
-    </div>
-
-    <div id="dayScreen" class="screen">
-        <h1>GIORNO</h1>
-        <div class="phase-indicator">Discussione e votazione</div>
-        <div class="parchment-effect">
-            <p id="nightEvents"></p>
-            <div id="dayPlayersList"></div>
-            <div class="voting-options" id="votingOptions"></div>
-        </div>
-        <button id="voteButton" onclick="submitVote()" disabled>CONFERMA VOTO</button>
-    </div>
-
-    <div id="resultsScreen" class="screen">
-        <h1>RISULTATI</h1>
-        <div class="parchment-effect">
-            <div id="votingResults"></div>
-            <div id="eliminatedPlayer"></div>
-        </div>
-        <button id="continueButton" onclick="continueToNextPhase()">CONTINUA</button>
-    </div>
-
-    <div id="gameOverScreen" class="screen">
-        <h1>FINE DEL GIOCO</h1>
-        <div class="parchment-effect">
-            <div id="winnerTeam"></div>
-            <div id="allRoles"></div>
-        </div>
-        <button onclick="returnToLobby()">TORNA ALLA LOBBY</button>
-    </div>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
@@ -538,67 +424,41 @@
         // Variabili globali
         let playerId;
         let isHost = false;
-        let currentGamePhase = 'lobby'; // lobby, night, day, results, gameover
-        let currentVote = null;
-        let hasVoted = false;
-        let playerRole = '';
-        let playerName = "";
-        
         const roles = {
             "Lupo": {
-                description: "Il tuo scopo è eliminare tutti i Villici. Ogni notte puoi uccidere un giocatore.",
-                image: "https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-                team: "lupus",
-                nightAction: true
+                description: "Il tuo scopo è eliminare tutti i Villici.",
+                image: "https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Puttana": {
                 description: "Il tuo ruolo è salvare un giocatore ogni notte, impedendo al Lupo di ucciderlo.",
-                image: "https://images.unsplash.com/photo-1593104547489-5cfb3839a3b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-                team: "villico",
-                nightAction: true
+                image: "https://images.unsplash.com/photo-1593104547489-5cfb3839a3b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Investigatore": {
-                description: "Il tuo ruolo è capire chi è il lupo. Ogni notte puoi scoprire il ruolo di un giocatore.",
-                image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-                team: "villico",
-                nightAction: true
+                description: "Il tuo ruolo è capire chi è il lupo.",
+                image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Vanessa": {
                 description: "Il tuo ruolo è sbirciare durante la notte per scoprire qualche info in più.",
-                image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-                team: "villico",
-                nightAction: false
+                image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Sindaco": {
                 description: "Il tuo ruolo è votare due volte durante le votazioni.",
-                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-                team: "villico",
-                nightAction: false
+                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Contadino": {
-                description: "Il tuo ruolo è zappare la vigna. Non hai poteri speciali.",
-                image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-                team: "villico",
-                nightAction: false
+                description: "Il tuo ruolo è zappare la vigna.",
+                image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Narratore": {
                 description: "Sei il narratore e controlli il gioco.",
-                image: "https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-                team: "narratore",
-                nightAction: false
+                image: "https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             }
         };
         
         const baseRoles = ["Lupo", "Puttana", "Investigatore", "Vanessa", "Sindaco", "Contadino"];
         let playersRef;
-        let gameRef;
         let currentPlayerRef;
-        let allPlayers = {};
-        let nightActions = {};
-        let votes = {};
-        let eliminatedPlayers = [];
-        let savedPlayer = null;
-        let investigatedPlayer = null;
+        let playerName = "";
 
         // Mostra alert personalizzato
         function showCustomAlert(message, isError = false) {
@@ -639,15 +499,14 @@
 
                 playerId = Date.now().toString();
                 playersRef = database.ref('players');
-                gameRef = database.ref('game');
                 currentPlayerRef = database.ref('players/' + playerId);
                 
                 // Controlla se il nome esiste già tra i giocatori attivi
                 const snapshot = await playersRef.once('value');
-                allPlayers = snapshot.val() || {};
+                const players = snapshot.val() || {};
                 
                 let existingPlayer = null;
-                for (const [id, player] of Object.entries(allPlayers)) {
+                for (const [id, player] of Object.entries(players)) {
                     if (player.name.toLowerCase() === playerName.toLowerCase()) {
                         existingPlayer = { id, ...player };
                         break;
@@ -663,7 +522,6 @@
                             role: '',
                             isHost: existingPlayer.isHost,
                             showRole: false,
-                            isAlive: true,
                             timestamp: firebase.database.ServerValue.TIMESTAMP
                         });
                     } 
@@ -679,12 +537,8 @@
                                 role: existingPlayer.role,
                                 isHost: existingPlayer.isHost,
                                 showRole: existingPlayer.showRole,
-                                isAlive: existingPlayer.isAlive,
                                 timestamp: firebase.database.ServerValue.TIMESTAMP
                             });
-                            
-                            // Aggiorna il ruolo locale
-                            playerRole = existingPlayer.role;
                         } else {
                             showCustomAlert("Nome già in uso da un giocatore attivo! Scegli un altro nome.", true);
                             nameInput.focus();
@@ -698,26 +552,15 @@
                         role: '',
                         isHost: false,
                         showRole: false,
-                        isAlive: true,
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     });
                 }
 
-                // Mostra la lobby o lo schermo appropriato in base allo stato del gioco
-                const gameSnapshot = await gameRef.once('value');
-                const gameState = gameSnapshot.val() || {};
-                
-                if (gameState.phase === 'night' || gameState.phase === 'day' || gameState.phase === 'results') {
-                    // Il gioco è già in corso, mostra lo schermo appropriato
-                    handleGamePhase(gameState.phase);
-                } else {
-                    // Mostra la lobby
-                    showScreen('lobbyScreen');
-                    listenForPlayers();
-                    listenForRoleAssignment();
-                    listenForGameReset();
-                    listenForGamePhase();
-                }
+                // Mostra la lobby
+                showScreen('lobbyScreen');
+                listenForPlayers();
+                listenForRoleAssignment();
+                listenForGameReset();
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -747,14 +590,14 @@
 
         function listenForPlayers() {
             playersRef.orderByChild('timestamp').on('value', (snapshot) => {
-                allPlayers = snapshot.val() || {};
+                const players = snapshot.val() || {};
                 const playersList = document.getElementById('playersList');
                 playersList.innerHTML = '';
 
                 let hostExists = false;
                 let playerCount = 0;
                 
-                for (const [id, player] of Object.entries(allPlayers)) {
+                for (const [id, player] of Object.entries(players)) {
                     const playerDiv = document.createElement('div');
                     playerDiv.innerHTML = `${player.name} ${player.isHost ? '<span style="color:var(--primary-color)">(NARRATORE)</span>' : ''}`;
                     
@@ -788,10 +631,9 @@
                     showScreen('hostScreen');
                     listenForRoles();
                 } else if (player.role && player.showRole) {
-                    playerRole = player.role;
-                    document.getElementById('playerRole').textContent = playerRole;
-                    document.getElementById('roleDescription').textContent = roles[playerRole]?.description || '';
-                    document.getElementById('roleImage').src = roles[playerRole]?.image || '';
+                    document.getElementById('playerRole').textContent = player.role;
+                    document.getElementById('roleDescription').textContent = roles[player.role]?.description || '';
+                    document.getElementById('roleImage').src = roles[player.role]?.image || '';
                     showScreen('roleScreen');
                 }
             });
@@ -808,36 +650,6 @@
                 }
             });
         }
-        
-        function listenForGamePhase() {
-            gameRef.on('value', (snapshot) => {
-                const gameState = snapshot.val() || {};
-                if (gameState.phase && gameState.phase !== currentGamePhase) {
-                    currentGamePhase = gameState.phase;
-                    handleGamePhase(currentGamePhase);
-                }
-            });
-        }
-        
-        function handleGamePhase(phase) {
-            switch(phase) {
-                case 'night':
-                    setupNightPhase();
-                    break;
-                case 'day':
-                    setupDayPhase();
-                    break;
-                case 'results':
-                    showVotingResults();
-                    break;
-                case 'gameover':
-                    showGameOver();
-                    break;
-                default:
-                    // Lobby o altre fasi
-                    break;
-            }
-        }
 
         async function becomeHost() {
             try {
@@ -853,26 +665,12 @@
                 await currentPlayerRef.update({ 
                     isHost: true,
                     role: 'Narratore',
-                    showRole: true,
-                    isAlive: true
-                });
-                
-                // Inizializza lo stato del gioco
-                await gameRef.set({
-                    phase: 'lobby',
-                    nightCount: 0,
-                    dayCount: 0,
-                    votes: {},
-                    nightActions: {},
-                    eliminatedPlayers: [],
-                    savedPlayer: null,
-                    investigatedPlayer: null
+                    showRole: true
                 });
                 
                 isHost = true;
                 showScreen('hostScreen');
                 listenForRoles();
-                listenForGamePhase();
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -899,24 +697,12 @@
                     updates['players/' + id + '/isHost'] = false;
                     updates['players/' + id + '/role'] = '';
                     updates['players/' + id + '/showRole'] = false;
-                    updates['players/' + id + '/isAlive'] = true;
                 }
                 
                 // Imposta il nuovo host
                 updates['players/' + newHostId + '/isHost'] = true;
                 updates['players/' + newHostId + '/role'] = 'Narratore';
                 updates['players/' + newHostId + '/showRole'] = true;
-                updates['players/' + newHostId + '/isAlive'] = true;
-                
-                // Resetta lo stato del gioco
-                updates['game/phase'] = 'lobby';
-                updates['game/nightCount'] = 0;
-                updates['game/dayCount'] = 0;
-                updates['game/votes'] = {};
-                updates['game/nightActions'] = {};
-                updates['game/eliminatedPlayers'] = [];
-                updates['game/savedPlayer'] = null;
-                updates['game/investigatedPlayer'] = null;
                 
                 await database.ref().update(updates);
                 
@@ -940,15 +726,15 @@
 
         function listenForRoles() {
             playersRef.on('value', (snapshot) => {
-                allPlayers = snapshot.val() || {};
+                const players = snapshot.val() || {};
                 const assignedRolesDiv = document.getElementById('assignedRoles');
                 assignedRolesDiv.innerHTML = '<h2>RUOLI ASSEGNATI:</h2>';
                 
                 let playerCount = 0;
                 
-                for (const [id, player] of Object.entries(allPlayers)) {
+                for (const [id, player] of Object.entries(players)) {
                     if (!player.isHost) {
-                        assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role || '...in attesa...'}</strong> ${!player.isAlive ? '<span style="color:var(--danger-color)">(ELIMINATO)</span>' : ''}</div>`;
+                        assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role || '...in attesa...'}</strong></div>`;
                         playerCount++;
                     }
                 }
@@ -984,19 +770,8 @@
                 playerIdsToAssign.forEach((id, index) => {
                     updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
                     updates['players/' + id + '/showRole'] = false; // Inizialmente non mostrare
-                    updates['players/' + id + '/isAlive'] = true; // Resetta lo stato del giocatore
                 });
 
-                // Resetta lo stato del gioco
-                updates['game/phase'] = 'lobby';
-                updates['game/nightCount'] = 0;
-                updates['game/dayCount'] = 0;
-                updates['game/votes'] = {};
-                updates['game/nightActions'] = {};
-                updates['game/eliminatedPlayers'] = [];
-                updates['game/savedPlayer'] = null;
-                updates['game/investigatedPlayer'] = null;
-                
                 await database.ref().update(updates);
                 
                 // Dopo 0.5 secondi, imposta showRole a true per tutti i giocatori (più veloce)
@@ -1008,640 +783,9 @@
                     await database.ref().update(showRoleUpdates);
                 }, 500);
                 
-                // Inizia la prima notte dopo 3 secondi
-                setTimeout(() => startNightPhase(), 3000);
-                
             } catch (error) {
                 console.error("Errore:", error);
                 showCustomAlert("Errore nell'assegnazione dei ruoli. Riprova!", true);
-            }
-        }
-        
-        async function startNightPhase() {
-            if (!isHost) return;
-            
-            try {
-                // Aggiorna lo stato del gioco
-                const gameSnapshot = await gameRef.once('value');
-                const gameState = gameSnapshot.val() || {};
-                const nightCount = (gameState.nightCount || 0) + 1;
-                
-                await gameRef.update({
-                    phase: 'night',
-                    nightCount: nightCount,
-                    votes: {},
-                    nightActions: {},
-                    savedPlayer: null,
-                    investigatedPlayer: null
-                });
-                
-                // Mostra lo schermo notte per l'host
-                setupNightPhase();
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nell'inizio della notte. Riprova!", true);
-            }
-        }
-        
-        function setupNightPhase() {
-            if (playerRole === 'Narratore') {
-                // Host vede tutti i giocatori e può gestire le azioni notturne
-                showScreen('hostScreen');
-                updateHostNightView();
-            } else if (roles[playerRole]?.nightAction && allPlayers[playerId]?.isAlive) {
-                // Giocatori con azioni notturne vedono lo schermo notte
-                showScreen('nightScreen');
-                updateNightActionsView();
-            } else {
-                // Altri giocatori vedono lo schermo di attesa
-                showScreen('roleScreen');
-            }
-        }
-        
-        function updateHostNightView() {
-            const assignedRolesDiv = document.getElementById('assignedRoles');
-            assignedRolesDiv.innerHTML = '<h2>FASE NOTTURNA</h2>';
-            
-            // Mostra i giocatori vivi con i loro ruoli
-            for (const [id, player] of Object.entries(allPlayers)) {
-                if (player.isAlive && !player.isHost) {
-                    assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role}</strong></div>`;
-                }
-            }
-            
-            assignedRolesDiv.innerHTML += '<h3>Azioni notturne:</h3>';
-            
-            // Mostra le azioni notturne registrate finora
-            if (nightActions.lupo) {
-                assignedRolesDiv.innerHTML += `<p>Lupo ha scelto: ${allPlayers[nightActions.lupo]?.name || 'Nessuno'}</p>`;
-            } else {
-                assignedRolesDiv.innerHTML += '<p>In attesa del Lupo...</p>';
-            }
-            
-            if (nightActions.puttana) {
-                assignedRolesDiv.innerHTML += `<p>Puttana ha salvato: ${allPlayers[nightActions.puttana]?.name || 'Nessuno'}</p>`;
-            } else {
-                assignedRolesDiv.innerHTML += '<p>In attesa della Puttana...</p>';
-            }
-            
-            if (nightActions.investigatore) {
-                assignedRolesDiv.innerHTML += `<p>Investigatore ha indagato: ${allPlayers[nightActions.investigatore]?.name || 'Nessuno'}</p>`;
-            } else {
-                assignedRolesDiv.innerHTML += '<p>In attesa dell\'Investigatore...</p>';
-            }
-            
-            // Pulsante per concludere la notte (solo host)
-            if (isHost) {
-                assignedRolesDiv.innerHTML += '<button onclick="endNightPhase()" class="pulse">CONCLUDI NOTTE</button>';
-            }
-        }
-        
-        function updateNightActionsView() {
-            const nightInstructions = document.getElementById('nightInstructions');
-            const nightOptions = document.getElementById('nightOptions');
-            nightOptions.innerHTML = '';
-            
-            if (playerRole === 'Lupo') {
-                nightInstructions.innerHTML = '<p>Scegli un giocatore da uccidere:</p>';
-                
-                // Mostra solo i giocatori vivi (escludendo te stesso)
-                for (const [id, player] of Object.entries(allPlayers)) {
-                    if (player.isAlive && id !== playerId && !player.isHost) {
-                        const playerDiv = document.createElement('div');
-                        playerDiv.className = 'voting-option';
-                        playerDiv.innerHTML = `${player.name} <span class="vote-count">${player.role === 'Puttana' ? 'P' : ''}</span>`;
-                        playerDiv.onclick = () => selectNightAction(id);
-                        nightOptions.appendChild(playerDiv);
-                    }
-                }
-            } 
-            else if (playerRole === 'Puttana') {
-                nightInstructions.innerHTML = '<p>Scegli un giocatore da salvare:</p>';
-                
-                // Mostra solo i giocatori vivi (escludendo te stesso)
-                for (const [id, player] of Object.entries(allPlayers)) {
-                    if (player.isAlive && id !== playerId && !player.isHost) {
-                        const playerDiv = document.createElement('div');
-                        playerDiv.className = 'voting-option';
-                        playerDiv.innerHTML = player.name;
-                        playerDiv.onclick = () => selectNightAction(id);
-                        nightOptions.appendChild(playerDiv);
-                    }
-                }
-            }
-            else if (playerRole === 'Investigatore') {
-                nightInstructions.innerHTML = '<p>Scegli un giocatore da investigare:</p>';
-                
-                // Mostra solo i giocatori vivi (escludendo te stesso)
-                for (const [id, player] of Object.entries(allPlayers)) {
-                    if (player.isAlive && id !== playerId && !player.isHost) {
-                        const playerDiv = document.createElement('div');
-                        playerDiv.className = 'voting-option';
-                        playerDiv.innerHTML = player.name;
-                        playerDiv.onclick = () => selectNightAction(id);
-                        nightOptions.appendChild(playerDiv);
-                    }
-                }
-            }
-        }
-        
-        async function selectNightAction(targetId) {
-            if (hasVoted) return;
-            
-            try {
-                // Registra l'azione notturna
-                const actionType = playerRole.toLowerCase();
-                await gameRef.child('nightActions').update({
-                    [actionType]: targetId
-                });
-                
-                hasVoted = true;
-                showCustomAlert(`Hai scelto ${allPlayers[targetId]?.name || 'nessuno'}`);
-                
-                // Aggiorna la vista
-                if (playerRole === 'Narratore') {
-                    updateHostNightView();
-                } else {
-                    updateNightActionsView();
-                }
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nel registrare l'azione. Riprova!", true);
-            }
-        }
-        
-        async function endNightPhase() {
-            if (!isHost) return;
-            
-            try {
-                // Recupera le azioni notturne
-                const gameSnapshot = await gameRef.once('value');
-                const gameState = gameSnapshot.val() || {};
-                nightActions = gameState.nightActions || {};
-                
-                // Determina il giocatore ucciso (se non salvato dalla puttana)
-                const wolfTarget = nightActions.lupo;
-                const savedByPuttana = nightActions.puttana;
-                
-                let killedPlayer = null;
-                if (wolfTarget && wolfTarget !== savedByPuttana) {
-                    killedPlayer = wolfTarget;
-                    
-                    // Segna il giocatore come eliminato
-                    await database.ref('players/' + killedPlayer).update({
-                        isAlive: false
-                    });
-                    
-                    // Aggiungi alla lista degli eliminati
-                    const eliminatedPlayers = gameState.eliminatedPlayers || [];
-                    eliminatedPlayers.push({
-                        id: killedPlayer,
-                        name: allPlayers[killedPlayer]?.name,
-                        role: allPlayers[killedPlayer]?.role,
-                        day: gameState.dayCount || 0
-                    });
-                    
-                    await gameRef.update({
-                        eliminatedPlayers: eliminatedPlayers
-                    });
-                }
-                
-                // Salva il giocatore salvato dalla puttana (per mostrarlo durante il giorno)
-                await gameRef.update({
-                    savedPlayer: savedByPuttana ? allPlayers[savedByPuttana]?.name : null
-                });
-                
-                // Salva il giocatore investigato (per mostrarlo all'investigatore)
-                const investigatedId = nightActions.investigatore;
-                if (investigatedId) {
-                    await gameRef.update({
-                        investigatedPlayer: {
-                            id: investigatedId,
-                            name: allPlayers[investigatedId]?.name,
-                            role: allPlayers[investigatedId]?.role
-                        }
-                    });
-                }
-                
-                // Passa alla fase diurna
-                await gameRef.update({
-                    phase: 'day',
-                    dayCount: (gameState.dayCount || 0) + 1
-                });
-                
-                // Mostra i risultati della notte all'host
-                let nightResults = "Notte conclusa.\n";
-                if (killedPlayer) {
-                    nightResults += `Il Lupo ha ucciso ${allPlayers[killedPlayer]?.name} (${allPlayers[killedPlayer]?.role}).\n`;
-                } else if (wolfTarget) {
-                    nightResults += `Il Lupo ha tentato di uccidere ${allPlayers[wolfTarget]?.name} ma è stato salvato dalla Puttana.\n`;
-                } else {
-                    nightResults += "Nessuno è stato ucciso stanotte.\n";
-                }
-                
-                if (savedByPuttana) {
-                    nightResults += `La Puttana ha salvato ${allPlayers[savedByPuttana]?.name}.\n`;
-                }
-                
-                if (investigatedId) {
-                    nightResults += `L'Investigatore ha indagato ${allPlayers[investigatedId]?.name} (${allPlayers[investigatedId]?.role}).\n`;
-                }
-                
-                showCustomAlert(nightResults);
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nel concludere la notte. Riprova!", true);
-            }
-        }
-        
-async function setupDayPhase() {
-    // Resetta il voto del giocatore
-    currentVote = null;
-    hasVoted = false;
-    
-    if (playerRole === 'Narratore') {
-        // Host vede tutti i giocatori e può gestire la votazione
-        showScreen('hostScreen');
-        await updateHostDayView(); // Aggiungi await
-    } else {
-        // Altri giocatori vedono lo schermo diurna
-        showScreen('dayScreen');
-        await updateDayView(); // Aggiungi await
-    }
-}
-
-			async function setupDayPhase() {
-    if (playerRole === 'Narratore') {
-        await updateHostDayView(); // Aggiungi await
-    } else {
-        await updateDayView(); // Aggiungi await
-    }
-}
-        }
-        
-async function updateHostDayView() {
-    const assignedRolesDiv = document.getElementById('assignedRoles');
-    assignedRolesDiv.innerHTML = '<h2>FASE DIURNA</h2>';
-    
-    const gameSnapshot = await gameRef.once('value');
-    const gameState = gameSnapshot.val() || {};
-    
-    if (gameState.savedPlayer) {
-        assignedRolesDiv.innerHTML += `<p>La Puttana ha salvato ${gameState.savedPlayer}.</p>`;
-    }
-    
-    if (gameState.eliminatedPlayers && gameState.eliminatedPlayers.length > 0) {
-        const lastEliminated = gameState.eliminatedPlayers[gameState.eliminatedPlayers.length - 1];
-        assignedRolesDiv.innerHTML += `<p>${lastEliminated.name} (${lastEliminated.role}) è stato ucciso durante la notte.</p>`;
-    } else {
-        assignedRolesDiv.innerHTML += '<p>Nessuno è stato ucciso stanotte.</p>';
-    }
-    
-    // Resto del codice esistente...
-}
-            
-            // Mostra i giocatori vivi
-            assignedRolesDiv.innerHTML += '<h3>Giocatori vivi:</h3>';
-            for (const [id, player] of Object.entries(allPlayers)) {
-                if (player.isAlive && !player.isHost) {
-                    assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role}</strong></div>`;
-                }
-            }
-            
-            // Mostra i voti finora
-            assignedRolesDiv.innerHTML += '<h3>Voti:</h3>';
-            const votes = gameState.votes || {};
-            const voteCounts = {};
-            
-            // Conta i voti
-            for (const voterId in votes) {
-                const targetId = votes[voterId];
-                voteCounts[targetId] = (voteCounts[targetId] || 0) + 1;
-            }
-            
-            // Mostra il conteggio
-            for (const [targetId, count] of Object.entries(voteCounts)) {
-                assignedRolesDiv.innerHTML += `<p>${allPlayers[targetId]?.name}: ${count} voti</p>`;
-            }
-            
-            // Pulsante per concludere la votazione (solo host)
-            if (isHost) {
-                assignedRolesDiv.innerHTML += '<button onclick="endDayPhase()" class="pulse">CONCLUDI VOTAZIONE</button>';
-            }
-        }
-        
-async function updateDayView() {
-    const nightEvents = document.getElementById('nightEvents');
-    const dayPlayersList = document.getElementById('dayPlayersList');
-    const votingOptions = document.getElementById('votingOptions');
-    const voteButton = document.getElementById('voteButton');
-    
-    // Resetta gli elementi
-    nightEvents.innerHTML = '';
-    dayPlayersList.innerHTML = '';
-    votingOptions.innerHTML = '';
-    voteButton.disabled = true;
-    
-    // Aggiungi await qui sotto
-    const gameSnapshot = await gameRef.once('value');
-    const gameState = gameSnapshot.val() || {};
-    
-    if (gameState.savedPlayer) {
-        nightEvents.innerHTML += `<p>La Puttana ha salvato ${gameState.savedPlayer}.</p>`;
-    }
-    
-    if (gameState.eliminatedPlayers && gameState.eliminatedPlayers.length > 0) {
-        const lastEliminated = gameState.eliminatedPlayers[gameState.eliminatedPlayers.length - 1];
-        nightEvents.innerHTML += `<p>${lastEliminated.name} (${lastEliminated.role}) è stato ucciso durante la notte.</p>`;
-    } else {
-        nightEvents.innerHTML += '<p>Nessuno è stato ucciso stanotte.</p>';
-    }
-	
-            // Mostra il risultato dell'investigazione (solo per l'investigatore)
-            if (playerRole === 'Investigatore' && gameState.investigatedPlayer) {
-                nightEvents.innerHTML += `<p>Hai investigato ${gameState.investigatedPlayer.name} - Ruolo: ${gameState.investigatedPlayer.role}</p>`;
-            }
-            
-            // Mostra la lista dei giocatori vivi per la votazione
-            dayPlayersList.innerHTML = '<h3>Giocatori vivi:</h3>';
-            for (const [id, player] of Object.entries(allPlayers)) {
-                if (player.isAlive && !player.isHost) {
-                    const playerDiv = document.createElement('div');
-                    playerDiv.className = 'voting-option';
-                    playerDiv.innerHTML = player.name;
-                    playerDiv.onclick = () => selectVote(id);
-                    votingOptions.appendChild(playerDiv);
-                }
-            }
-        }
-        
-        function selectVote(targetId) {
-            // Deseleziona tutte le opzioni
-            document.querySelectorAll('.voting-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            
-            // Seleziona l'opzione cliccata
-            event.target.classList.add('selected');
-            
-            // Imposta il voto corrente
-            currentVote = targetId;
-            document.getElementById('voteButton').disabled = false;
-        }
-        
-        async function submitVote() {
-            if (!currentVote || hasVoted) return;
-            
-            try {
-                // Registra il voto
-                await gameRef.child('votes').update({
-                    [playerId]: currentVote
-                });
-                
-                hasVoted = true;
-                showCustomAlert(`Hai votato per ${allPlayers[currentVote]?.name}`);
-                
-                // Disabilita il pulsante di voto
-                document.getElementById('voteButton').disabled = true;
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nel registrare il voto. Riprova!", true);
-            }
-        }
-        
-        async function endDayPhase() {
-            if (!isHost) return;
-            
-            try {
-                // Recupera i voti
-                const gameSnapshot = await gameRef.once('value');
-                const gameState = gameSnapshot.val() || {};
-                votes = gameState.votes || {};
-                
-                // Conta i voti
-                const voteCounts = {};
-                for (const voterId in votes) {
-                    const targetId = votes[voterId];
-                    voteCounts[targetId] = (voteCounts[targetId] || 0) + 1;
-                    
-                    // Se il votante è il sindaco, conta doppio
-                    if (allPlayers[voterId]?.role === 'Sindaco') {
-                        voteCounts[targetId] += 1;
-                    }
-                }
-                
-                // Trova il giocatore con più voti
-                let maxVotes = 0;
-                let eliminatedId = null;
-                
-                for (const [targetId, count] of Object.entries(voteCounts)) {
-                    if (count > maxVotes) {
-                        maxVotes = count;
-                        eliminatedId = targetId;
-                    } else if (count === maxVotes) {
-                        // Pareggio, nessuno viene eliminato
-                        eliminatedId = null;
-                    }
-                }
-                
-                // Se c'è un giocatore da eliminare
-                if (eliminatedId && maxVotes > 0) {
-                    // Segna il giocatore come eliminato
-                    await database.ref('players/' + eliminatedId).update({
-                        isAlive: false
-                    });
-                    
-                    // Aggiungi alla lista degli eliminati
-                    const eliminatedPlayers = gameState.eliminatedPlayers || [];
-                    eliminatedPlayers.push({
-                        id: eliminatedId,
-                        name: allPlayers[eliminatedId]?.name,
-                        role: allPlayers[eliminatedId]?.role,
-                        day: gameState.dayCount || 0
-                    });
-                    
-                    await gameRef.update({
-                        eliminatedPlayers: eliminatedPlayers
-                    });
-                }
-                
-                // Passa alla fase dei risultati
-                await gameRef.update({
-                    phase: 'results'
-                });
-                
-                // Mostra i risultati della votazione
-                showVotingResults();
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nel concludere la votazione. Riprova!", true);
-            }
-        }
-        
-async function showVotingResults() {
-    showScreen('resultsScreen');
-    const votingResults = document.getElementById('votingResults');
-    const eliminatedPlayer = document.getElementById('eliminatedPlayer');
-    
-    votingResults.innerHTML = '<h2>Risultati della votazione:</h2>';
-    eliminatedPlayer.innerHTML = '';
-    
-    // Aggiungi await qui
-    const gameSnapshot = await gameRef.once('value');
-    const gameState = gameSnapshot.val() || {};
-    votes = gameState.votes || {};
-            
-            // Conta i voti
-            const voteCounts = {};
-            for (const voterId in votes) {
-                const targetId = votes[voterId];
-                voteCounts[targetId] = (voteCounts[targetId] || 0) + 1;
-                
-                // Se il votante è il sindaco, conta doppio
-                if (allPlayers[voterId]?.role === 'Sindaco') {
-                    voteCounts[targetId] += 1;
-                }
-            }
-            
-            // Mostra il conteggio dei voti
-            for (const [targetId, count] of Object.entries(voteCounts)) {
-                votingResults.innerHTML += `<p>${allPlayers[targetId]?.name}: ${count} voti</p>`;
-            }
-            
-            // Trova il giocatore eliminato (se c'è)
-            const eliminatedPlayers = gameState.eliminatedPlayers || [];
-            if (eliminatedPlayers.length > 0) {
-                const lastEliminated = eliminatedPlayers[eliminatedPlayers.length - 1];
-                
-                // Verifica se è stato eliminato oggi (controllando il giorno)
-                if (lastEliminated.day === gameState.dayCount) {
-                    eliminatedPlayer.innerHTML = `<h3>${lastEliminated.name} è stato eliminato!</h3>`;
-                    eliminatedPlayer.innerHTML += `<p>Ruolo: ${lastEliminated.role}</p>`;
-                }
-            } else {
-                votingResults.innerHTML += '<p>Nessuno è stato eliminato oggi.</p>';
-            }
-            
-            // Verifica se il gioco è finito
-            checkGameEnd();
-        }
-        
-        async function checkGameEnd() {
-            const gameSnapshot = await gameRef.once('value');
-            const gameState = gameSnapshot.val() || {};
-            
-            // Conta i giocatori vivi per squadra
-            let lupusCount = 0;
-            let villicoCount = 0;
-            
-            for (const [id, player] of Object.entries(allPlayers)) {
-                if (player.isAlive && !player.isHost) {
-                    if (roles[player.role]?.team === 'lupus') {
-                        lupusCount++;
-                    } else if (roles[player.role]?.team === 'villico') {
-                        villicoCount++;
-                    }
-                }
-            }
-            
-            // Determina se il gioco è finito
-            if (lupusCount === 0) {
-                // Villici vincono
-                await endGame('villico');
-            } else if (lupusCount >= villicoCount) {
-                // Lupi vincono
-                await endGame('lupus');
-            }
-        }
-        
-        async function endGame(winningTeam) {
-            await gameRef.update({
-                phase: 'gameover',
-                winner: winningTeam
-            });
-            
-            showGameOver();
-        }
-        
-        // SOSTITUISCI la funzione esistente con:
-async function showGameOver() {
-    showScreen('gameOverScreen');
-    const winnerTeam = document.getElementById('winnerTeam');
-    const allRoles = document.getElementById('allRoles');
-    
-    // Aggiungi await qui
-    const gameSnapshot = await gameRef.once('value');
-    const gameState = gameSnapshot.val() || {};
-    
-    if (gameState.winner === 'villico') {
-        winnerTeam.innerHTML = '<h2 style="color:var(--success-color)">I VILLICI HANNO VINTO!</h2>';
-    } else {
-        winnerTeam.innerHTML = '<h2 style="color:var(--danger-color)">I LUPI HANNO VINTO!</h2>';
-    }
-    
-    allRoles.innerHTML = '<h3>Tutti i ruoli:</h3>';
-    for (const [id, player] of Object.entries(allPlayers)) {
-        if (!player.isHost) {
-            allRoles.innerHTML += `<div>${player.name}: <strong>${player.role}</strong> ${!player.isAlive ? '<span style="color:var(--danger-color)">(ELIMINATO)</span>' : ''}</div>`;
-        }
-    }
-}
-        
-        async function continueToNextPhase() {
-            if (!isHost) return;
-            
-            // Verifica se il gioco è finito
-            await checkGameEnd();
-            
-            // Se il gioco non è finito, inizia una nuova notte
-            const gameSnapshot = await gameRef.once('value');
-            if (gameSnapshot.val()?.phase !== 'gameover') {
-                startNightPhase();
-            }
-        }
-        
-        async function returnToLobby() {
-            try {
-                // Se sei l'host, resetta il gioco
-                if (isHost) {
-                    const updates = {};
-                    
-                    // Resetta tutti i giocatori
-                    const snapshot = await playersRef.once('value');
-                    const players = snapshot.val() || {};
-                    
-                    for (const id in players) {
-                        updates['players/' + id + '/role'] = '';
-                        updates['players/' + id + '/showRole'] = false;
-                        updates['players/' + id + '/isHost'] = false;
-                        updates['players/' + id + '/isAlive'] = true;
-                    }
-                    
-                    // Resetta lo stato del gioco
-                    updates['game/phase'] = 'lobby';
-                    updates['game/nightCount'] = 0;
-                    updates['game/dayCount'] = 0;
-                    updates['game/votes'] = {};
-                    updates['game/nightActions'] = {};
-                    updates['game/eliminatedPlayers'] = [];
-                    updates['game/savedPlayer'] = null;
-                    updates['game/investigatedPlayer'] = null;
-                    updates['game/winner'] = null;
-                    
-                    await database.ref().update(updates);
-                }
-                
-                // Torna alla lobby
-                showScreen('lobbyScreen');
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nel tornare alla lobby. Riprova!", true);
             }
         }
 
@@ -1665,19 +809,7 @@ async function showGameOver() {
                         updates['players/' + id + '/role'] = '';
                         updates['players/' + id + '/showRole'] = false;
                         updates['players/' + id + '/isHost'] = false;
-                        updates['players/' + id + '/isAlive'] = true;
                     }
-                    
-                    // Resetta lo stato del gioco
-                    updates['game/phase'] = 'lobby';
-                    updates['game/nightCount'] = 0;
-                    updates['game/dayCount'] = 0;
-                    updates['game/votes'] = {};
-                    updates['game/nightActions'] = {};
-                    updates['game/eliminatedPlayers'] = [];
-                    updates['game/savedPlayer'] = null;
-                    updates['game/investigatedPlayer'] = null;
-                    updates['game/winner'] = null;
                     
                     await database.ref().update(updates);
                     
