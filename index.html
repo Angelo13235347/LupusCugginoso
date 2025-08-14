@@ -512,25 +512,28 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
-        // Configurazione Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyAsTO8sYN1M7A1aK238RiYXDef4MQkw-AI",
-            authDomain: "lupus-764f6.firebaseapp.com",
-            databaseURL: "https://lupus-764f6-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "lupus-764f6",
-            storageBucket: "lupus-764f6.appspot.com",
-            messagingSenderId: "695119804153",
-            appId: "1:695119804153:web:d5cdcf9adbf633adb25428"
-        };
+// Configurazione Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyAsTO8sYN1M7A1aK238RiYXDef4MQkw-AI",
+    authDomain: "lupus-764f6.firebaseapp.com",
+    databaseURL: "https://lupus-764f6-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "lupus-764f6",
+    storageBucket: "lupus-764f6.appspot.com",
+    messagingSenderId: "695119804153",
+    appId: "1:695119804153:web:d5cdcf9adbf633adb25428"
+};
 
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const playersRef = database.ref('players');
+const gameStateRef = database.ref('gameState');
+let currentPlayerRef = null;
 
-        let playerId;
-        let isHost = false;
-        let gameStarted = false;
-        let votingInProgress = false;
-        let votedPlayerId = null;
+let playerId;
+let isHost = false;
+let gameStarted = false;
+let votingInProgress = false;
+let votedPlayerId = null;
         const roles = {
             "Lupo": {
                 description: "Di notte scegli un giocatore da uccidere. Di giorno cerca di non farti scoprire!",
@@ -866,7 +869,7 @@
                 });
                 
                 // Se ero io l'host precedente, torno alla lobby
-                if (currentPlayerRef.key === newHostId) {
+                if (playerId === newHostId) {
                     isHost = true;
                     gameStarted = false;
                     showScreen('hostScreen');
@@ -906,64 +909,85 @@
             });
         }
 
-        async function startGame() {
-            try {
-                const snapshot = await playersRef.once('value');
-                const players = snapshot.val() || {};
+async function startGame() {
+    try {
+        console.log("Avvio partita..."); // Debug
+        const snapshot = await playersRef.once('value');
+        const players = snapshot.val() || {};
+        
+        // Filtra solo i giocatori non host e non eliminati
+        const playerIdsToAssign = Object.keys(players).filter(id => 
+            !players[id].isHost && !players[id].isEliminated
+        );
 
-                // Filtra solo i giocatori non host
-                const playerIdsToAssign = Object.keys(players).filter(id => !players[id].isHost);
-
-                if (playerIdsToAssign.length < 3) {
-                    showCustomAlert("Servono almeno 3 giocatori (escluso il narratore) per iniziare!", true);
-                    return;
-                }
-
-                // Crea i ruoli da assegnare
-                let rolesToAssign = [...baseRoles];
-                while (rolesToAssign.length < playerIdsToAssign.length) {
-                    rolesToAssign.push("Contadino");
-                }
-                rolesToAssign = rolesToAssign.slice(0, playerIdsToAssign.length); // Limita al numero esatto di giocatori
-
-                const shuffledRoles = shuffleArray(rolesToAssign);
-                const updates = {};
-
-                // Assegna i ruoli
-                playerIdsToAssign.forEach((id, index) => {
-                    updates['players/' + id + '/role'] = shuffledRoles[index];
-                    updates['players/' + id + '/showRole'] = false;
-                    updates['players/' + id + '/votedFor'] = '';
-                    updates['players/' + id + '/isEliminated'] = false;
-                });
-
-                await database.ref().update(updates);
-
-                // Stato del gioco
-                await gameStateRef.set({
-                    votingInProgress: false,
-                    gameStarted: true
-                });
-
-                gameStarted = true;
-
-                // Mostra il pulsante per avviare le votazioni
-                document.getElementById('startVotingButton').style.display = 'inline-block';
-
-                // Dopo mezzo secondo, mostra i ruoli ai giocatori
-                setTimeout(async () => {
-                    const showRoleUpdates = {};
-                    playerIdsToAssign.forEach(id => {
-                        showRoleUpdates['players/' + id + '/showRole'] = true;
-                    });
-                    await database.ref().update(showRoleUpdates);
-                }, 500);
-
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nell'assegnazione dei ruoli. Riprova!", true);
-            }
+        console.log("Giocatori da assegnare:", playerIdsToAssign.length); // Debug
+        
+        if (playerIdsToAssign.length < 3) {
+            showCustomAlert("Servono almeno 3 giocatori (escluso il narratore) per iniziare!", true);
+            return;
         }
+
+        // Crea una lista di ruoli bilanciata
+        let rolesToAssign = [];
+        
+        // Prima assegna tutti i ruoli base
+        const baseRolesCopy = [...baseRoles];
+        while (rolesToAssign.length < playerIdsToAssign.length && baseRolesCopy.length > 0) {
+            rolesToAssign.push(baseRolesCopy.shift());
+        }
+        
+        // Poi completa con Contadini se necessario
+        while (rolesToAssign.length < playerIdsToAssign.length) {
+            rolesToAssign.push("Contadino");
+        }
+
+        console.log("Ruoli da assegnare:", rolesToAssign); // Debug
+        
+        const shuffledRoles = shuffleArray(rolesToAssign);
+        const updates = {};
+
+        // Assegna i ruoli
+        playerIdsToAssign.forEach((id, index) => {
+            updates['players/' + id + '/role'] = shuffledRoles[index];
+            updates['players/' + id + '/showRole'] = false;
+            updates['players/' + id + '/votedFor'] = '';
+            updates['players/' + id + '/isEliminated'] = false;
+        });
+
+        await database.ref().update(updates);
+        console.log("Ruoli assegnati con successo"); // Debug
+
+        // Stato del gioco
+        await gameStateRef.set({
+            votingInProgress: false,
+            gameStarted: true
+        });
+
+        gameStarted = true;
+        console.log("Gioco avviato con successo"); // Debug
+
+        // Mostra il pulsante per avviare le votazioni
+        document.getElementById('startVotingButton').style.display = 'inline-block';
+
+        // Dopo mezzo secondo, mostra i ruoli ai giocatori
+        setTimeout(async () => {
+            const showRoleUpdates = {};
+            playerIdsToAssign.forEach(id => {
+                showRoleUpdates['players/' + id + '/showRole'] = true;
+            });
+            await database.ref().update(showRoleUpdates);
+            console.log("Ruoli mostrati ai giocatori"); // Debug
+        }, 500);
+
+    } catch (error) {
+        console.error("Errore dettagliato:", {
+            message: error.message,
+            stack: error.stack,
+            fullError: error
+        });
+        showCustomAlert(`Errore nell'avvio: ${error.message}`, true);
+    }
+}
 		
         async function startVoting() {
             if (!isHost) return;
