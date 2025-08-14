@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LUPUS CUGGINOSO</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative:wght@700&family=IM+Fell+English+SC&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative:wght@700&display=swap');
         
         :root {
             --primary-color: #f8bb22;
@@ -16,25 +16,20 @@
             --success-color: #4CAF50;
             --danger-color: #a52a2a;
             --info-color: #3f51b5;
-            --warning-color: #ff9800;
-            --gold-light: #ffd700;
-            --gold-dark: #c9a227;
-            --shadow-dark: rgba(0, 0, 0, 0.7);
-            --shadow-light: rgba(248, 187, 34, 0.3);
         }
         
         * {
             box-sizing: border-box;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
         
         body {
-            font-family: 'IM Fell English SC', serif;
+            font-family: 'MedievalSharp', cursive;
             text-align: center;
             background-color: var(--secondary-color);
             color: var(--text-color);
             margin: 0;
-            padding: 0;
+            padding: 20px;
             background-image: url('https://images.unsplash.com/photo-1518562180175-34a163b1a9a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
             background-size: cover;
             background-attachment: fixed;
@@ -46,13 +41,13 @@
         
         .screen {
             display: none;
-            max-width: 900px;
+            max-width: 800px;
             margin: 20px auto;
             padding: 30px;
             background-color: rgba(26, 26, 46, 0.95);
             border-radius: 15px;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
-            border: 3px solid var(--accent-color);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--accent-color);
             position: relative;
             overflow: hidden;
             animation: fadeIn 0.5s ease-out;
@@ -78,130 +73,93 @@
             display: block;
         }
         
-        h1, h2, h3 {
+        h1 {
             color: var(--primary-color);
-            text-shadow: 2px 2px 4px var(--shadow-dark);
-            margin-bottom: 25px;
-            letter-spacing: 1.5px;
+            text-shadow: 2px 2px 4px #000;
+            font-size: clamp(2em, 5vw, 3em);
+            margin-bottom: 30px;
+            letter-spacing: 2px;
             font-family: 'Cinzel Decorative', cursive;
         }
         
-        h1 {
-            font-size: clamp(2.2em, 5vw, 3.5em);
-            margin-bottom: 30px;
-            position: relative;
-            display: inline-block;
-        }
-        
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
-        }
-        
-        h2 {
-            font-size: clamp(1.8em, 4vw, 2.5em);
-            margin-top: 0;
-        }
-        
-        h3 {
-            font-size: clamp(1.4em, 3vw, 1.8em);
-            color: var(--gold-light);
-        }
-        
         button {
-            background: linear-gradient(to bottom, var(--gold-light), var(--gold-dark));
+            background: linear-gradient(to bottom, var(--primary-color), #d89e1a);
             color: var(--secondary-color);
             border: none;
-            padding: 15px 35px;
+            padding: 15px 30px;
             margin: 15px;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
-            font-family: 'IM Fell English SC', serif;
+            font-family: 'MedievalSharp', cursive;
             letter-spacing: 1px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            min-width: 220px;
+            min-width: 200px;
             position: relative;
             overflow: hidden;
-            transition: all 0.3s;
         }
         
-        button::before {
+        button::after {
             content: '';
             position: absolute;
             top: 0;
-            left: -100%;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
+            background: rgba(255,255,255,0.1);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
         }
         
         button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-            background: linear-gradient(to bottom, #ffdf33, #d4b126);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(to bottom, #ffcc33, #e6b020);
         }
         
-        button:hover::before {
-            left: 100%;
+        button:hover::after {
+            transform: translateX(0);
         }
         
-        button:active {
-            transform: translateY(0);
-        }
-        
-        input, select {
-            padding: 14px;
+        input {
+            padding: 12px;
             margin: 15px;
             width: min(80%, 350px);
-            border-radius: 10px;
+            border-radius: 8px;
             border: 2px solid var(--accent-color);
             background-color: rgba(255, 255, 255, 0.9);
             color: var(--secondary-color);
-            font-size: 1.1rem;
-            font-family: 'IM Fell English SC', serif;
+            font-size: 1rem;
+            font-family: 'MedievalSharp', cursive;
             text-align: center;
             transition: all 0.3s;
         }
         
-        input:focus, select:focus {
+        input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 15px var(--shadow-light);
+            box-shadow: 0 0 8px rgba(248, 187, 34, 0.5);
         }
         
-        #playersList, #assignedRoles, #votingList {
+        #playersList {
             margin: 25px 0;
             text-align: left;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
         
-        #playersList div, #assignedRoles div, #votingList div {
-            padding: 15px 20px;
-            margin: 12px 0;
-            background-color: rgba(74, 74, 106, 0.6);
+        #playersList div {
+            padding: 12px 15px;
+            margin: 10px 0;
+            background-color: rgba(74, 74, 106, 0.5);
             border-left: 4px solid var(--primary-color);
-            border-radius: 8px;
+            border-radius: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
-            transition: all 0.3s;
-        }
-        
-        #playersList div:hover, #assignedRoles div:hover, #votingList div:hover {
-            background-color: rgba(74, 74, 106, 0.8);
-            transform: translateX(5px);
+            gap: 10px;
         }
         
         .role-container {
@@ -209,46 +167,40 @@
             flex-direction: column;
             align-items: center;
             margin: 30px 0;
-            padding: 20px;
-            background-color: rgba(26, 26, 46, 0.7);
-            border-radius: 15px;
-            border: 2px solid var(--primary-color);
         }
         
         .role-image {
-            width: clamp(150px, 30vw, 220px);
-            height: clamp(150px, 30vw, 220px);
+            width: clamp(120px, 25vw, 180px);
+            height: clamp(120px, 25vw, 180px);
             border-radius: 50%;
             object-fit: cover;
-            border: 8px solid var(--primary-color);
-            box-shadow: 0 0 30px var(--shadow-light);
-            margin-bottom: 25px;
-            transition: transform 0.4s;
+            border: 5px solid var(--primary-color);
+            box-shadow: 0 0 20px rgba(248, 187, 34, 0.5);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
         }
         
         .role-image:hover {
-            transform: scale(1.1) rotate(5deg);
+            transform: scale(1.05);
         }
         
         .role-display {
-            font-size: clamp(2rem, 6vw, 3rem);
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
             color: var(--primary-color);
-            margin: 15px 0;
-            text-shadow: 3px 3px 6px var(--shadow-dark);
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px #000;
             font-weight: bold;
-            letter-spacing: 2px;
         }
         
         .role-description {
-            font-size: clamp(1.1rem, 3vw, 1.3rem);
-            margin-top: 20px;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            margin-top: 15px;
             color: var(--text-color);
             background-color: rgba(26, 26, 46, 0.9);
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 5px solid var(--primary-color);
-            text-align: center;
-            line-height: 1.8;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+            text-align: left;
         }
         
         .custom-alert {
@@ -258,16 +210,16 @@
             transform: translate(-50%, -50%);
             background-color: rgba(26, 26, 46, 0.98);
             color: var(--text-color);
-            padding: 30px;
+            padding: 25px;
             border-radius: 15px;
-            border: 3px solid var(--primary-color);
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
             z-index: 1000;
             max-width: 90%;
-            width: min(450px, 90vw);
+            width: min(400px, 90vw);
             text-align: center;
-            font-size: 1.2rem;
-            animation: popIn 0.4s ease-out;
+            font-size: 1.1rem;
+            animation: popIn 0.3s ease-out;
         }
         
         @keyframes popIn {
@@ -276,8 +228,7 @@
         }
         
         .custom-alert button {
-            margin: 10px;
-            min-width: 120px;
+            margin-top: 15px;
         }
         
         #hostButton {
@@ -289,50 +240,50 @@
             background: linear-gradient(to bottom, #7a5ca3, #5a3c8a);
         }
         
+        #assignedRoles {
+            margin: 25px 0;
+        }
+        
+        #assignedRoles div {
+            padding: 12px;
+            margin: 12px 0;
+            background-color: rgba(74, 74, 106, 0.5);
+            border-radius: 8px;
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
         .parchment-effect {
             background-image: url('https://www.transparenttextures.com/patterns/old-paper.png');
             background-color: var(--parchment-color);
             color: #3a3a3a;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
-            border: 2px solid #c9b7a2;
-            margin: 25px 0;
-            position: relative;
-        }
-        
-        .parchment-effect::before {
-            content: '';
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            right: 5px;
-            bottom: 5px;
-            border: 1px solid rgba(201, 183, 162, 0.5);
-            border-radius: 8px;
-            pointer-events: none;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+            border: 1px solid #c9b7a2;
+            margin: 20px 0;
         }
         
         .player-count {
-            font-size: 1.3rem;
-            margin: 20px 0;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
             color: var(--primary-color);
             font-weight: bold;
-            text-shadow: 1px 1px 2px var(--shadow-dark);
         }
         
-        .make-host-btn, .assign-host-btn, .vote-btn {
+        .make-host-btn {
             background: linear-gradient(to bottom, var(--success-color), #2E7D32);
             color: white;
-            padding: 10px 18px;
-            font-size: 1rem;
-            margin-left: 12px;
-            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+            border-radius: 6px;
             flex-shrink: 0;
-            min-width: auto;
         }
         
-        .make-host-btn:hover, .assign-host-btn:hover, .vote-btn:hover {
+        .make-host-btn:hover {
             background: linear-gradient(to bottom, #66BB6A, #388E3C);
         }
         
@@ -345,21 +296,17 @@
             background: linear-gradient(to bottom, #c52d2d, #a00000);
         }
         
-        .start-voting-btn {
-            background: linear-gradient(to bottom, var(--warning-color), #e68a00);
-            color: var(--secondary-color);
-        }
-        
-        .start-voting-btn:hover {
-            background: linear-gradient(to bottom, #ffa726, #f57c00);
-        }
-        
-        .end-voting-btn {
+        .assign-host-btn {
             background: linear-gradient(to bottom, var(--info-color), #303f9f);
             color: white;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+            border-radius: 6px;
+            flex-shrink: 0;
         }
         
-        .end-voting-btn:hover {
+        .assign-host-btn:hover {
             background: linear-gradient(to bottom, #5c6bc0, #3949ab);
         }
         
@@ -369,9 +316,9 @@
         }
         
         @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 15px rgba(248, 187, 34, 0.5); }
-            50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(248, 187, 34, 0.8); }
-            100% { transform: scale(1); box-shadow: 0 0 15px rgba(248, 187, 34, 0.5); }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         
         .shake {
@@ -380,76 +327,33 @@
         
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-8px); }
-            40%, 80% { transform: translateX(8px); }
-        }
-        
-        .floating {
-            animation: floating 3s ease-in-out infinite;
-        }
-        
-        @keyframes floating {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .voted {
-            background-color: rgba(165, 42, 42, 0.5) !important;
-            border-left: 4px solid var(--danger-color) !important;
-        }
-        
-        .eliminated {
-            opacity: 0.6;
-            text-decoration: line-through;
-            background-color: rgba(165, 42, 42, 0.3) !important;
-            border-left: 4px solid var(--danger-color) !important;
-        }
-        
-        .voting-status {
-            font-size: 1.2rem;
-            margin: 20px 0;
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-        
-        .vote-count {
-            display: inline-block;
-            min-width: 30px;
-            text-align: center;
-            font-weight: bold;
-            color: var(--danger-color);
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
         }
         
         /* Ottimizzazione per mobile */
         @media (max-width: 768px) {
             .screen {
                 padding: 20px;
-                margin: 15px;
-            }
-            
-            button {
-                padding: 12px 25px;
-                font-size: 1.1rem;
-                min-width: 180px;
                 margin: 10px;
             }
             
-            #playersList div, #assignedRoles div, #votingList div {
+            button {
+                padding: 12px 20px;
+                font-size: 1rem;
+                min-width: 160px;
+            }
+            
+            #playersList div, #assignedRoles div {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 10px;
+                gap: 8px;
             }
             
-            .make-host-btn, .assign-host-btn, .vote-btn {
+            .make-host-btn, .assign-host-btn {
                 margin-left: 0;
-                margin-top: 10px;
-                align-self: stretch;
-                text-align: center;
-            }
-            
-            .role-image {
-                width: 150px;
-                height: 150px;
+                margin-top: 8px;
+                align-self: flex-end;
             }
         }
     </style>
@@ -457,7 +361,7 @@
 <body>
     <div id="homeScreen" class="screen active">
         <h1>LUPUS CUGGINOSO</h1>
-        <div class="parchment-effect floating">
+        <div class="parchment-effect">
             <p>Il gioco del lupo mannaro in versione cugginese</p>
         </div>
         <button onclick="showScreen('joinScreen')" class="pulse">ENTRA NEL GIOCO</button>
@@ -487,8 +391,6 @@
             <div class="player-count" id="hostPlayerCount">0 giocatori in lobby</div>
         </div>
         <button id="startGameButton" onclick="startGame()" class="pulse">AVVIA PARTITA</button>
-        <button id="startVotingButton" onclick="startVoting()" class="start-voting-btn" style="display:none;">AVVIA VOTAZIONI</button>
-        <button id="endVotingButton" onclick="endVoting()" class="end-voting-btn" style="display:none;">TERMINA VOTAZIONI</button>
         <button onclick="resetGame()" class="reset-btn">RESETTA PARTITA</button>
     </div>
 
@@ -501,66 +403,54 @@
         </div>
     </div>
 
-    <div id="votingScreen" class="screen">
-        <h1>VOTAZIONI</h1>
-        <div class="parchment-effect">
-            <div id="votingStatus" class="voting-status">Scegli il giocatore da eliminare:</div>
-            <div id="votingList"></div>
-        </div>
-    </div>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
-// Configurazione Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyAsTO8sYN1M7A1aK238RiYXDef4MQkw-AI",
-    authDomain: "lupus-764f6.firebaseapp.com",
-    databaseURL: "https://lupus-764f6-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "lupus-764f6",
-    storageBucket: "lupus-764f6.appspot.com",
-    messagingSenderId: "695119804153",
-    appId: "1:695119804153:web:d5cdcf9adbf633adb25428"
-};
+        // Configurazione Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAsTO8sYN1M7A1aK238RiYXDef4MQkw-AI",
+            authDomain: "lupus-764f6.firebaseapp.com",
+            databaseURL: "https://lupus-764f6-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "lupus-764f6",
+            storageBucket: "lupus-764f6.appspot.com",
+            messagingSenderId: "695119804153",
+            appId: "1:695119804153:web:d5cdcf9adbf633adb25428"
+        };
 
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const playersRef = database.ref('players');
-const gameStateRef = database.ref('gameState');
-let currentPlayerRef = null;
+        // Inizializza Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-let playerId;
-let isHost = false;
-let gameStarted = false;
-let votingInProgress = false;
-let votedPlayerId = null;
+        // Variabili globali
+        let playerId;
+        let isHost = false;
         const roles = {
             "Lupo": {
-                description: "Di notte scegli un giocatore da uccidere. Di giorno cerca di non farti scoprire!",
+                description: "Il tuo scopo è eliminare tutti i Villici.",
                 image: "https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Puttana": {
-                description: "Ogni notte puoi salvare un giocatore, impedendo al Lupo di ucciderlo.",
+                description: "Il tuo ruolo è salvare un giocatore ogni notte, impedendo al Lupo di ucciderlo.",
                 image: "https://images.unsplash.com/photo-1593104547489-5cfb3839a3b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Investigatore": {
-                description: "Ogni notte puoi investigare su un giocatore per scoprire se è il Lupo.",
+                description: "Il tuo ruolo è capire chi è il lupo.",
                 image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Vanessa": {
-                description: "Ogni notte puoi sbirciare per scoprire informazioni aggiuntive sui giocatori.",
+                description: "Il tuo ruolo è sbirciare durante la notte per scoprire qualche info in più.",
                 image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Sindaco": {
-                description: "Durante le votazioni il tuo voto conta doppio. Usalo con saggezza!",
+                description: "Il tuo ruolo è votare due volte durante le votazioni.",
                 image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Contadino": {
-                description: "Sei un semplice villico senza poteri speciali, ma il tuo voto è importante!",
+                description: "Il tuo ruolo è zappare la vigna.",
                 image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             },
             "Narratore": {
-                description: "Sei il narratore e controlli il gioco. Gestisci le fasi e assicurati che le regole siano rispettate!",
+                description: "Sei il narratore e controlli il gioco.",
                 image: "https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
             }
         };
@@ -569,8 +459,6 @@ let votedPlayerId = null;
         let playersRef;
         let currentPlayerRef;
         let playerName = "";
-        let gameStateRef;
-
 
         // Mostra alert personalizzato
         function showCustomAlert(message, isError = false) {
@@ -611,7 +499,6 @@ let votedPlayerId = null;
 
                 playerId = Date.now().toString();
                 playersRef = database.ref('players');
-                gameStateRef = database.ref('gameState');
                 currentPlayerRef = database.ref('players/' + playerId);
                 
                 // Controlla se il nome esiste già tra i giocatori attivi
@@ -635,9 +522,7 @@ let votedPlayerId = null;
                             role: '',
                             isHost: existingPlayer.isHost,
                             showRole: false,
-                            timestamp: firebase.database.ServerValue.TIMESTAMP,
-                            votedFor: '',
-                            isEliminated: false
+                            timestamp: firebase.database.ServerValue.TIMESTAMP
                         });
                     } 
                     // Se il giocatore esiste e ha già un ruolo assegnato (partita in corso)
@@ -645,16 +530,14 @@ let votedPlayerId = null;
                         // Verifica se il giocatore è ancora attivo
                         const isActive = await checkPlayerActivity(existingPlayer.id);
                         
-                        if (!isActive || existingPlayer.isEliminated) {
-                            // Se non è attivo o è eliminato, permette di riprendere il ruolo
+                        if (!isActive) {
+                            // Se non è attivo, permette di riprendere il ruolo
                             await currentPlayerRef.set({
                                 name: playerName,
                                 role: existingPlayer.role,
                                 isHost: existingPlayer.isHost,
                                 showRole: existingPlayer.showRole,
-                                timestamp: firebase.database.ServerValue.TIMESTAMP,
-                                votedFor: '',
-                                isEliminated: existingPlayer.isEliminated
+                                timestamp: firebase.database.ServerValue.TIMESTAMP
                             });
                         } else {
                             showCustomAlert("Nome già in uso da un giocatore attivo! Scegli un altro nome.", true);
@@ -669,9 +552,7 @@ let votedPlayerId = null;
                         role: '',
                         isHost: false,
                         showRole: false,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP,
-                        votedFor: '',
-                        isEliminated: false
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
                     });
                 }
 
@@ -680,7 +561,6 @@ let votedPlayerId = null;
                 listenForPlayers();
                 listenForRoleAssignment();
                 listenForGameReset();
-                listenForGameState();
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -718,17 +598,11 @@ let votedPlayerId = null;
                 let playerCount = 0;
                 
                 for (const [id, player] of Object.entries(players)) {
-                    if (player.isEliminated) continue;
-                    
                     const playerDiv = document.createElement('div');
                     playerDiv.innerHTML = `${player.name} ${player.isHost ? '<span style="color:var(--primary-color)">(NARRATORE)</span>' : ''}`;
                     
-                    if (player.role && gameStarted) {
-                        playerDiv.innerHTML += ` <span style="color:var(--accent-color)">(${player.role})</span>`;
-                    }
-                    
                     // Aggiungi pulsante "Rendi narratore" solo per l'host e se non è già narratore
-                    if (isHost && !player.isHost && !gameStarted) {
+                    if (isHost && !player.isHost) {
                         const assignHostBtn = document.createElement('button');
                         assignHostBtn.className = 'assign-host-btn';
                         assignHostBtn.textContent = 'Assegna narratore';
@@ -743,7 +617,7 @@ let votedPlayerId = null;
                 }
 
                 updatePlayerCount(playerCount);
-                document.getElementById('hostButton').style.display = (hostExists || gameStarted) ? 'none' : 'block';
+                document.getElementById('hostButton').style.display = hostExists ? 'none' : 'block';
             });
         }
 
@@ -772,35 +646,7 @@ let votedPlayerId = null;
                 
                 // Se il giocatore non ha più un ruolo (reset del gioco)
                 if (!player.role && !player.isHost) {
-                    gameStarted = false;
                     showScreen('lobbyScreen');
-                }
-            });
-        }
-
-        function listenForGameState() {
-            if (!gameStateRef) return;
-            
-            gameStateRef.on('value', (snapshot) => {
-                const state = snapshot.val() || {};
-                
-                if (state.votingInProgress) {
-                    votingInProgress = true;
-                    if (!isHost) {
-                        setupVotingScreen();
-                        showScreen('votingScreen');
-                    } else {
-                        document.getElementById('startVotingButton').style.display = 'none';
-                        document.getElementById('endVotingButton').style.display = 'inline-block';
-                    }
-                } else {
-                    votingInProgress = false;
-                    if (!isHost && document.getElementById('votingScreen').classList.contains('active')) {
-                        showScreen('roleScreen');
-                    } else if (isHost && gameStarted) {
-                        document.getElementById('startVotingButton').style.display = 'inline-block';
-                        document.getElementById('endVotingButton').style.display = 'none';
-                    }
                 }
             });
         }
@@ -851,8 +697,6 @@ let votedPlayerId = null;
                     updates['players/' + id + '/isHost'] = false;
                     updates['players/' + id + '/role'] = '';
                     updates['players/' + id + '/showRole'] = false;
-                    updates['players/' + id + '/votedFor'] = '';
-                    updates['players/' + id + '/isEliminated'] = false;
                 }
                 
                 // Imposta il nuovo host
@@ -862,21 +706,13 @@ let votedPlayerId = null;
                 
                 await database.ref().update(updates);
                 
-                // Resetta lo stato del gioco
-                await gameStateRef.set({
-                    votingInProgress: false,
-                    gameStarted: false
-                });
-                
                 // Se ero io l'host precedente, torno alla lobby
-                if (playerId === newHostId) {
+                if (currentPlayerRef.key === newHostId) {
                     isHost = true;
-                    gameStarted = false;
                     showScreen('hostScreen');
                     listenForRoles();
                 } else {
                     isHost = false;
-                    gameStarted = false;
                     showScreen('lobbyScreen');
                 }
                 
@@ -897,9 +733,7 @@ let votedPlayerId = null;
                 let playerCount = 0;
                 
                 for (const [id, player] of Object.entries(players)) {
-                    if (player.isEliminated) {
-                        assignedRolesDiv.innerHTML += `<div class="eliminated">${player.name}: <strong>${player.role || '...'} (ELIMINATO)</strong></div>`;
-                    } else if (!player.isHost) {
+                    if (!player.isHost) {
                         assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role || '...in attesa...'}</strong></div>`;
                         playerCount++;
                     }
@@ -909,276 +743,49 @@ let votedPlayerId = null;
             });
         }
 
-async function startGame() {
-    try {
-        console.log("Avvio partita..."); // Debug
-        const snapshot = await playersRef.once('value');
-        const players = snapshot.val() || {};
-        
-        // Filtra solo i giocatori non host e non eliminati
-        const playerIdsToAssign = Object.keys(players).filter(id => 
-            !players[id].isHost && !players[id].isEliminated
-        );
-
-        console.log("Giocatori da assegnare:", playerIdsToAssign.length); // Debug
-        
-        if (playerIdsToAssign.length < 3) {
-            showCustomAlert("Servono almeno 3 giocatori (escluso il narratore) per iniziare!", true);
-            return;
-        }
-
-        // Crea una lista di ruoli bilanciata
-        let rolesToAssign = [];
-        
-        // Prima assegna tutti i ruoli base
-        const baseRolesCopy = [...baseRoles];
-        while (rolesToAssign.length < playerIdsToAssign.length && baseRolesCopy.length > 0) {
-            rolesToAssign.push(baseRolesCopy.shift());
-        }
-        
-        // Poi completa con Contadini se necessario
-        while (rolesToAssign.length < playerIdsToAssign.length) {
-            rolesToAssign.push("Contadino");
-        }
-
-        console.log("Ruoli da assegnare:", rolesToAssign); // Debug
-        
-        const shuffledRoles = shuffleArray(rolesToAssign);
-        const updates = {};
-
-        // Assegna i ruoli
-        playerIdsToAssign.forEach((id, index) => {
-            updates['players/' + id + '/role'] = shuffledRoles[index];
-            updates['players/' + id + '/showRole'] = false;
-            updates['players/' + id + '/votedFor'] = '';
-            updates['players/' + id + '/isEliminated'] = false;
-        });
-
-        await database.ref().update(updates);
-        console.log("Ruoli assegnati con successo"); // Debug
-
-        // Stato del gioco
-        await gameStateRef.set({
-            votingInProgress: false,
-            gameStarted: true
-        });
-
-        gameStarted = true;
-        console.log("Gioco avviato con successo"); // Debug
-
-        // Mostra il pulsante per avviare le votazioni
-        document.getElementById('startVotingButton').style.display = 'inline-block';
-
-        // Dopo mezzo secondo, mostra i ruoli ai giocatori
-        setTimeout(async () => {
-            const showRoleUpdates = {};
-            playerIdsToAssign.forEach(id => {
-                showRoleUpdates['players/' + id + '/showRole'] = true;
-            });
-            await database.ref().update(showRoleUpdates);
-            console.log("Ruoli mostrati ai giocatori"); // Debug
-        }, 500);
-
-    } catch (error) {
-        console.error("Errore dettagliato:", {
-            message: error.message,
-            stack: error.stack,
-            fullError: error
-        });
-        showCustomAlert(`Errore nell'avvio: ${error.message}`, true);
-    }
-}
-		
-        async function startVoting() {
-            if (!isHost) return;
-            
+        async function startGame() {
             try {
-                // Imposta lo stato di votazione
-                await gameStateRef.update({
-                    votingInProgress: true
-                });
-                
-                // Resetta i voti precedenti
                 const snapshot = await playersRef.once('value');
                 const players = snapshot.val() || {};
-                const updates = {};
+                const playerIds = Object.keys(players);
+                const playerCount = playerIds.length;
                 
-                for (const id in players) {
-                    updates['players/' + id + '/votedFor'] = '';
-                }
-                
-                await database.ref().update(updates);
-                
-                showCustomAlert("Votazioni avviate! I giocatori stanno votando.");
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nell'avvio delle votazioni.", true);
-            }
-        }
-
-        async function endVoting() {
-            if (!isHost) return;
-            
-            try {
-                // Calcola i voti
-                const snapshot = await playersRef.once('value');
-                const players = snapshot.val() || {};
-                
-                const voteCounts = {};
-                let maxVotes = 0;
-                let playersToEliminate = [];
-                
-                // Conta i voti
-                for (const [id, player] of Object.entries(players)) {
-                    if (player.isEliminated || !player.votedFor) continue;
-                    
-                    if (voteCounts[player.votedFor]) {
-                        voteCounts[player.votedFor]++;
-                    } else {
-                        voteCounts[player.votedFor] = 1;
-                    }
-                    
-                    // Controlla se il voto è il massimo
-                    if (voteCounts[player.votedFor] > maxVotes) {
-                        maxVotes = voteCounts[player.votedFor];
-                        playersToEliminate = [player.votedFor];
-                    } else if (voteCounts[player.votedFor] === maxVotes) {
-                        playersToEliminate.push(player.votedFor);
-                    }
-                }
-                
-                // Se non ci sono voti, termina senza eliminare nessuno
-                if (playersToEliminate.length === 0) {
-                    await gameStateRef.update({
-                        votingInProgress: false
-                    });
-                    
-                    showCustomAlert("Nessun giocatore è stato votato. La votazione termina senza eliminazioni.");
+                if (playerCount < 3) {
+                    showCustomAlert("Servono almeno 3 giocatori per iniziare!", true);
                     return;
                 }
                 
-                // Se c'è un pareggio, scegli a random tra i più votati
-                const playerToEliminate = playersToEliminate.length > 1 
-                    ? playersToEliminate[Math.floor(Math.random() * playersToEliminate.length)]
-                    : playersToEliminate[0];
+                // Filtra solo i giocatori (escludi il narratore)
+                const playerIdsToAssign = playerIds.filter(id => !players[id].isHost);
                 
-                // Elimina il giocatore
-                await database.ref('players/' + playerToEliminate).update({
-                    isEliminated: true
-                });
-                
-                // Termina la votazione
-                await gameStateRef.update({
-                    votingInProgress: false
-                });
-                
-                // Mostra il risultato
-                const eliminatedPlayer = players[playerToEliminate];
-                showCustomAlert(`${eliminatedPlayer.name} (${eliminatedPlayer.role}) è stato eliminato con ${maxVotes} voti!`);
-                
-                // Controlla se il gioco è finito
-                checkGameEnd();
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nel terminare le votazioni.", true);
-            }
-        }
-
-        async function checkGameEnd() {
-            const snapshot = await playersRef.once('value');
-            const players = snapshot.val() || {};
-            
-            let wolves = 0;
-            let villagers = 0;
-            let totalActive = 0;
-            
-            for (const player of Object.values(players)) {
-                if (player.isEliminated) continue;
-                
-                totalActive++;
-                if (player.role === "Lupo") wolves++;
-                else villagers++;
-            }
-            
-            // Se tutti i lupi sono eliminati, i villici vincono
-            if (wolves === 0) {
-                await gameStateRef.update({
-                    votingInProgress: false,
-                    gameStarted: false
-                });
-                
-                showCustomAlert("I VILLICI HANNO VINTO! Tutti i lupi sono stati eliminati.");
-                return;
-            }
-            
-            // Se i lupi sono pari o più dei villici, i lupi vincono
-            if (wolves >= villagers) {
-                await gameStateRef.update({
-                    votingInProgress: false,
-                    gameStarted: false
-                });
-                
-                showCustomAlert("I LUPI HANNO VINTO! Hanno raggiunto la maggioranza.");
-            }
-        }
-
-        async function setupVotingScreen() {
-            const snapshot = await playersRef.once('value');
-            const players = snapshot.val() || {};
-            const votingList = document.getElementById('votingList');
-            votingList.innerHTML = '';
-            
-            // Mostra solo i giocatori attivi (non eliminati)
-            for (const [id, player] of Object.entries(players)) {
-                if (player.isEliminated || id === playerId) continue;
-                
-                const playerDiv = document.createElement('div');
-                playerDiv.innerHTML = `${player.name} ${player.role ? `<span style="color:var(--accent-color)">(${player.role})</span>` : ''}`;
-                
-                const voteBtn = document.createElement('button');
-                voteBtn.className = 'vote-btn';
-                voteBtn.textContent = 'VOTA';
-                voteBtn.onclick = () => voteForPlayer(id, player.name);
-                playerDiv.appendChild(voteBtn);
-                
-                votingList.appendChild(playerDiv);
-            }
-            
-            // Aggiorna lo stato della votazione
-            document.getElementById('votingStatus').textContent = "Scegli il giocatore da eliminare:";
-        }
-
-        async function voteForPlayer(targetId, targetName) {
-            try {
-                // Aggiorna il voto del giocatore corrente
-                await currentPlayerRef.update({
-                    votedFor: targetId
-                });
-                
-                // Mostra conferma
-                document.getElementById('votingStatus').textContent = `Hai votato per eliminare ${targetName}`;
-                
-                // Disabilita tutti i pulsanti di voto
-                document.querySelectorAll('.vote-btn').forEach(btn => {
-                    btn.disabled = true;
-                });
-                
-                // Evidenzia il giocatore votato
-                const votingList = document.getElementById('votingList').children;
-                for (let i = 0; i < votingList.length; i++) {
-                    if (votingList[i].textContent.includes(targetName)) {
-                        votingList[i].classList.add('voted');
-                        break;
-                    }
+                let rolesToAssign = [...baseRoles];
+                while (rolesToAssign.length < playerIdsToAssign.length) {
+                    rolesToAssign.push("Contadino");
                 }
                 
-                showCustomAlert(`Hai votato per eliminare ${targetName}. Attendi che il narratore concluda le votazioni.`);
+                const shuffledRoles = shuffleArray(rolesToAssign);
+                const updates = {};
+                
+                // Assegna i ruoli solo ai giocatori (non al narratore)
+                playerIdsToAssign.forEach((id, index) => {
+                    updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
+                    updates['players/' + id + '/showRole'] = false; // Inizialmente non mostrare
+                });
+
+                await database.ref().update(updates);
+                
+                // Dopo 0.5 secondi, imposta showRole a true per tutti i giocatori (più veloce)
+                setTimeout(async () => {
+                    const showRoleUpdates = {};
+                    playerIdsToAssign.forEach(id => {
+                        showRoleUpdates['players/' + id + '/showRole'] = true;
+                    });
+                    await database.ref().update(showRoleUpdates);
+                }, 500);
                 
             } catch (error) {
                 console.error("Errore:", error);
-                showCustomAlert("Errore nel registrare il tuo voto.", true);
+                showCustomAlert("Errore nell'assegnazione dei ruoli. Riprova!", true);
             }
         }
 
@@ -1186,11 +793,10 @@ async function startGame() {
             if (!isHost) return;
             
             try {
-                const alertDiv = showCustomAlert("Vuoi resettare completamente la partita?", false);
+                const alertDiv = showCustomAlert("Vuoi resettare la partita e assegnare un nuovo narratore?", false);
                 alertDiv.innerHTML = `
-                    <p>Vuoi resettare completamente la partita?</p>
-                    <p><small>Tutti i ruoli e i progressi verranno cancellati.</small></p>
-                    <button onclick="confirmReset()">CONFERMA RESET</button>
+                    <p>Vuoi resettare la partita e assegnare un nuovo narratore?</p>
+                    <button onclick="confirmReset()">CONFERMA</button>
                     <button onclick="this.parentNode.remove()">ANNULLA</button>
                 `;
                 
@@ -1203,21 +809,12 @@ async function startGame() {
                         updates['players/' + id + '/role'] = '';
                         updates['players/' + id + '/showRole'] = false;
                         updates['players/' + id + '/isHost'] = false;
-                        updates['players/' + id + '/votedFor'] = '';
-                        updates['players/' + id + '/isEliminated'] = false;
                     }
                     
                     await database.ref().update(updates);
                     
-                    // Resetta lo stato del gioco
-                    await gameStateRef.set({
-                        votingInProgress: false,
-                        gameStarted: false
-                    });
-                    
-                    gameStarted = false;
                     document.querySelector('.custom-alert')?.remove();
-                    showCustomAlert("Partita resettata completamente! Ora puoi iniziare una nuova partita.");
+                    showCustomAlert("Partita resettata! Ora puoi assegnare un nuovo narratore.");
                 };
                 
             } catch (error) {
