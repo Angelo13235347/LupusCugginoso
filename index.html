@@ -509,7 +509,7 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
         // Configurazione Firebase
@@ -523,11 +523,9 @@
             appId: "1:695119804153:web:d5cdcf9adbf633adb25428"
         };
 
-        // Inizializza Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Variabili globali
         let playerId;
         let isHost = false;
         let gameStarted = false;
@@ -569,6 +567,7 @@
         let currentPlayerRef;
         let playerName = "";
         let gameStateRef;
+
 
         // Mostra alert personalizzato
         function showCustomAlert(message, isError = false) {
@@ -911,47 +910,47 @@
             try {
                 const snapshot = await playersRef.once('value');
                 const players = snapshot.val() || {};
-                const playerIds = Object.keys(players);
-                const playerCount = playerIds.length;
-                
-                if (playerCount < 3) {
-                    showCustomAlert("Servono almeno 3 giocatori per iniziare!", true);
+
+                // Filtra solo i giocatori non host
+                const playerIdsToAssign = Object.keys(players).filter(id => !players[id].isHost);
+
+                if (playerIdsToAssign.length < 3) {
+                    showCustomAlert("Servono almeno 3 giocatori (escluso il narratore) per iniziare!", true);
                     return;
                 }
-                
-                // Filtra solo i giocatori (escludi il narratore)
-                const playerIdsToAssign = playerIds.filter(id => !players[id].isHost);
-                
+
+                // Crea i ruoli da assegnare
                 let rolesToAssign = [...baseRoles];
                 while (rolesToAssign.length < playerIdsToAssign.length) {
                     rolesToAssign.push("Contadino");
                 }
-                
+                rolesToAssign = rolesToAssign.slice(0, playerIdsToAssign.length); // Limita al numero esatto di giocatori
+
                 const shuffledRoles = shuffleArray(rolesToAssign);
                 const updates = {};
-                
-                // Assegna i ruoli solo ai giocatori (non al narratore)
+
+                // Assegna i ruoli
                 playerIdsToAssign.forEach((id, index) => {
-                    updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
-                    updates['players/' + id + '/showRole'] = false; // Inizialmente non mostrare
+                    updates['players/' + id + '/role'] = shuffledRoles[index];
+                    updates['players/' + id + '/showRole'] = false;
                     updates['players/' + id + '/votedFor'] = '';
                     updates['players/' + id + '/isEliminated'] = false;
                 });
 
                 await database.ref().update(updates);
-                
-                // Imposta lo stato del gioco
+
+                // Stato del gioco
                 await gameStateRef.set({
                     votingInProgress: false,
                     gameStarted: true
                 });
-                
+
                 gameStarted = true;
-                
+
                 // Mostra il pulsante per avviare le votazioni
                 document.getElementById('startVotingButton').style.display = 'inline-block';
-                
-                // Dopo 0.5 secondi, imposta showRole a true per tutti i giocatori
+
+                // Dopo mezzo secondo, mostra i ruoli ai giocatori
                 setTimeout(async () => {
                     const showRoleUpdates = {};
                     playerIdsToAssign.forEach(id => {
@@ -959,13 +958,13 @@
                     });
                     await database.ref().update(showRoleUpdates);
                 }, 500);
-                
+
             } catch (error) {
                 console.error("Errore:", error);
                 showCustomAlert("Errore nell'assegnazione dei ruoli. Riprova!", true);
             }
         }
-
+		
         async function startVoting() {
             if (!isHost) return;
             
