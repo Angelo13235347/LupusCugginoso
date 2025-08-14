@@ -1257,40 +1257,51 @@
             }
         }
         
-        function setupDayPhase() {
-            // Resetta il voto del giocatore
-            currentVote = null;
-            hasVoted = false;
-            
-            if (playerRole === 'Narratore') {
-                // Host vede tutti i giocatori e può gestire la votazione
-                showScreen('hostScreen');
-                updateHostDayView();
-            } else {
-                // Altri giocatori vedono lo schermo diurna
-                showScreen('dayScreen');
-                updateDayView();
-            }
+async function setupDayPhase() {
+    // Resetta il voto del giocatore
+    currentVote = null;
+    hasVoted = false;
+    
+    if (playerRole === 'Narratore') {
+        // Host vede tutti i giocatori e può gestire la votazione
+        showScreen('hostScreen');
+        await updateHostDayView(); // Aggiungi await
+    } else {
+        // Altri giocatori vedono lo schermo diurna
+        showScreen('dayScreen');
+        await updateDayView(); // Aggiungi await
+    }
+}
+
+			async function setupDayPhase() {
+    if (playerRole === 'Narratore') {
+        await updateHostDayView(); // Aggiungi await
+    } else {
+        await updateDayView(); // Aggiungi await
+    }
+}
         }
         
-        function updateHostDayView() {
-            const assignedRolesDiv = document.getElementById('assignedRoles');
-            assignedRolesDiv.innerHTML = '<h2>FASE DIURNA</h2>';
-            
-            // Mostra i risultati della notte
-            const gameSnapshot = await gameRef.once('value');
-            const gameState = gameSnapshot.val() || {};
-            
-            if (gameState.savedPlayer) {
-                assignedRolesDiv.innerHTML += `<p>La Puttana ha salvato ${gameState.savedPlayer}.</p>`;
-            }
-            
-            if (gameState.eliminatedPlayers && gameState.eliminatedPlayers.length > 0) {
-                const lastEliminated = gameState.eliminatedPlayers[gameState.eliminatedPlayers.length - 1];
-                assignedRolesDiv.innerHTML += `<p>${lastEliminated.name} (${lastEliminated.role}) è stato ucciso durante la notte.</p>`;
-            } else {
-                assignedRolesDiv.innerHTML += '<p>Nessuno è stato ucciso stanotte.</p>';
-            }
+async function updateHostDayView() {
+    const assignedRolesDiv = document.getElementById('assignedRoles');
+    assignedRolesDiv.innerHTML = '<h2>FASE DIURNA</h2>';
+    
+    const gameSnapshot = await gameRef.once('value');
+    const gameState = gameSnapshot.val() || {};
+    
+    if (gameState.savedPlayer) {
+        assignedRolesDiv.innerHTML += `<p>La Puttana ha salvato ${gameState.savedPlayer}.</p>`;
+    }
+    
+    if (gameState.eliminatedPlayers && gameState.eliminatedPlayers.length > 0) {
+        const lastEliminated = gameState.eliminatedPlayers[gameState.eliminatedPlayers.length - 1];
+        assignedRolesDiv.innerHTML += `<p>${lastEliminated.name} (${lastEliminated.role}) è stato ucciso durante la notte.</p>`;
+    } else {
+        assignedRolesDiv.innerHTML += '<p>Nessuno è stato ucciso stanotte.</p>';
+    }
+    
+    // Resto del codice esistente...
+}
             
             // Mostra i giocatori vivi
             assignedRolesDiv.innerHTML += '<h3>Giocatori vivi:</h3>';
@@ -1322,33 +1333,33 @@
             }
         }
         
-        function updateDayView() {
-            const nightEvents = document.getElementById('nightEvents');
-            const dayPlayersList = document.getElementById('dayPlayersList');
-            const votingOptions = document.getElementById('votingOptions');
-            const voteButton = document.getElementById('voteButton');
-            
-            // Resetta gli elementi
-            nightEvents.innerHTML = '';
-            dayPlayersList.innerHTML = '';
-            votingOptions.innerHTML = '';
-            voteButton.disabled = true;
-            
-            // Mostra gli eventi della notte
-            const gameSnapshot = await gameRef.once('value');
-            const gameState = gameSnapshot.val() || {};
-            
-            if (gameState.savedPlayer) {
-                nightEvents.innerHTML += `<p>La Puttana ha salvato ${gameState.savedPlayer}.</p>`;
-            }
-            
-            if (gameState.eliminatedPlayers && gameState.eliminatedPlayers.length > 0) {
-                const lastEliminated = gameState.eliminatedPlayers[gameState.eliminatedPlayers.length - 1];
-                nightEvents.innerHTML += `<p>${lastEliminated.name} (${lastEliminated.role}) è stato ucciso durante la notte.</p>`;
-            } else {
-                nightEvents.innerHTML += '<p>Nessuno è stato ucciso stanotte.</p>';
-            }
-            
+async function updateDayView() {
+    const nightEvents = document.getElementById('nightEvents');
+    const dayPlayersList = document.getElementById('dayPlayersList');
+    const votingOptions = document.getElementById('votingOptions');
+    const voteButton = document.getElementById('voteButton');
+    
+    // Resetta gli elementi
+    nightEvents.innerHTML = '';
+    dayPlayersList.innerHTML = '';
+    votingOptions.innerHTML = '';
+    voteButton.disabled = true;
+    
+    // Aggiungi await qui sotto
+    const gameSnapshot = await gameRef.once('value');
+    const gameState = gameSnapshot.val() || {};
+    
+    if (gameState.savedPlayer) {
+        nightEvents.innerHTML += `<p>La Puttana ha salvato ${gameState.savedPlayer}.</p>`;
+    }
+    
+    if (gameState.eliminatedPlayers && gameState.eliminatedPlayers.length > 0) {
+        const lastEliminated = gameState.eliminatedPlayers[gameState.eliminatedPlayers.length - 1];
+        nightEvents.innerHTML += `<p>${lastEliminated.name} (${lastEliminated.role}) è stato ucciso durante la notte.</p>`;
+    } else {
+        nightEvents.innerHTML += '<p>Nessuno è stato ucciso stanotte.</p>';
+    }
+	
             // Mostra il risultato dell'investigazione (solo per l'investigatore)
             if (playerRole === 'Investigatore' && gameState.investigatedPlayer) {
                 nightEvents.innerHTML += `<p>Hai investigato ${gameState.investigatedPlayer.name} - Ruolo: ${gameState.investigatedPlayer.role}</p>`;
@@ -1472,18 +1483,18 @@
             }
         }
         
-        function showVotingResults() {
-            showScreen('resultsScreen');
-            const votingResults = document.getElementById('votingResults');
-            const eliminatedPlayer = document.getElementById('eliminatedPlayer');
-            
-            votingResults.innerHTML = '<h2>Risultati della votazione:</h2>';
-            eliminatedPlayer.innerHTML = '';
-            
-            // Recupera i voti
-            const gameSnapshot = await gameRef.once('value');
-            const gameState = gameSnapshot.val() || {};
-            votes = gameState.votes || {};
+async function showVotingResults() {
+    showScreen('resultsScreen');
+    const votingResults = document.getElementById('votingResults');
+    const eliminatedPlayer = document.getElementById('eliminatedPlayer');
+    
+    votingResults.innerHTML = '<h2>Risultati della votazione:</h2>';
+    eliminatedPlayer.innerHTML = '';
+    
+    // Aggiungi await qui
+    const gameSnapshot = await gameRef.once('value');
+    const gameState = gameSnapshot.val() || {};
+    votes = gameState.votes || {};
             
             // Conta i voti
             const voteCounts = {};
@@ -1557,30 +1568,29 @@
             showGameOver();
         }
         
-        function showGameOver() {
-            showScreen('gameOverScreen');
-            const winnerTeam = document.getElementById('winnerTeam');
-            const allRoles = document.getElementById('allRoles');
-            
-            // Recupera lo stato del gioco
-            const gameSnapshot = await gameRef.once('value');
-            const gameState = gameSnapshot.val() || {};
-            
-            // Mostra il team vincitore
-            if (gameState.winner === 'villico') {
-                winnerTeam.innerHTML = '<h2 style="color:var(--success-color)">I VILLICI HANNO VINTO!</h2>';
-            } else {
-                winnerTeam.innerHTML = '<h2 style="color:var(--danger-color)">I LUPI HANNO VINTO!</h2>';
-            }
-            
-            // Mostra tutti i ruoli
-            allRoles.innerHTML = '<h3>Tutti i ruoli:</h3>';
-            for (const [id, player] of Object.entries(allPlayers)) {
-                if (!player.isHost) {
-                    allRoles.innerHTML += `<div>${player.name}: <strong>${player.role}</strong> ${!player.isAlive ? '<span style="color:var(--danger-color)">(ELIMINATO)</span>' : ''}</div>`;
-                }
-            }
+        // SOSTITUISCI la funzione esistente con:
+async function showGameOver() {
+    showScreen('gameOverScreen');
+    const winnerTeam = document.getElementById('winnerTeam');
+    const allRoles = document.getElementById('allRoles');
+    
+    // Aggiungi await qui
+    const gameSnapshot = await gameRef.once('value');
+    const gameState = gameSnapshot.val() || {};
+    
+    if (gameState.winner === 'villico') {
+        winnerTeam.innerHTML = '<h2 style="color:var(--success-color)">I VILLICI HANNO VINTO!</h2>';
+    } else {
+        winnerTeam.innerHTML = '<h2 style="color:var(--danger-color)">I LUPI HANNO VINTO!</h2>';
+    }
+    
+    allRoles.innerHTML = '<h3>Tutti i ruoli:</h3>';
+    for (const [id, player] of Object.entries(allPlayers)) {
+        if (!player.isHost) {
+            allRoles.innerHTML += `<div>${player.name}: <strong>${player.role}</strong> ${!player.isAlive ? '<span style="color:var(--danger-color)">(ELIMINATO)</span>' : ''}</div>`;
         }
+    }
+}
         
         async function continueToNextPhase() {
             if (!isHost) return;
