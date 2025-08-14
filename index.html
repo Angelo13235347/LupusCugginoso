@@ -403,6 +403,22 @@
         </div>
     </div>
 
+<!-- Pulsante aggiunto nel hostScreen -->
+<button id="startVotingButton" onclick="startVoting()" style="display:none;">AVVIA VOTAZIONI</button>
+
+<!-- Schermata di voto (per giocatori) -->
+<div id="voteScreen" class="screen">
+    <h1>VOTA UN GIOCATORE</h1>
+    <div class="parchment-effect" id="votePlayersList"></div>
+</div>
+
+<!-- Schermata dei risultati (per narratore) -->
+<div id="resultsScreen" class="screen">
+    <h1>RISULTATI VOTAZIONE</h1>
+    <div class="parchment-effect" id="voteResults"></div>
+    <button onclick="endVoting()">TERMINA VOTAZIONI</button>
+</div>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
@@ -418,13 +434,16 @@
         };
 
         // Inizializza Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
 
-        // Variabili globali
-        let playerId;
-        let isHost = false;
-        const roles = {
+// Riferimento al nodo votazioni
+const votingRef = database.ref('voting'); // <--- nuovo nodo
+
+// Variabili globali
+let playerId;
+let isHost = false;
+const roles = {
             "Lupo": {
                 description: "Il tuo scopo è eliminare tutti i Villici.",
                 image: "https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
@@ -455,6 +474,29 @@
             }
         };
         
+		// Funzione per avviare le votazioni
+function startVoting() {
+    votingRef.set({
+        active: true,
+        votes: {}
+    });
+}
+
+// Funzione per terminare le votazioni
+function endVoting() {
+    votingRef.set({
+        active: false
+    });
+}
+
+// Funzione per votare un giocatore
+function voteFor(playerId) {
+    const currentPlayerId = playerId; // questo è l'ID di chi sta votando
+    votingRef.child('votes').update({
+        [currentPlayerId]: playerId // assegna il voto
+    });
+}
+		
         const baseRoles = ["Lupo", "Puttana", "Investigatore", "Vanessa", "Sindaco", "Contadino"];
         let playersRef;
         let currentPlayerRef;
@@ -561,6 +603,7 @@
                 listenForPlayers();
                 listenForRoleAssignment();
                 listenForGameReset();
+				listenForVoting();
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -754,6 +797,124 @@
                     showCustomAlert("Servono almeno 3 giocatori per iniziare!", true);
                     return;
                 }
+				
+				let votingRef = database.ref('voting');
+
+// Funzione chiamata dal narratore per avviare la votazione
+async function startVoting() {
+    await votingRef.set({
+        active: true,
+        votes: {}
+    });
+
+    // Mostra ai giocatori la schermata di voto
+    showCustomAlert("Votazioni iniziate!");
+}
+
+// Ascolta lo stato di votazione per ogni giocatore
+function listenForVoting() {
+    votingRef.on('value', snapshot => {
+        const data = snapshot.val();
+        if (!data) return;
+
+        if (data.active) {
+            // Se non sono narratore -> apro schermata di voto
+            if (!isHost) {
+                loadVotingPlayers();
+                showScreen('voteScreen');
+            }
+            // Se sono narratore -> apro schermata risultati live
+            else {
+                updateVotingResults(data.votes || {});
+                showScreen('resultsScreen');
+            }
+        } else {
+            // Votazione terminata, torno alla schermata di gioco
+            if (!isHost) {
+                showScreen('roleScreen');
+            }
+        }
+		if (isHost) {
+    document.getElementById('startVotingButton').style.display = 'inline-block';
+}
+    });
+}
+
+// Carica lista giocatori per il voto
+async function loadVotingPlayers() {
+    const snapshot = await playersRef.once('value');
+    const players = snapshot.val() || {};
+    const listDiv = document.getElementById('votePlayersList');
+    listDiv.innerHTML = '';
+
+    for (const [id, player] of Object.entries(players)) {
+        if (id !== playerId && !player.isHost && player.role) { // non voti te stesso e no host
+            const btn = document.createElement('button');
+            btn.textContent = player.name;
+            btn.onclick = () => castVote(id);
+            listDiv.appendChild(btn);
+        }
+    }
+}
+
+// Registra voto
+async function castVote(targetId) {
+    await votingRef.child('votes/' + playerId).set(targetId);
+    showCustomAlert("Voto registrato!");
+}
+
+// Aggiorna risultati live per narratore
+async function updateVotingResults(votes) {
+    const snapshot = await playersRef.once('value');
+    const players = snapshot.val() || {};
+    const counts = {};
+
+    for (const voter in votes) {
+        const voted = votes[voter];
+        counts[voted] = (counts[voted] || 0) + 1;
+    }
+
+    let html = '';
+    for (const [id, player] of Object.entries(players)) {
+        if (!player.isHost && player.role) {
+            html += `<div>${player.name}: ${counts[id] || 0} voti</div>`;
+        }
+    }
+    document.getElementById('voteResults').innerHTML = html;
+}
+
+// Termina votazione e elimina il giocatore con più voti
+async function endVoting() {
+    const snapshotVotes = await votingRef.child('votes').once('value');
+    const votes = snapshotVotes.val() || {};
+
+    const counts = {};
+    for (const voter in votes) {
+        const voted = votes[voter];
+        counts[voted] = (counts[voted] || 0) + 1;
+    }
+
+    // Trova ID più votato
+    let maxVotes = 0;
+    let eliminatedId = null;
+    for (const id in counts) {
+        if (counts[id] > maxVotes) {
+            maxVotes = counts[id];
+            eliminatedId = id;
+        }
+    }
+
+    if (eliminatedId) {
+        await database.ref('players/' + eliminatedId).remove();
+        showCustomAlert("Il giocatore è stato eliminato!");
+    }
+
+    // Chiudi votazioni
+    await votingRef.set({ active: false, votes: {} });
+
+    // Torna alla schermata narratore
+    showScreen('hostScreen');
+}
                 
                 // Filtra solo i giocatori (escludi il narratore)
                 const playerIdsToAssign = playerIds.filter(id => !players[id].isHost);
@@ -844,4 +1005,4 @@
         });
     </script>
 </body>
-</html>
+</html> 
