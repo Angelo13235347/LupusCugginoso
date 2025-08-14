@@ -9,14 +9,13 @@
         
         :root {
             --primary-color: #f8bb22;
-            --secondary-color: #11131a;
-            --accent-color: #343954;
-            --text-color: #e9ebf1;
-            --parchment-color: #f8f1e2;
+            --secondary-color: #1a1a2e;
+            --accent-color: #4a4a6a;
+            --text-color: #e6e6e6;
+            --parchment-color: #f0e6d2;
             --success-color: #4CAF50;
             --danger-color: #a52a2a;
             --info-color: #3f51b5;
-            --muted-color: #9aa2b1;
         }
         
         * {
@@ -31,7 +30,7 @@
             color: var(--text-color);
             margin: 0;
             padding: 20px;
-            background-image: url('https://images.unsplash.com/photo-1518562180175-34a163b1a9a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');
+            background-image: url('https://images.unsplash.com/photo-1518562180175-34a163b1a9a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
             background-size: cover;
             background-attachment: fixed;
             background-position: center;
@@ -42,13 +41,13 @@
         
         .screen {
             display: none;
-            max-width: 900px;
+            max-width: 800px;
             margin: 20px auto;
             padding: 30px;
-            background-color: rgba(17, 19, 26, 0.94);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
-            border: 1px solid rgba(255,255,255,0.06);
+            background-color: rgba(26, 26, 46, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--accent-color);
             position: relative;
             overflow: hidden;
             animation: fadeIn 0.5s ease-out;
@@ -62,9 +61,12 @@
         .screen::before {
             content: '';
             position: absolute;
-            inset: 0;
-            background: radial-gradient(80% 80% at 50% 0%, rgba(255,255,255,0.04), transparent 60%);
-            pointer-events: none;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.7) 100%);
+            z-index: -1;
         }
         
         .active {
@@ -73,27 +75,28 @@
         
         h1 {
             color: var(--primary-color);
-            text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
-            font-size: clamp(2.1rem, 4.2vw, 3rem);
-            margin-bottom: 24px;
-            letter-spacing: 1.5px;
+            text-shadow: 2px 2px 4px #000;
+            font-size: clamp(2em, 5vw, 3em);
+            margin-bottom: 30px;
+            letter-spacing: 2px;
             font-family: 'Cinzel Decorative', cursive;
         }
         
         button {
-            background: linear-gradient(180deg, var(--primary-color), #d79f1f);
-            color: #1a1a1a;
+            background: linear-gradient(to bottom, var(--primary-color), #d89e1a);
+            color: var(--secondary-color);
             border: none;
-            padding: 14px 26px;
-            margin: 12px;
-            border-radius: 10px;
+            padding: 15px 30px;
+            margin: 15px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1.05rem;
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: bold;
             font-family: 'MedievalSharp', cursive;
-            letter-spacing: 0.6px;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.35);
-            border: 1px solid rgba(255, 211, 119, 0.35);
+            letter-spacing: 1px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 200px;
             position: relative;
             overflow: hidden;
         }
@@ -101,62 +104,69 @@
         button::after {
             content: '';
             position: absolute;
-            top: 0; left: -120%;
-            width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-            transform: skewX(-15deg);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
         }
-        button:hover::after { left: 160%; transition: left .8s ease; }
         
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
-            background: linear-gradient(180deg, #ffd054, #e6b020);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(to bottom, #ffcc33, #e6b020);
+        }
+        
+        button:hover::after {
+            transform: translateX(0);
         }
         
         input {
-            padding: 12px 14px;
+            padding: 12px;
             margin: 15px;
-            width: min(80%, 360px);
-            border-radius: 10px;
+            width: min(80%, 350px);
+            border-radius: 8px;
             border: 2px solid var(--accent-color);
-            background-color: rgba(255, 255, 255, 0.96);
-            color: #161821;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: var(--secondary-color);
             font-size: 1rem;
             font-family: 'MedievalSharp', cursive;
             text-align: center;
+            transition: all 0.3s;
         }
         
         input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 10px rgba(248, 187, 34, 0.35);
+            box-shadow: 0 0 8px rgba(248, 187, 34, 0.5);
         }
         
         #playersList {
             margin: 25px 0;
             text-align: left;
-            font-size: 1.05rem;
+            font-size: 1.1rem;
         }
         
         #playersList div {
-            padding: 12px 16px;
-            margin: 8px 0;
-            background-color: rgba(74, 74, 106, 0.4);
+            padding: 12px 15px;
+            margin: 10px 0;
+            background-color: rgba(74, 74, 106, 0.5);
             border-left: 4px solid var(--primary-color);
-            border-radius: 8px;
+            border-radius: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 10px;
         }
         
         .role-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 24px 0;
+            margin: 30px 0;
         }
         
         .role-image {
@@ -165,24 +175,29 @@
             border-radius: 50%;
             object-fit: cover;
             border: 5px solid var(--primary-color);
-            box-shadow: 0 0 20px rgba(248, 187, 34, 0.4);
-            margin-bottom: 16px;
+            box-shadow: 0 0 20px rgba(248, 187, 34, 0.5);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .role-image:hover {
+            transform: scale(1.05);
         }
         
         .role-display {
             font-size: clamp(1.8rem, 5vw, 2.5rem);
             color: var(--primary-color);
-            margin: 6px 0 10px 0;
+            margin: 10px 0;
             text-shadow: 2px 2px 4px #000;
             font-weight: bold;
         }
         
         .role-description {
-            font-size: clamp(1rem, 3vw, 1.15rem);
-            margin-top: 14px;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            margin-top: 15px;
             color: var(--text-color);
             background-color: rgba(26, 26, 46, 0.9);
-            padding: 16px;
+            padding: 15px;
             border-radius: 10px;
             border-left: 4px solid var(--primary-color);
             text-align: left;
@@ -193,38 +208,46 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: rgba(22, 24, 33, 0.98);
+            background-color: rgba(26, 26, 46, 0.98);
             color: var(--text-color);
-            padding: 22px;
-            border-radius: 14px;
-            border: 1px solid rgba(255,255,255,0.12);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
             z-index: 1000;
-            max-width: 92%;
-            width: min(420px, 92vw);
+            max-width: 90%;
+            width: min(400px, 90vw);
             text-align: center;
-            font-size: 1.05rem;
-            animation: popIn 0.25s ease-out;
+            font-size: 1.1rem;
+            animation: popIn 0.3s ease-out;
         }
         
         @keyframes popIn {
-            0% { transform: translate(-50%, -50%) scale(0.96); opacity: 0; }
+            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
             100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
         
-        .custom-alert button { margin-top: 12px; }
+        .custom-alert button {
+            margin-top: 15px;
+        }
         
         #hostButton {
-            background: linear-gradient(180deg, #6a4c93, #4a2c7a);
+            background: linear-gradient(to bottom, #6a4c93, #4a2c7a);
             color: var(--text-color);
         }
-        #hostButton:hover { background: linear-gradient(180deg, #7b5ca6, #59408b); }
         
-        #assignedRoles { margin: 18px 0; }
+        #hostButton:hover {
+            background: linear-gradient(to bottom, #7a5ca3, #5a3c8a);
+        }
+        
+        #assignedRoles {
+            margin: 25px 0;
+        }
+        
         #assignedRoles div {
             padding: 12px;
-            margin: 9px 0;
-            background-color: rgba(74, 74, 106, 0.4);
+            margin: 12px 0;
+            background-color: rgba(74, 74, 106, 0.5);
             border-radius: 8px;
             font-size: 1rem;
             display: flex;
@@ -235,81 +258,103 @@
         .parchment-effect {
             background-image: url('https://www.transparenttextures.com/patterns/old-paper.png');
             background-color: var(--parchment-color);
-            color: #2b2b2b;
-            padding: 18px;
-            border-radius: 12px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.18);
-            border: 1px solid #d5c6ac;
-            margin: 18px 0;
+            color: #3a3a3a;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+            border: 1px solid #c9b7a2;
+            margin: 20px 0;
         }
         
         .player-count {
-            font-size: 1.05rem;
-            margin-top: 10px;
-            color: var(--muted-color);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
             font-weight: bold;
         }
         
         .make-host-btn {
-            background: linear-gradient(180deg, var(--success-color), #2E7D32);
+            background: linear-gradient(to bottom, var(--success-color), #2E7D32);
             color: white;
-            padding: 8px 14px;
+            padding: 8px 15px;
             font-size: 0.9rem;
-            border-radius: 8px;
+            margin-left: 10px;
+            border-radius: 6px;
             flex-shrink: 0;
         }
-        .make-host-btn:hover { background: linear-gradient(180deg, #66BB6A, #388E3C); }
+        
+        .make-host-btn:hover {
+            background: linear-gradient(to bottom, #66BB6A, #388E3C);
+        }
         
         .reset-btn {
-            background: linear-gradient(180deg, var(--danger-color), #8b0000);
+            background: linear-gradient(to bottom, var(--danger-color), #8b0000);
             color: white;
         }
-        .reset-btn:hover { background: linear-gradient(180deg, #c52d2d, #a00000); }
+        
+        .reset-btn:hover {
+            background: linear-gradient(to bottom, #c52d2d, #a00000);
+        }
         
         .assign-host-btn {
-            background: linear-gradient(180deg, var(--info-color), #303f9f);
+            background: linear-gradient(to bottom, var(--info-color), #303f9f);
             color: white;
-            padding: 8px 14px;
+            padding: 8px 15px;
             font-size: 0.9rem;
-            border-radius: 8px;
+            margin-left: 10px;
+            border-radius: 6px;
             flex-shrink: 0;
         }
-        .assign-host-btn:hover { background: linear-gradient(180deg, #5c6bc0, #3949ab); }
         
-        .pulse { animation: pulse 2s infinite; }
+        .assign-host-btn:hover {
+            background: linear-gradient(to bottom, #5c6bc0, #3949ab);
+        }
+        
+        /* Animazioni e effetti aggiuntivi */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
+            50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
         
-        .shake { animation: shake 0.45s; }
+        .shake {
+            animation: shake 0.5s;
+        }
+        
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             20%, 60% { transform: translateX(-5px); }
             40%, 80% { transform: translateX(5px); }
         }
-
-        .chip {
-            display:inline-block;
-            padding:6px 10px;
-            border-radius:999px;
-            background:rgba(255,255,255,0.08);
-            border:1px solid rgba(255,255,255,0.12);
-            font-size:.9rem;
-        }
-
-        .muted { color: var(--muted-color); }
-        .eliminated { opacity: .6; text-decoration: line-through; color: #ff6f61; }
-
-        /* Mobile */
+        
+        /* Ottimizzazione per mobile */
         @media (max-width: 768px) {
-            .screen { padding: 20px; margin: 10px; }
-            button { padding: 12px 18px; font-size: 1rem; min-width: 160px; }
-            #playersList div, #assignedRoles div {
-                flex-direction: column; align-items: flex-start; gap: 8px;
+            .screen {
+                padding: 20px;
+                margin: 10px;
             }
-            .make-host-btn, .assign-host-btn { margin-left: 0; margin-top: 8px; align-self: flex-end; }
+            
+            button {
+                padding: 12px 20px;
+                font-size: 1rem;
+                min-width: 160px;
+            }
+            
+            #playersList div, #assignedRoles div {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .make-host-btn, .assign-host-btn {
+                margin-left: 0;
+                margin-top: 8px;
+                align-self: flex-end;
+            }
         }
     </style>
 </head>
@@ -344,17 +389,8 @@
         <div class="parchment-effect">
             <div id="assignedRoles"></div>
             <div class="player-count" id="hostPlayerCount">0 giocatori in lobby</div>
-            <!-- Sezione votazioni per il narratore -->
-            <div id="hostVotingPanel" style="display:none; margin-top:12px; text-align:left;">
-                <div class="chip">Votazioni attive</div>
-                <div id="voteTally" class="parchment-effect" style="margin-top:10px;">
-                    <div class="muted">Nessun voto ancora...</div>
-                </div>
-            </div>
         </div>
         <button id="startGameButton" onclick="startGame()" class="pulse">AVVIA PARTITA</button>
-        <button id="startVoteButton" onclick="startVoting()" style="display:none;">AVVIA VOTAZIONI</button>
-        <button id="endVoteButton" onclick="endVoting()" style="display:none;" class="reset-btn">TERMINA VOTAZIONI</button>
         <button onclick="resetGame()" class="reset-btn">RESETTA PARTITA</button>
     </div>
 
@@ -367,20 +403,10 @@
         </div>
     </div>
 
-    <!-- Nuova schermata per votazioni -->
-    <div id="voteScreen" class="screen">
-        <h1>VOTA UN GIOCATORE</h1>
-        <div class="parchment-effect">
-            <div class="muted" id="voteHint">Seleziona un giocatore da eliminare</div>
-            <div id="voteList" style="margin-top:8px;"></div>
-        </div>
-        <button onclick="leaveVoteScreen()" style="display:none;" id="backFromVoteBtn">TORNA</button>
-    </div>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
-        // Configurazione Firebase (lasciata identica)
+        // Configurazione Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAsTO8sYN1M7A1aK238RiYXDef4MQkw-AI",
             authDomain: "lupus-764f6.firebaseapp.com",
@@ -391,11 +417,11 @@
             appId: "1:695119804153:web:d5cdcf9adbf633adb25428"
         };
 
-        // Inizializza Firebase (come prima)
+        // Inizializza Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Variabili globali (invariato + estensioni per votazioni)
+        // Variabili globali
         let playerId;
         let isHost = false;
         const roles = {
@@ -434,10 +460,7 @@
         let currentPlayerRef;
         let playerName = "";
 
-        // Nuovi riferimenti per votazioni
-        const votingRef = database.ref('voting');
-
-        // Mostra alert personalizzato (fixate le template string)
+        // Mostra alert personalizzato
         function showCustomAlert(message, isError = false) {
             const alertDiv = document.createElement('div');
             alertDiv.className = 'custom-alert';
@@ -484,7 +507,7 @@
                 
                 let existingPlayer = null;
                 for (const [id, player] of Object.entries(players)) {
-                    if ((player.name || "").toLowerCase() === playerName.toLowerCase()) {
+                    if (player.name.toLowerCase() === playerName.toLowerCase()) {
                         existingPlayer = { id, ...player };
                         break;
                     }
@@ -499,8 +522,6 @@
                             role: '',
                             isHost: existingPlayer.isHost,
                             showRole: false,
-                            eliminated: !!existingPlayer.eliminated,
-                            inVoting: false,
                             timestamp: firebase.database.ServerValue.TIMESTAMP
                         });
                     } 
@@ -516,8 +537,6 @@
                                 role: existingPlayer.role,
                                 isHost: existingPlayer.isHost,
                                 showRole: existingPlayer.showRole,
-                                eliminated: !!existingPlayer.eliminated,
-                                inVoting: false,
                                 timestamp: firebase.database.ServerValue.TIMESTAMP
                             });
                         } else {
@@ -533,8 +552,6 @@
                         role: '',
                         isHost: false,
                         showRole: false,
-                        eliminated: false,
-                        inVoting: false,
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     });
                 }
@@ -544,7 +561,6 @@
                 listenForPlayers();
                 listenForRoleAssignment();
                 listenForGameReset();
-                listenForVotingActivation(); // <— nuovo listener globale votazioni
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -553,9 +569,9 @@
         }
 
         // Funzione per verificare se un giocatore è ancora attivo
-        async function checkPlayerActivity(playerIdToCheck) {
+        async function checkPlayerActivity(playerId) {
             try {
-                const playerRef = database.ref('players/' + playerIdToCheck);
+                const playerRef = database.ref('players/' + playerId);
                 const snapshot = await playerRef.once('value');
                 return snapshot.exists();
             } catch (error) {
@@ -583,17 +599,9 @@
                 
                 for (const [id, player] of Object.entries(players)) {
                     const playerDiv = document.createElement('div');
-                    const tags = [];
-                    if (player.isHost) tags.push('<span class="chip">Narratore</span>');
-                    if (player.eliminated) tags.push('<span class="chip" style="background:#3a1b1b;border-color:#5a2a2a;color:#ffb4a8;">Eliminato</span>');
-
-                    playerDiv.innerHTML = `
-                        <div class="${player.eliminated ? 'eliminated' : ''}">
-                            ${player.name} ${tags.join(' ')}
-                        </div>
-                    `;
+                    playerDiv.innerHTML = `${player.name} ${player.isHost ? '<span style="color:var(--primary-color)">(NARRATORE)</span>' : ''}`;
                     
-                    // Aggiungi pulsante "Assegna narratore" solo per l'host e se non è già narratore
+                    // Aggiungi pulsante "Rendi narratore" solo per l'host e se non è già narratore
                     if (isHost && !player.isHost) {
                         const assignHostBtn = document.createElement('button');
                         assignHostBtn.className = 'assign-host-btn';
@@ -609,7 +617,7 @@
                 }
 
                 updatePlayerCount(playerCount);
-                document.getElementById('hostButton').style.display = hostExists ? 'none' : 'inline-block';
+                document.getElementById('hostButton').style.display = hostExists ? 'none' : 'block';
             });
         }
 
@@ -622,18 +630,11 @@
                     isHost = true;
                     showScreen('hostScreen');
                     listenForRoles();
-                    // mostra il tasto "Avvia Votazioni" dopo aver avviato la partita (quando i ruoli sono assegnati)
-                    // qui non forziamo nulla: il tasto verrà mostrato da startGame alla fine dell'assegnazione
                 } else if (player.role && player.showRole) {
                     document.getElementById('playerRole').textContent = player.role;
                     document.getElementById('roleDescription').textContent = roles[player.role]?.description || '';
                     document.getElementById('roleImage').src = roles[player.role]?.image || '';
                     showScreen('roleScreen');
-                }
-
-                // Se il giocatore è chiamato alla votazione, spostalo nella schermata di voto
-                if (player.inVoting && !player.isHost) {
-                    buildVoteListAndShow();
                 }
             });
         }
@@ -691,13 +692,11 @@
                 
                 const updates = {};
                 
-                // Resetta tutti gli host e i ruoli (come da tua logica)
+                // Resetta tutti gli host e i ruoli
                 for (const id in players) {
                     updates['players/' + id + '/isHost'] = false;
                     updates['players/' + id + '/role'] = '';
                     updates['players/' + id + '/showRole'] = false;
-                    updates['players/' + id + '/inVoting'] = false;
-                    // non tocchiamo 'eliminated' per coerenza con reset host (ma tu lo facevi già per i ruoli)
                 }
                 
                 // Imposta il nuovo host
@@ -707,6 +706,7 @@
                 
                 await database.ref().update(updates);
                 
+                // Se ero io l'host precedente, torno alla lobby
                 if (currentPlayerRef.key === newHostId) {
                     isHost = true;
                     showScreen('hostScreen');
@@ -728,13 +728,13 @@
             playersRef.on('value', (snapshot) => {
                 const players = snapshot.val() || {};
                 const assignedRolesDiv = document.getElementById('assignedRoles');
-                assignedRolesDiv.innerHTML = '<h2 style="margin:0 0 8px 0;">RUOLI ASSEGNATI:</h2>';
+                assignedRolesDiv.innerHTML = '<h2>RUOLI ASSEGNATI:</h2>';
                 
                 let playerCount = 0;
                 
                 for (const [id, player] of Object.entries(players)) {
                     if (!player.isHost) {
-                        assignedRolesDiv.innerHTML += `<div class="${player.eliminated ? 'eliminated' : ''}">${player.name}: <strong>${player.role || '...in attesa...'}</strong> ${player.eliminated ? '<span class="chip" style="background:#3a1b1b;border-color:#5a2a2a;color:#ffb4a8;">(Eliminato)</span>' : ''}</div>`;
+                        assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role || '...in attesa...'}</strong></div>`;
                         playerCount++;
                     }
                 }
@@ -770,8 +770,6 @@
                 playerIdsToAssign.forEach((id, index) => {
                     updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
                     updates['players/' + id + '/showRole'] = false; // Inizialmente non mostrare
-                    updates['players/' + id + '/eliminated'] = false; // tutti vivi a inizio
-                    updates['players/' + id + '/inVoting'] = false;
                 });
 
                 await database.ref().update(updates);
@@ -783,10 +781,6 @@
                         showRoleUpdates['players/' + id + '/showRole'] = true;
                     });
                     await database.ref().update(showRoleUpdates);
-                    // Mostra il bottone per avviare le votazioni all'host
-                    if (isHost) {
-                        document.getElementById('startVoteButton').style.display = 'inline-block';
-                    }
                 }, 500);
                 
             } catch (error) {
@@ -799,12 +793,13 @@
             if (!isHost) return;
             
             try {
-                const alertDiv = showCustomAlert("Vuoi resettare la partita e assegnare un nuovo narratore?");
+                const alertDiv = showCustomAlert("Vuoi resettare la partita e assegnare un nuovo narratore?", false);
                 alertDiv.innerHTML = `
                     <p>Vuoi resettare la partita e assegnare un nuovo narratore?</p>
                     <button onclick="confirmReset()">CONFERMA</button>
                     <button onclick="this.parentNode.remove()">ANNULLA</button>
                 `;
+                
                 window.confirmReset = async function() {
                     const updates = {};
                     const snapshot = await playersRef.once('value');
@@ -814,17 +809,11 @@
                         updates['players/' + id + '/role'] = '';
                         updates['players/' + id + '/showRole'] = false;
                         updates['players/' + id + '/isHost'] = false;
-                        updates['players/' + id + '/eliminated'] = false;
-                        updates['players/' + id + '/inVoting'] = false;
                     }
-                    updates['voting'] = null;
                     
                     await database.ref().update(updates);
                     
                     document.querySelector('.custom-alert')?.remove();
-                    document.getElementById('startVoteButton').style.display = 'none';
-                    document.getElementById('endVoteButton').style.display = 'none';
-                    document.getElementById('hostVotingPanel').style.display = 'none';
                     showCustomAlert("Partita resettata! Ora puoi assegnare un nuovo narratore.");
                 };
                 
@@ -843,213 +832,7 @@
             return newArray;
         }
 
-        // ====== SEZIONE VOTAZIONI (NUOVA) ======
-
-        // Listener globale: quando cambia lo stato di voting, aggiorna UI
-        function listenForVotingActivation() {
-            votingRef.child('active').on('value', (snap) => {
-                const active = !!snap.val();
-                if (isHost) {
-                    document.getElementById('hostVotingPanel').style.display = active ? 'block' : 'none';
-                    document.getElementById('endVoteButton').style.display = active ? 'inline-block' : 'none';
-                }
-                // I singoli giocatori vengono spostati da inVoting (flag per-player)
-            });
-
-            // Tally live per il narratore
-            votingRef.child('votesBy').on('value', async (snap) => {
-                if (!isHost) return;
-                const votesBy = snap.val() || {};
-                const counts = await computeVoteCounts(votesBy);
-                renderVoteTally(counts);
-            });
-        }
-
-        // Avvia votazioni (host)
-        async function startVoting() {
-            if (!isHost) return;
-            try {
-                // attiva votazione e svuota voti
-                await votingRef.set({ active: true, votesBy: {} });
-
-                // setta il flag inVoting solo a giocatori vivi (non host, non eliminati)
-                const snap = await playersRef.once('value');
-                const players = snap.val() || {};
-                const updates = {};
-                for (const [id, p] of Object.entries(players)) {
-                    if (!p.isHost && !p.eliminated) {
-                        updates['players/' + id + '/inVoting'] = true;
-                    } else {
-                        updates['players/' + id + '/inVoting'] = false;
-                    }
-                }
-                await database.ref().update(updates);
-
-                // UI host
-                document.getElementById('endVoteButton').style.display = 'inline-block';
-                document.getElementById('hostVotingPanel').style.display = 'block';
-                showCustomAlert("Votazioni iniziate. I giocatori possono votare.");
-
-            } catch (e) {
-                console.error(e);
-                showCustomAlert("Errore nell'avvio delle votazioni.", true);
-            }
-        }
-
-        // Mostra lista votabile al giocatore e schermata
-        async function buildVoteListAndShow() {
-            try {
-                const voteList = document.getElementById('voteList');
-                voteList.innerHTML = '';
-                const snap = await playersRef.once('value');
-                const players = snap.val() || {};
-
-                // Bottone per ogni giocatore vivo (non host, non eliminato) — il voter può votare chiunque tranne se stesso? 
-                // Se vuoi impedire auto-voto, basta filtrare: id !== playerId
-                for (const [id, p] of Object.entries(players)) {
-                    if (!p.isHost && !p.eliminated) {
-                        const btn = document.createElement('button');
-                        btn.textContent = p.name;
-                        btn.style.minWidth = '180px';
-                        btn.style.margin = '8px';
-                        btn.onclick = () => castVote(id);
-                        voteList.appendChild(btn);
-                    }
-                }
-                document.getElementById('voteHint').textContent = 'Seleziona un giocatore da eliminare';
-                showScreen('voteScreen');
-                document.getElementById('backFromVoteBtn').style.display = 'none';
-            } catch (e) {
-                console.error(e);
-                showCustomAlert("Errore nel caricare la lista voti.", true);
-            }
-        }
-
-        // Il giocatore esprime il voto
-        async function castVote(targetId) {
-            try {
-                // Registra voto come mappa voter -> target (così ogni giocatore ha al massimo 1 voto)
-                await votingRef.child('votesBy/' + playerId).set(targetId);
-                await currentPlayerRef.update({ inVoting: false });
-                document.getElementById('voteHint').textContent = 'Voto inviato! Attendi la fine delle votazioni.';
-                // Disabilita lista
-                Array.from(document.getElementById('voteList').querySelectorAll('button')).forEach(b => b.disabled = true);
-                document.getElementById('backFromVoteBtn').style.display = 'inline-block';
-            } catch (e) {
-                console.error(e);
-                showCustomAlert("Errore nell’invio del voto.", true);
-            }
-        }
-
-        // Torna al ruolo/lobby (solo per UX, non incide sul voto)
-        function leaveVoteScreen() {
-            currentPlayerRef.once('value').then(snap => {
-                const p = snap.val();
-                if (!p) return;
-                if (p.role && p.showRole && !p.isHost) showScreen('roleScreen');
-                else showScreen('lobbyScreen');
-            });
-        }
-
-        // Termina votazioni (host) → elimina il più votato
-        async function endVoting() {
-            if (!isHost) return;
-            try {
-                const votesBySnap = await votingRef.child('votesBy').once('value');
-                const votesBy = votesBySnap.val() || {};
-                const counts = await computeVoteCounts(votesBy);
-
-                // Trova massimo
-                let max = -1;
-                let eliminatedId = null;
-                for (const [id, count] of Object.entries(counts)) {
-                    if (count > max) {
-                        max = count;
-                        eliminatedId = id;
-                    }
-                }
-
-                const updates = {};
-                // chiudi votazioni
-                updates['voting'] = { active: false, votesBy: {} };
-
-                // togli flag inVoting a tutti
-                const snap = await playersRef.once('value');
-                const players = snap.val() || {};
-                for (const [id, p] of Object.entries(players)) {
-                    updates['players/' + id + '/inVoting'] = false;
-                }
-
-                // marca eliminato se c'è un id valido
-                if (eliminatedId) {
-                    updates['players/' + eliminatedId + '/eliminated'] = true;
-                }
-
-                await database.ref().update(updates);
-
-                // UI host
-                document.getElementById('endVoteButton').style.display = 'none';
-                document.getElementById('hostVotingPanel').style.display = 'none';
-
-                if (eliminatedId && players[eliminatedId]) {
-                    showCustomAlert(`${players[eliminatedId].name} è stato eliminato.`);
-                } else {
-                    showCustomAlert("Nessuna eliminazione (nessun voto o pareggio).");
-                }
-
-            } catch (e) {
-                console.error(e);
-                showCustomAlert("Errore nel terminare le votazioni.", true);
-            }
-        }
-
-        // Compute counts dalla mappa voter->target
-        async function computeVoteCounts(votesBy) {
-            const counts = {};
-            const snap = await playersRef.once('value');
-            const players = snap.val() || {};
-            // conta solo voti su giocatori vivi (se qualcuno è stato eliminato prima che finisse)
-            for (const voterId of Object.keys(votesBy)) {
-                const targetId = votesBy[voterId];
-                if (players[targetId] && !players[targetId].eliminated) {
-                    counts[targetId] = (counts[targetId] || 0) + 1;
-                    // Bonus Sindaco: doppio voto (se vuoi attivarlo davvero)
-                    if (players[voterId] && players[voterId].role === 'Sindaco') {
-                        counts[targetId] = (counts[targetId] || 0) + 1;
-                    }
-                }
-            }
-            return counts;
-        }
-
-        // Render conteggio voti in tempo reale per l’host
-        async function renderVoteTally(counts) {
-            const container = document.getElementById('voteTally');
-            const snap = await playersRef.once('value');
-            const players = snap.val() || {};
-            const alive = Object.entries(players)
-                .filter(([id,p]) => !p.isHost && !p.eliminated)
-                .map(([id,p]) => ({id, name: p.name}));
-
-            if (alive.length === 0) {
-                container.innerHTML = '<div class="muted">Nessun giocatore vivo da contare.</div>';
-                return;
-            }
-            // Ordina per voti desc
-            alive.sort((a,b) => (counts[b.id]||0) - (counts[a.id]||0));
-
-            container.innerHTML = alive.map(p => {
-                const c = counts[p.id] || 0;
-                return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px dashed rgba(0,0,0,0.08);">
-                            <span>${p.name}</span>
-                            <strong>${c}</strong>
-                        </div>`;
-            }).join('');
-        }
-
-        // ====== FINE SEZIONE VOTAZIONI ======
-
-        // Gestione della disconnessione (invariata)
+        // Gestione della disconnessione
         window.addEventListener('beforeunload', async () => {
             if (currentPlayerRef) {
                 try {
