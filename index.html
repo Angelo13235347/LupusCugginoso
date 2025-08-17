@@ -82,13 +82,6 @@
             font-family: 'Cinzel Decorative', cursive;
         }
         
-        h2 {
-            color: var(--primary-color);
-            text-shadow: 1px 1px 2px #000;
-            font-size: clamp(1.5em, 4vw, 2em);
-            margin-bottom: 20px;
-        }
-        
         button {
             background: linear-gradient(to bottom, var(--primary-color), #d89e1a);
             color: var(--secondary-color);
@@ -317,50 +310,6 @@
             background: linear-gradient(to bottom, #5c6bc0, #3949ab);
         }
         
-        .vote-btn {
-            background: linear-gradient(to bottom, #9c27b0, #7b1fa2);
-            color: white;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            margin-left: 10px;
-            border-radius: 6px;
-            flex-shrink: 0;
-        }
-        
-        .vote-btn:hover {
-            background: linear-gradient(to bottom, #ab47bc, #8e24aa);
-        }
-        
-        .voting-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        
-        .voting-option {
-            padding: 12px;
-            background-color: rgba(74, 74, 106, 0.5);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .voting-option:hover {
-            background-color: rgba(74, 74, 106, 0.8);
-            transform: translateX(5px);
-        }
-        
-        .voting-option.selected {
-            background-color: rgba(248, 187, 34, 0.3);
-            border-left: 4px solid var(--primary-color);
-        }
-        
-        .eliminated {
-            text-decoration: line-through;
-            opacity: 0.6;
-        }
-        
         /* Animazioni e effetti aggiuntivi */
         .pulse {
             animation: pulse 2s infinite;
@@ -401,7 +350,7 @@
                 gap: 8px;
             }
             
-            .make-host-btn, .assign-host-btn, .vote-btn {
+            .make-host-btn, .assign-host-btn {
                 margin-left: 0;
                 margin-top: 8px;
                 align-self: flex-end;
@@ -442,7 +391,6 @@
             <div class="player-count" id="hostPlayerCount">0 giocatori in lobby</div>
         </div>
         <button id="startGameButton" onclick="startGame()" class="pulse">AVVIA PARTITA</button>
-        <button id="votingButton" onclick="startVoting()" class="vote-btn">AVVIA VOTAZIONE</button>
         <button onclick="resetGame()" class="reset-btn">RESETTA PARTITA</button>
     </div>
 
@@ -453,23 +401,6 @@
             <div id="playerRole" class="role-display">...</div>
             <div id="roleDescription" class="role-description parchment-effect"></div>
         </div>
-    </div>
-
-    <div id="votingScreen" class="screen">
-        <h1>VOTA ORA</h1>
-        <div class="parchment-effect">
-            <h2>Scegli chi eliminare:</h2>
-            <div id="votingOptions" class="voting-options"></div>
-        </div>
-        <button onclick="submitVote()">CONFERMA VOTO</button>
-    </div>
-
-    <div id="votingResultsScreen" class="screen">
-        <h1>RISULTATI VOTAZIONE</h1>
-        <div class="parchment-effect">
-            <div id="votingResults"></div>
-        </div>
-        <button onclick="continueGame()" class="pulse">CONTINUA IL GIOCO</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -493,8 +424,6 @@
         // Variabili globali
         let playerId;
         let isHost = false;
-        let selectedVote = null;
-        let currentGameState = 'lobby'; // lobby, playing, voting, results
         const roles = {
             "Lupo": {
                 description: "Il tuo scopo è eliminare tutti i Villici.",
@@ -529,8 +458,6 @@
         const baseRoles = ["Lupo", "Puttana", "Investigatore", "Vanessa", "Sindaco", "Contadino"];
         let playersRef;
         let currentPlayerRef;
-        let gameRef;
-        let votesRef;
         let playerName = "";
 
         // Mostra alert personalizzato
@@ -573,8 +500,6 @@
                 playerId = Date.now().toString();
                 playersRef = database.ref('players');
                 currentPlayerRef = database.ref('players/' + playerId);
-                gameRef = database.ref('game');
-                votesRef = database.ref('votes');
                 
                 // Controlla se il nome esiste già tra i giocatori attivi
                 const snapshot = await playersRef.once('value');
@@ -597,7 +522,6 @@
                             role: '',
                             isHost: existingPlayer.isHost,
                             showRole: false,
-                            isEliminated: false,
                             timestamp: firebase.database.ServerValue.TIMESTAMP
                         });
                     } 
@@ -613,7 +537,6 @@
                                 role: existingPlayer.role,
                                 isHost: existingPlayer.isHost,
                                 showRole: existingPlayer.showRole,
-                                isEliminated: existingPlayer.isEliminated || false,
                                 timestamp: firebase.database.ServerValue.TIMESTAMP
                             });
                         } else {
@@ -629,7 +552,6 @@
                         role: '',
                         isHost: false,
                         showRole: false,
-                        isEliminated: false,
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     });
                 }
@@ -639,8 +561,6 @@
                 listenForPlayers();
                 listenForRoleAssignment();
                 listenForGameReset();
-                listenForGameState();
-                listenForVoting();
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -678,8 +598,6 @@
                 let playerCount = 0;
                 
                 for (const [id, player] of Object.entries(players)) {
-                    if (player.isEliminated) continue;
-                    
                     const playerDiv = document.createElement('div');
                     playerDiv.innerHTML = `${player.name} ${player.isHost ? '<span style="color:var(--primary-color)">(NARRATORE)</span>' : ''}`;
                     
@@ -712,7 +630,7 @@
                     isHost = true;
                     showScreen('hostScreen');
                     listenForRoles();
-                } else if (player.role && player.showRole && !player.isEliminated) {
+                } else if (player.role && player.showRole) {
                     document.getElementById('playerRole').textContent = player.role;
                     document.getElementById('roleDescription').textContent = roles[player.role]?.description || '';
                     document.getElementById('roleImage').src = roles[player.role]?.image || '';
@@ -733,36 +651,6 @@
             });
         }
 
-        function listenForGameState() {
-            gameRef.on('value', (snapshot) => {
-                const gameData = snapshot.val();
-                if (!gameData) return;
-                
-                currentGameState = gameData.state || 'lobby';
-                
-                // Se sono l'host e lo stato è voting, mostro i risultati quando tutti hanno votato
-                if (isHost && currentGameState === 'voting') {
-                    checkVotingCompletion();
-                }
-                
-                // Se sono un giocatore e lo stato è voting, mostro la schermata di voto
-                if (!isHost && currentGameState === 'voting' && !isPlayerEliminated()) {
-                    showVotingScreen();
-                }
-            });
-        }
-
-        function listenForVoting() {
-            votesRef.on('value', (snapshot) => {
-                const votes = snapshot.val() || {};
-                
-                // Se sono l'host e lo stato è results, mostro i risultati
-                if (isHost && currentGameState === 'results') {
-                    showVotingResults();
-                }
-            });
-        }
-
         async function becomeHost() {
             try {
                 const snapshot = await playersRef.once('value');
@@ -777,12 +665,7 @@
                 await currentPlayerRef.update({ 
                     isHost: true,
                     role: 'Narratore',
-                    showRole: true,
-                    isEliminated: false
-                });
-                
-                await gameRef.set({
-                    state: 'lobby'
+                    showRole: true
                 });
                 
                 isHost = true;
@@ -814,21 +697,14 @@
                     updates['players/' + id + '/isHost'] = false;
                     updates['players/' + id + '/role'] = '';
                     updates['players/' + id + '/showRole'] = false;
-                    updates['players/' + id + '/isEliminated'] = false;
                 }
                 
                 // Imposta il nuovo host
                 updates['players/' + newHostId + '/isHost'] = true;
                 updates['players/' + newHostId + '/role'] = 'Narratore';
                 updates['players/' + newHostId + '/showRole'] = true;
-                updates['players/' + newHostId + '/isEliminated'] = false;
                 
                 await database.ref().update(updates);
-                
-                // Resetta lo stato del gioco
-                await gameRef.set({
-                    state: 'lobby'
-                });
                 
                 // Se ero io l'host precedente, torno alla lobby
                 if (currentPlayerRef.key === newHostId) {
@@ -858,8 +734,7 @@
                 
                 for (const [id, player] of Object.entries(players)) {
                     if (!player.isHost) {
-                        let playerStatus = player.isEliminated ? ' (ELIMINATO)' : '';
-                        assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role || '...in attesa...'}${playerStatus}</strong></div>`;
+                        assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role || '...in attesa...'}</strong></div>`;
                         playerCount++;
                     }
                 }
@@ -895,15 +770,9 @@
                 playerIdsToAssign.forEach((id, index) => {
                     updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
                     updates['players/' + id + '/showRole'] = false; // Inizialmente non mostrare
-                    updates['players/' + id + '/isEliminated'] = false; // Resetta eliminazione
                 });
 
                 await database.ref().update(updates);
-                
-                // Imposta lo stato del gioco a 'playing'
-                await gameRef.set({
-                    state: 'playing'
-                });
                 
                 // Dopo 0.5 secondi, imposta showRole a true per tutti i giocatori (più veloce)
                 setTimeout(async () => {
@@ -918,262 +787,6 @@
                 console.error("Errore:", error);
                 showCustomAlert("Errore nell'assegnazione dei ruoli. Riprova!", true);
             }
-        }
-
-        async function startVoting() {
-            if (!isHost) return;
-            
-            try {
-                const snapshot = await playersRef.once('value');
-                const players = snapshot.val() || {};
-                const activePlayers = Object.values(players).filter(p => !p.isEliminated && !p.isHost);
-                
-                if (activePlayers.length < 2) {
-                    showCustomAlert("Non ci sono abbastanza giocatori per votare!", true);
-                    return;
-                }
-                
-                // Resetta i voti precedenti
-                await votesRef.remove();
-                
-                // Imposta lo stato del gioco a 'voting'
-                await gameRef.set({
-                    state: 'voting'
-                });
-                
-                // Mostra la schermata di voto per l'host
-                showVotingScreen();
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nell'avvio della votazione. Riprova!", true);
-            }
-        }
-
-        function showVotingScreen() {
-            if (isHost) {
-                // Per l'host, mostra la lista dei giocatori attivi
-                playersRef.once('value').then(snapshot => {
-                    const players = snapshot.val() || {};
-                    const votingOptions = document.getElementById('votingOptions');
-                    votingOptions.innerHTML = '';
-                    
-                    for (const [id, player] of Object.entries(players)) {
-                        if (!player.isEliminated && !player.isHost) {
-                            const option = document.createElement('div');
-                            option.className = 'voting-option';
-                            option.textContent = player.name;
-                            option.dataset.playerId = id;
-                            option.onclick = function() {
-                                selectVote(this);
-                            };
-                            votingOptions.appendChild(option);
-                        }
-                    }
-                    
-                    showScreen('votingScreen');
-                });
-            } else {
-                // Per i giocatori normali, mostra la lista dei giocatori attivi
-                playersRef.once('value').then(snapshot => {
-                    const players = snapshot.val() || {};
-                    const votingOptions = document.getElementById('votingOptions');
-                    votingOptions.innerHTML = '';
-                    
-                    for (const [id, player] of Object.entries(players)) {
-                        if (!player.isEliminated && !player.isHost && id !== playerId) {
-                            const option = document.createElement('div');
-                            option.className = 'voting-option';
-                            option.textContent = player.name;
-                            option.dataset.playerId = id;
-                            option.onclick = function() {
-                                selectVote(this);
-                            };
-                            votingOptions.appendChild(option);
-                        }
-                    }
-                    
-                    showScreen('votingScreen');
-                });
-            }
-        }
-
-        function selectVote(optionElement) {
-            // Deseleziona tutte le opzioni
-            document.querySelectorAll('.voting-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            
-            // Seleziona l'opzione cliccata
-            optionElement.classList.add('selected');
-            selectedVote = optionElement.dataset.playerId;
-        }
-
-        async function submitVote() {
-            if (!selectedVote) {
-                showCustomAlert("Seleziona un giocatore da votare!", true);
-                return;
-            }
-            
-            try {
-                // Registra il voto
-                await votesRef.child(playerId).set({
-                    playerId: playerId,
-                    votedFor: selectedVote,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
-                
-                if (isHost) {
-                    // L'host torna alla schermata host dopo aver votato
-                    showScreen('hostScreen');
-                    checkVotingCompletion();
-                } else {
-                    // I giocatori tornano alla schermata del loro ruolo
-                    showScreen('roleScreen');
-                }
-                
-                selectedVote = null;
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nell'invio del voto. Riprova!", true);
-            }
-        }
-
-        async function checkVotingCompletion() {
-            if (!isHost) return;
-            
-            try {
-                const playersSnapshot = await playersRef.once('value');
-                const votesSnapshot = await votesRef.once('value');
-                
-                const players = playersSnapshot.val() || {};
-                const votes = votesSnapshot.val() || {};
-                
-                // Conta i giocatori attivi (escluso l'host)
-                const activePlayers = Object.values(players).filter(p => !p.isEliminated && !p.isHost);
-                
-                // Conta i voti ricevuti
-                const voteCounts = {};
-                for (const vote of Object.values(votes)) {
-                    if (!voteCounts[vote.votedFor]) {
-                        voteCounts[vote.votedFor] = 0;
-                    }
-                    voteCounts[vote.votedFor]++;
-                }
-                
-                // Se tutti hanno votato o hanno avuto il tempo sufficiente
-                if (Object.keys(votes).length >= activePlayers.length) {
-                    // Trova il giocatore con più voti
-                    let maxVotes = 0;
-                    let eliminatedPlayerId = null;
-                    
-                    for (const [playerId, count] of Object.entries(voteCounts)) {
-                        if (count > maxVotes) {
-                            maxVotes = count;
-                            eliminatedPlayerId = playerId;
-                        }
-                    }
-                    
-                    // Se c'è un pareggio, nessuno viene eliminato
-                    if (maxVotes === 0 || Object.values(voteCounts).filter(c => c === maxVotes).length > 1) {
-                        await gameRef.set({
-                            state: 'results',
-                            eliminatedPlayer: null,
-                            isTie: true
-                        });
-                    } else {
-                        // Elimina il giocatore con più voti
-                        await database.ref('players/' + eliminatedPlayerId).update({
-                            isEliminated: true
-                        });
-                        
-                        await gameRef.set({
-                            state: 'results',
-                            eliminatedPlayer: eliminatedPlayerId,
-                            isTie: false
-                        });
-                    }
-                }
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nel verificare i voti. Riprova!", true);
-            }
-        }
-
-        async function showVotingResults() {
-            if (!isHost) return;
-            
-            try {
-                const gameSnapshot = await gameRef.once('value');
-                const playersSnapshot = await playersRef.once('value');
-                const votesSnapshot = await votesRef.once('value');
-                
-                const gameData = gameSnapshot.val() || {};
-                const players = playersSnapshot.val() || {};
-                const votes = votesSnapshot.val() || {};
-                
-                const votingResults = document.getElementById('votingResults');
-                votingResults.innerHTML = '';
-                
-                if (gameData.isTie) {
-                    votingResults.innerHTML = '<h2>PAREGGIO!</h2><p>Nessun giocatore è stato eliminato.</p>';
-                } else if (gameData.eliminatedPlayer) {
-                    const eliminatedPlayer = players[gameData.eliminatedPlayer];
-                    votingResults.innerHTML = `<h2>${eliminatedPlayer.name} È STATO ELIMINATO!</h2><p>Il villaggio ha deciso la sua sorte.</p>`;
-                }
-                
-                // Mostra i voti ricevuti da ogni giocatore
-                const voteCounts = {};
-                for (const vote of Object.values(votes)) {
-                    if (!voteCounts[vote.votedFor]) {
-                        voteCounts[vote.votedFor] = 0;
-                    }
-                    voteCounts[vote.votedFor]++;
-                }
-                
-                let votesList = '<h3>Voti ricevuti:</h3><ul style="text-align: left;">';
-                for (const [playerId, count] of Object.entries(voteCounts)) {
-                    const player = players[playerId];
-                    if (player) {
-                        votesList += `<li>${player.name}: ${count} voti</li>`;
-                    }
-                }
-                votesList += '</ul>';
-                
-                votingResults.innerHTML += votesList;
-                showScreen('votingResultsScreen');
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nel mostrare i risultati. Riprova!", true);
-            }
-        }
-
-        async function continueGame() {
-            if (!isHost) return;
-            
-            try {
-                // Resetta i voti
-                await votesRef.remove();
-                
-                // Torna allo stato di gioco normale
-                await gameRef.set({
-                    state: 'playing'
-                });
-                
-                showScreen('hostScreen');
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nel continuare il gioco. Riprova!", true);
-            }
-        }
-
-        function isPlayerEliminated() {
-            // Questa funzione verrà implementata quando avremo i dati del giocatore corrente
-            return false;
         }
 
         async function resetGame() {
@@ -1196,16 +809,9 @@
                         updates['players/' + id + '/role'] = '';
                         updates['players/' + id + '/showRole'] = false;
                         updates['players/' + id + '/isHost'] = false;
-                        updates['players/' + id + '/isEliminated'] = false;
                     }
                     
                     await database.ref().update(updates);
-                    
-                    // Resetta lo stato del gioco e i voti
-                    await gameRef.set({
-                        state: 'lobby'
-                    });
-                    await votesRef.remove();
                     
                     document.querySelector('.custom-alert')?.remove();
                     showCustomAlert("Partita resettata! Ora puoi assegnare un nuovo narratore.");
