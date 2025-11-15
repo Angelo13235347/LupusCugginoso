@@ -479,6 +479,7 @@
         </div>
         <button id="startGameButton" onclick="startGame()" class="pulse">AVVIA PARTITA</button>
         <button onclick="startVotingPhase()" id="startVotingButton">INIZIA VOTAZIONE</button>
+        <button onclick="showVotingResults()" id="showResultsButton">MOSTRA RISULTATI</button>
         <button onclick="resetGame()" class="reset-btn">RESETTA PARTITA</button>
     </div>
 
@@ -577,11 +578,11 @@
         };
         
         const baseRoles = ["Lupo", "Puttana", "Investigatore", "Vanessa", "Sindaco", "Contadino"];
-        let playersRef;
+        let playersRef = database.ref('players');
         let currentPlayerRef;
         let playerName = "";
-        let gameStateRef;
-        let votesRef;
+        let gameStateRef = database.ref('gameState');
+        let votesRef = database.ref('votes');
 
         // Mostra alert personalizzato
         function showCustomAlert(message, isError = false) {
@@ -621,10 +622,7 @@
                 }
 
                 playerId = Date.now().toString();
-                playersRef = database.ref('players');
                 currentPlayerRef = database.ref('players/' + playerId);
-                gameStateRef = database.ref('gameState');
-                votesRef = database.ref('votes');
                 
                 // Controlla se il nome esiste già tra i giocatori attivi
                 const snapshot = await playersRef.once('value');
@@ -752,6 +750,8 @@
         }
 
         function listenForRoleAssignment() {
+            if (!currentPlayerRef) return;
+            
             currentPlayerRef.on('value', (snapshot) => {
                 const player = snapshot.val();
                 if (!player) return;
@@ -770,6 +770,8 @@
         }
 
         function listenForGameReset() {
+            if (!currentPlayerRef) return;
+            
             currentPlayerRef.on('value', (snapshot) => {
                 const player = snapshot.val();
                 if (!player) return;
@@ -782,7 +784,7 @@
         }
 
         function listenForVotingPhase() {
-            gameStateRef?.on('value', (snapshot) => {
+            gameStateRef.on('value', (snapshot) => {
                 const gameState = snapshot.val();
                 if (!gameState) return;
                 
@@ -949,6 +951,8 @@
             if (!isHost) return;
             
             try {
+                console.log("Avvio votazione...");
+                
                 // Reset dei voti precedenti
                 await votesRef.remove();
                 
@@ -962,7 +966,7 @@
                 showCustomAlert("Votazione iniziata! I giocatori possono ora votare.");
                 
             } catch (error) {
-                console.error("Errore:", error);
+                console.error("Errore nell'avviare la votazione:", error);
                 showCustomAlert("Errore nell'avviare la votazione.", true);
             }
         }
@@ -1003,6 +1007,11 @@
                             candidates.push({ id, name: player.name });
                         }
                     }
+                }
+                
+                if (candidates.length === 0) {
+                    votingOptions.innerHTML = '<p>Nessun giocatore disponibile per la votazione.</p>';
+                    return;
                 }
                 
                 candidates.forEach(candidate => {
@@ -1055,7 +1064,7 @@
         }
 
         async function showVotingResults() {
-            if (isHost) {
+            try {
                 // Calcola i risultati dei voti
                 const votesSnapshot = await votesRef.once('value');
                 const votes = votesSnapshot.val() || {};
@@ -1113,40 +1122,51 @@
                 }
                 
                 document.getElementById('voteResults').innerHTML = resultsHTML;
+                
+                // Mostra a tutti i risultati
+                await gameStateRef.update({
+                    showVotingResults: true
+                });
+                
                 showScreen('votingResultsScreen');
                 
-            } else {
-                // Per i giocatori normali, mostra semplicemente la schermata dei risultati
-                showScreen('votingResultsScreen');
+            } catch (error) {
+                console.error("Errore:", error);
+                showCustomAlert("Errore nel calcolare i risultati.", true);
             }
         }
 
         async function continueToNextPhase() {
             if (!isHost) return;
             
-            if (votingPhase === 1) {
-                // Passa alla seconda votazione
-                votingPhase = 2;
-                await gameStateRef.update({
-                    votingPhase: 2,
-                    showVotingResults: false
-                });
-                
-                // Reset dei voti per la seconda votazione
-                await votesRef.remove();
-                
-                showCustomAlert("Seconda votazione iniziata!");
-                
-            } else {
-                // Termina le votazioni e passa alla notte
-                votingPhase = 1; // Reset per la prossima volta
-                await gameStateRef.update({
-                    votingPhase: 0,
-                    showVotingResults: false,
-                    nightPhase: true
-                });
-                
-                showCustomAlert("Notte iniziata! Gestisci le azioni notturne.");
+            try {
+                if (votingPhase === 1) {
+                    // Passa alla seconda votazione
+                    votingPhase = 2;
+                    await gameStateRef.update({
+                        votingPhase: 2,
+                        showVotingResults: false
+                    });
+                    
+                    // Reset dei voti per la seconda votazione
+                    await votesRef.remove();
+                    
+                    showCustomAlert("Seconda votazione iniziata!");
+                    
+                } else {
+                    // Termina le votazioni e passa alla notte
+                    votingPhase = 1; // Reset per la prossima volta
+                    await gameStateRef.update({
+                        votingPhase: 0,
+                        showVotingResults: false,
+                        nightPhase: true
+                    });
+                    
+                    showCustomAlert("Notte iniziata! Gestisci le azioni notturne.");
+                }
+            } catch (error) {
+                console.error("Errore:", error);
+                showCustomAlert("Errore nel passare alla prossima fase.", true);
             }
         }
 
@@ -1226,6 +1246,12 @@
                     console.error("Errore nella pulizia:", error);
                 }
             }
+        });
+
+        // Inizializzazione
+        document.addEventListener('DOMContentLoaded', function() {
+            // I riferimenti Firebase sono già inizializzati
+            console.log("Lupus Cugginoso inizializzato!");
         });
     </script>
 </body>
