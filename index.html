@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUPUS CUGGINOSO</title>
+    <title>LUPUS CUGGINOSO REALISTICO</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative:wght@700&display=swap');
         
@@ -16,6 +16,7 @@
             --success-color: #4CAF50;
             --danger-color: #a52a2a;
             --info-color: #3f51b5;
+            --vote-color: #ff5722; /* Colore votazione */
         }
         
         * {
@@ -58,28 +59,22 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .screen::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.7) 100%);
-            z-index: -1;
-        }
-        
         .active {
             display: block;
         }
         
-        h1 {
+        h1, h2 {
             color: var(--primary-color);
             text-shadow: 2px 2px 4px #000;
             font-size: clamp(2em, 5vw, 3em);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             letter-spacing: 2px;
             font-family: 'Cinzel Decorative', cursive;
+        }
+
+        h2 {
+            font-size: clamp(1.5em, 4vw, 2em);
+            margin-top: 25px;
         }
         
         button {
@@ -87,7 +82,7 @@
             color: var(--secondary-color);
             border: none;
             padding: 15px 30px;
-            margin: 15px;
+            margin: 10px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 1.1rem;
@@ -101,26 +96,10 @@
             overflow: hidden;
         }
         
-        button::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255,255,255,0.1);
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-        }
-        
         button:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
             background: linear-gradient(to bottom, #ffcc33, #e6b020);
-        }
-        
-        button:hover::after {
-            transform: translateX(0);
         }
         
         input {
@@ -134,22 +113,9 @@
             font-size: 1rem;
             font-family: 'MedievalSharp', cursive;
             text-align: center;
-            transition: all 0.3s;
         }
         
-        input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 8px rgba(248, 187, 34, 0.5);
-        }
-        
-        #playersList {
-            margin: 25px 0;
-            text-align: left;
-            font-size: 1.1rem;
-        }
-        
-        #playersList div {
+        #playersList div, #assignedRoles div {
             padding: 12px 15px;
             margin: 10px 0;
             background-color: rgba(74, 74, 106, 0.5);
@@ -160,6 +126,13 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 10px;
+            font-size: 1.1rem;
+        }
+
+        #gameInfo p {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            font-weight: bold;
         }
         
         .role-container {
@@ -177,11 +150,6 @@
             border: 5px solid var(--primary-color);
             box-shadow: 0 0 20px rgba(248, 187, 34, 0.5);
             margin-bottom: 20px;
-            transition: transform 0.3s;
-        }
-        
-        .role-image:hover {
-            transform: scale(1.05);
         }
         
         .role-display {
@@ -222,39 +190,22 @@
             animation: popIn 0.3s ease-out;
         }
         
-        @keyframes popIn {
-            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
+        /* Stile per i ruoli */
+        .lupo-style { border-left-color: var(--danger-color) !important; color: var(--danger-color); }
+        .villico-style { border-left-color: var(--success-color) !important; color: var(--success-color); }
         
-        .custom-alert button {
-            margin-top: 15px;
+        /* Sezione Votazione */
+        #voteList button {
+            background: linear-gradient(to top, var(--vote-color), #ff7043);
+            color: white;
+            min-width: 100%;
+            padding: 10px;
+            margin: 5px 0;
         }
-        
-        #hostButton {
-            background: linear-gradient(to bottom, #6a4c93, #4a2c7a);
-            color: var(--text-color);
+        #voteList button:hover {
+            background: linear-gradient(to top, #ff8a65, var(--vote-color));
         }
-        
-        #hostButton:hover {
-            background: linear-gradient(to bottom, #7a5ca3, #5a3c8a);
-        }
-        
-        #assignedRoles {
-            margin: 25px 0;
-        }
-        
-        #assignedRoles div {
-            padding: 12px;
-            margin: 12px 0;
-            background-color: rgba(74, 74, 106, 0.5);
-            border-radius: 8px;
-            font-size: 1rem;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-        
+
         .parchment-effect {
             background-image: url('https://www.transparenttextures.com/patterns/old-paper.png');
             background-color: var(--parchment-color);
@@ -265,104 +216,30 @@
             border: 1px solid #c9b7a2;
             margin: 20px 0;
         }
-        
-        .player-count {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-            font-weight: bold;
+
+        .player-status-list {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            margin-top: 20px;
         }
-        
-        .make-host-btn {
-            background: linear-gradient(to bottom, var(--success-color), #2E7D32);
-            color: white;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            margin-left: 10px;
-            border-radius: 6px;
-            flex-shrink: 0;
+        .player-status-list li {
+            padding: 8px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+            font-size: 1rem;
         }
-        
-        .make-host-btn:hover {
-            background: linear-gradient(to bottom, #66BB6A, #388E3C);
-        }
-        
-        .reset-btn {
-            background: linear-gradient(to bottom, var(--danger-color), #8b0000);
-            color: white;
-        }
-        
-        .reset-btn:hover {
-            background: linear-gradient(to bottom, #c52d2d, #a00000);
-        }
-        
-        .assign-host-btn {
-            background: linear-gradient(to bottom, var(--info-color), #303f9f);
-            color: white;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            margin-left: 10px;
-            border-radius: 6px;
-            flex-shrink: 0;
-        }
-        
-        .assign-host-btn:hover {
-            background: linear-gradient(to bottom, #5c6bc0, #3949ab);
-        }
-        
-        /* Animazioni e effetti aggiuntivi */
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .shake {
-            animation: shake 0.5s;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-5px); }
-            40%, 80% { transform: translateX(5px); }
-        }
-        
-        /* Ottimizzazione per mobile */
-        @media (max-width: 768px) {
-            .screen {
-                padding: 20px;
-                margin: 10px;
-            }
-            
-            button {
-                padding: 12px 20px;
-                font-size: 1rem;
-                min-width: 160px;
-            }
-            
-            #playersList div, #assignedRoles div {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-            
-            .make-host-btn, .assign-host-btn {
-                margin-left: 0;
-                margin-top: 8px;
-                align-self: flex-end;
-            }
+        .player-status-list .eliminated {
+            text-decoration: line-through;
+            color: var(--danger-color);
+            font-style: italic;
         }
     </style>
 </head>
 <body>
     <div id="homeScreen" class="screen active">
-        <h1>LUPUS CUGGINOSO</h1>
+        <h1>LUPUS CUGGINOSO 🐺</h1>
         <div class="parchment-effect">
-            <p>Il gioco del lupo mannaro in versione cugginese</p>
+            <p>Il gioco del lupo mannaro in versione cugginese, ora più **realistico** con fasi Giorno/Notte e votazioni.</p>
         </div>
         <button onclick="showScreen('joinScreen')" class="pulse">ENTRA NEL GIOCO</button>
     </div>
@@ -387,20 +264,50 @@
     <div id="hostScreen" class="screen">
         <h1>SEI IL NARRATORE</h1>
         <div class="parchment-effect">
+            <div id="gameInfo"></div>
+            <h2>Giocatori e Ruoli:</h2>
             <div id="assignedRoles"></div>
             <div class="player-count" id="hostPlayerCount">0 giocatori in lobby</div>
         </div>
         <button id="startGameButton" onclick="startGame()" class="pulse">AVVIA PARTITA</button>
+        <button id="nextPhaseButton" onclick="handleHostNextPhase()" style="display:none;">AVANTI (Giorno)</button>
         <button onclick="resetGame()" class="reset-btn">RESETTA PARTITA</button>
     </div>
 
     <div id="roleScreen" class="screen">
         <h1>IL TUO RUOLO È:</h1>
+        <div id="gameStatusDisplay" class="parchment-effect"></div>
         <div class="role-container">
             <img id="roleImage" class="role-image" src="" alt="Ruolo" loading="lazy">
             <div id="playerRole" class="role-display">...</div>
             <div id="roleDescription" class="role-description parchment-effect"></div>
+            
+            <div id="nightAction" style="margin-top: 30px;">
+                <h2>Azione Notturna</h2>
+                <div id="targetList" class="parchment-effect"></div>
+                <button id="confirmNightAction" style="display:none; background: var(--vote-color); color: white;">CONFERMA AZIONE</button>
+            </div>
+            
+            <div id="dayAction" style="margin-top: 30px;">
+                <h2>Votazione del Giorno</h2>
+                <p>Scegli il tuo sospettato da linciare:</p>
+                <div id="voteList" class="parchment-effect"></div>
+                <button id="confirmDayVote" style="display:none; background: var(--info-color); color: white;">CONFERMA VOTO</button>
+            </div>
+
+            <h2>Stato Villaggio</h2>
+            <ul id="playersAliveList" class="player-status-list parchment-effect"></ul>
         </div>
+    </div>
+
+    <div id="gameOverScreen" class="screen">
+        <h1>PARTITA TERMINATA</h1>
+        <div class="parchment-effect">
+            <h2 id="winnerFaction"></h2>
+            <p>Risultato finale:</p>
+            <div id="finalRolesList" class="player-status-list"></div>
+        </div>
+        <button onclick="window.location.reload()">NUOVA PARTITA</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -408,7 +315,9 @@
     <script>
         // Configurazione Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyAsTO8sYN1M7A1aK238RiYXDef4MQkw-AI",
+            // DEVI SOSTITUIRE QUESTE CHIAVI CON LE TUE CHIAVI REALI DI FIREBASE!
+            // Le chiavi fornite nell'originale sono fittizie.
+            apiKey: "AIzaSyAsTO8sYN1M7A1aK238RiYXDef4MQkw-AI", 
             authDomain: "lupus-764f6.firebaseapp.com",
             databaseURL: "https://lupus-764f6-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "lupus-764f6",
@@ -424,43 +333,70 @@
         // Variabili globali
         let playerId;
         let isHost = false;
+        let playersRef = database.ref('players');
+        let gameRef = database.ref('gameStatus');
+        let currentPlayerRef;
+        let playerName = "";
+        let currentTargetId = null;
+        let currentVoteTargetId = null;
+
+        // Ruoli aggiornati con il Matto
         const roles = {
             "Lupo": {
-                description: "Il tuo scopo è eliminare tutti i Villici.",
-                image: "https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                description: "Il tuo scopo è eliminare tutti i Villici. Di notte, scegli la vittima.",
+                image: "https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                faction: "Lupo",
+                action: "kill"
             },
             "Puttana": {
-                description: "Il tuo ruolo è salvare un giocatore ogni notte, impedendo al Lupo di ucciderlo.",
-                image: "https://images.unsplash.com/photo-1593104547489-5cfb3839a3b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                description: "Il tuo ruolo è salvare un giocatore ogni notte, impedendo al Lupo di ucciderlo. Scegli chi proteggere.",
+                image: "https://images.unsplash.com/photo-1593104547489-5cfb3839a3b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                faction: "Villico",
+                action: "protect"
             },
             "Investigatore": {
-                description: "Il tuo ruolo è capire chi è il lupo.",
-                image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                description: "Il tuo ruolo è capire chi è il lupo. Di notte, scegli un giocatore per sapere se è 'Sospetto Alto' (Lupo) o meno.",
+                image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                faction: "Villico",
+                action: "investigate"
             },
             "Vanessa": {
-                description: "Il tuo ruolo è sbirciare durante la notte per scoprire qualche info in più.",
-                image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                description: "Il tuo ruolo è sbirciare durante la notte per scoprire qualche info in più. (Azione non implementata in questo codice, funziona come Contadino).",
+                image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                faction: "Villico",
+                action: null
             },
             "Sindaco": {
-                description: "Il tuo ruolo è votare due volte durante le votazioni.",
-                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                description: "Il tuo ruolo ti permette di votare due volte durante le votazioni del giorno. (L'implementazione richiede due voti sul target, gestita dal Narratore).",
+                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                faction: "Villico",
+                action: null
+            },
+            "Matto": {
+                description: "Sei un solitario. Il tuo scopo è farti linciare durante la prima Votazione del Giorno! Se ci riesci, vinci la partita da solo!",
+                image: "https://images.unsplash.com/photo-1549480111-738d1797e857?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                faction: "Neutrale",
+                action: null
             },
             "Contadino": {
-                description: "Il tuo ruolo è zappare la vigna.",
-                image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                description: "Sei un semplice abitante del villaggio. Il tuo ruolo è zappare la vigna e votare il lupo giusto.",
+                image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                faction: "Villico",
+                action: null
             },
             "Narratore": {
                 description: "Sei il narratore e controlli il gioco.",
-                image: "https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                image: "https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                faction: "NARRATORE",
+                action: null
             }
         };
         
-        const baseRoles = ["Lupo", "Puttana", "Investigatore", "Vanessa", "Sindaco", "Contadino"];
-        let playersRef;
-        let currentPlayerRef;
-        let playerName = "";
+        // Ruoli usati per l'assegnazione iniziale (il Contadino è il ruolo 'riempitivo')
+        const initialRoles = ["Lupo", "Puttana", "Investigatore", "Matto", "Sindaco"];
 
-        // Mostra alert personalizzato
+        // --- Funzioni di Utilità ---
+
         function showCustomAlert(message, isError = false) {
             const alertDiv = document.createElement('div');
             alertDiv.className = 'custom-alert';
@@ -481,6 +417,25 @@
             window.scrollTo(0, 0);
         }
 
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function updatePlayerCount(count) {
+            const countText = count === 1 ? "1 giocatore in lobby" : `${count} giocatori in lobby`;
+            document.getElementById('playerCount').textContent = countText;
+            if (document.getElementById('hostPlayerCount')) {
+                document.getElementById('hostPlayerCount').textContent = countText;
+            }
+        }
+
+        // --- Logica di Connessione e Lobby ---
+
         async function joinGame() {
             const nameInput = document.getElementById('playerName');
             playerName = nameInput.value.trim();
@@ -492,161 +447,84 @@
             }
 
             try {
-                // Rimuovi il giocatore esistente se c'è
-                if (currentPlayerRef) {
-                    await currentPlayerRef.remove();
-                }
-
                 playerId = Date.now().toString();
-                playersRef = database.ref('players');
                 currentPlayerRef = database.ref('players/' + playerId);
                 
-                // Controlla se il nome esiste già tra i giocatori attivi
-                const snapshot = await playersRef.once('value');
-                const players = snapshot.val() || {};
-                
-                let existingPlayer = null;
-                for (const [id, player] of Object.entries(players)) {
-                    if (player.name.toLowerCase() === playerName.toLowerCase()) {
-                        existingPlayer = { id, ...player };
-                        break;
-                    }
-                }
-                
-                if (existingPlayer) {
-                    // Se il giocatore esiste ma non ha un ruolo assegnato (non è ancora iniziata la partita)
-                    if (!existingPlayer.role) {
-                        // Permetti di rientrare con lo stesso nome
-                        await currentPlayerRef.set({
-                            name: playerName,
-                            role: '',
-                            isHost: existingPlayer.isHost,
-                            showRole: false,
-                            timestamp: firebase.database.ServerValue.TIMESTAMP
-                        });
-                    } 
-                    // Se il giocatore esiste e ha già un ruolo assegnato (partita in corso)
-                    else {
-                        // Verifica se il giocatore è ancora attivo
-                        const isActive = await checkPlayerActivity(existingPlayer.id);
-                        
-                        if (!isActive) {
-                            // Se non è attivo, permette di riprendere il ruolo
-                            await currentPlayerRef.set({
-                                name: playerName,
-                                role: existingPlayer.role,
-                                isHost: existingPlayer.isHost,
-                                showRole: existingPlayer.showRole,
-                                timestamp: firebase.database.ServerValue.TIMESTAMP
-                            });
-                        } else {
-                            showCustomAlert("Nome già in uso da un giocatore attivo! Scegli un altro nome.", true);
-                            nameInput.focus();
-                            return;
-                        }
-                    }
-                } else {
-                    // Aggiungi il nuovo giocatore
-                    await currentPlayerRef.set({
-                        name: playerName,
-                        role: '',
-                        isHost: false,
-                        showRole: false,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                    });
-                }
+                await currentPlayerRef.set({
+                    name: playerName,
+                    role: '',
+                    isHost: false,
+                    isAlive: true,
+                    showRole: false,
+                    lastTarget: '', // Per l'azione notturna
+                    dayVote: '', // Per la votazione diurna
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
 
-                // Mostra la lobby
+                // Mostra la lobby e avvia i listener
                 showScreen('lobbyScreen');
                 listenForPlayers();
-                listenForRoleAssignment();
-                listenForGameReset();
+                listenForGameStatus();
                 
+                // Gestione della disconnessione
+                currentPlayerRef.onDisconnect().remove();
+
             } catch (error) {
                 console.error("Errore:", error);
                 showCustomAlert("Errore di connessione. Ricarica e riprova.", true);
             }
         }
 
-        // Funzione per verificare se un giocatore è ancora attivo
-        async function checkPlayerActivity(playerId) {
-            try {
-                const playerRef = database.ref('players/' + playerId);
-                const snapshot = await playerRef.once('value');
-                return snapshot.exists();
-            } catch (error) {
-                console.error("Errore nel verificare l'attività del giocatore:", error);
-                return false;
-            }
-        }
-
-        function updatePlayerCount(count) {
-            const countText = count === 1 ? "1 giocatore in lobby" : `${count} giocatori in lobby`;
-            document.getElementById('playerCount').textContent = countText;
-            if (document.getElementById('hostPlayerCount')) {
-                document.getElementById('hostPlayerCount').textContent = countText;
-            }
-        }
-
         function listenForPlayers() {
-            playersRef.orderByChild('timestamp').on('value', (snapshot) => {
+            playersRef.on('value', (snapshot) => {
                 const players = snapshot.val() || {};
                 const playersList = document.getElementById('playersList');
+                const assignedRolesDiv = document.getElementById('assignedRoles');
                 playersList.innerHTML = '';
+                assignedRolesDiv.innerHTML = '<h2>RUOLI ASSEGNATI:</h2>';
 
                 let hostExists = false;
                 let playerCount = 0;
                 
                 for (const [id, player] of Object.entries(players)) {
+                    if (player.isHost) {
+                        hostExists = true;
+                    }
+
+                    if (!player.isHost && player.isAlive !== false) {
+                         playerCount++;
+                    }
+
                     const playerDiv = document.createElement('div');
                     playerDiv.innerHTML = `${player.name} ${player.isHost ? '<span style="color:var(--primary-color)">(NARRATORE)</span>' : ''}`;
                     
-                    // Aggiungi pulsante "Rendi narratore" solo per l'host e se non è già narratore
-                    if (isHost && !player.isHost) {
-                        const assignHostBtn = document.createElement('button');
-                        assignHostBtn.className = 'assign-host-btn';
-                        assignHostBtn.textContent = 'Assegna narratore';
-                        assignHostBtn.onclick = () => assignNewHost(id);
-                        playerDiv.appendChild(assignHostBtn);
+                    if (player.isAlive === false) {
+                        playerDiv.innerHTML = `<span style="text-decoration: line-through; color: var(--danger-color);">${player.name} ELIMINATO</span>`;
+                    } else if (player.isAlive === true) {
+                        // Aggiungi pulsante "Assegna narratore" solo per l'host e se non è già narratore
+                        if (isHost && !player.isHost) {
+                            const assignHostBtn = document.createElement('button');
+                            assignHostBtn.className = 'assign-host-btn';
+                            assignHostBtn.textContent = 'Assegna narratore';
+                            assignHostBtn.onclick = () => assignNewHost(id);
+                            playerDiv.appendChild(assignHostBtn);
+                        }
                     }
-                    
+
                     playersList.appendChild(playerDiv);
-                    
-                    if (player.isHost) hostExists = true;
-                    playerCount++;
+
+                    // Aggiorna lista ruoli per l'Host
+                    if (isHost && !player.isHost) {
+                        let roleStyle = roles[player.role]?.faction === "Lupo" ? 'lupo-style' : (player.role ? 'villico-style' : '');
+                        assignedRolesDiv.innerHTML += `<div class="${roleStyle}">${player.name}: <strong>${player.role || '...in attesa...'}</strong> - Stato: ${player.isAlive !== false ? 'Vivo' : 'Eliminato'}</div>`;
+                    }
                 }
 
-                updatePlayerCount(playerCount);
+                updatePlayerCount(playerCount + (hostExists ? 1 : 0));
                 document.getElementById('hostButton').style.display = hostExists ? 'none' : 'block';
-            });
-        }
 
-        function listenForRoleAssignment() {
-            currentPlayerRef.on('value', (snapshot) => {
-                const player = snapshot.val();
-                if (!player) return;
-                
-                if (player.isHost) {
-                    isHost = true;
-                    showScreen('hostScreen');
-                    listenForRoles();
-                } else if (player.role && player.showRole) {
-                    document.getElementById('playerRole').textContent = player.role;
-                    document.getElementById('roleDescription').textContent = roles[player.role]?.description || '';
-                    document.getElementById('roleImage').src = roles[player.role]?.image || '';
-                    showScreen('roleScreen');
-                }
-            });
-        }
-
-        function listenForGameReset() {
-            currentPlayerRef.on('value', (snapshot) => {
-                const player = snapshot.val();
-                if (!player) return;
-                
-                // Se il giocatore non ha più un ruolo (reset del gioco)
-                if (!player.role && !player.isHost) {
-                    showScreen('lobbyScreen');
+                if (isHost && document.getElementById('startGameButton')) {
+                    document.getElementById('startGameButton').disabled = playerCount < 4; // Minimo 4 giocatori per ruoli complessi
                 }
             });
         }
@@ -670,7 +548,6 @@
                 
                 isHost = true;
                 showScreen('hostScreen');
-                listenForRoles();
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -678,170 +555,507 @@
             }
         }
 
-        async function assignNewHost(newHostId) {
+        // --- Logica di Gioco (Host) ---
+
+        async function startGame() {
             if (!isHost) return;
+
+            const snapshot = await playersRef.once('value');
+            const allPlayers = snapshot.val() || {};
+            const playersToAssign = Object.entries(allPlayers).filter(([, p]) => !p.isHost);
+            const playerIdsToAssign = playersToAssign.map(([id]) => id);
+            const playerCount = playerIdsToAssign.length;
             
-            try {
-                const snapshot = await playersRef.once('value');
-                const players = snapshot.val() || {};
-                
-                if (!players[newHostId]) {
-                    showCustomAlert("Giocatore non trovato!", true);
-                    return;
-                }
-                
-                const updates = {};
-                
-                // Resetta tutti gli host e i ruoli
-                for (const id in players) {
-                    updates['players/' + id + '/isHost'] = false;
-                    updates['players/' + id + '/role'] = '';
-                    updates['players/' + id + '/showRole'] = false;
-                }
-                
-                // Imposta il nuovo host
-                updates['players/' + newHostId + '/isHost'] = true;
-                updates['players/' + newHostId + '/role'] = 'Narratore';
-                updates['players/' + newHostId + '/showRole'] = true;
-                
-                await database.ref().update(updates);
-                
-                // Se ero io l'host precedente, torno alla lobby
-                if (currentPlayerRef.key === newHostId) {
-                    isHost = true;
-                    showScreen('hostScreen');
-                    listenForRoles();
-                } else {
-                    isHost = false;
-                    showScreen('lobbyScreen');
-                }
-                
-                showCustomAlert(`Hai assegnato il ruolo di narratore a ${players[newHostId].name}.`);
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nell'assegnazione del nuovo narratore.", true);
+            if (playerCount < 4) {
+                showCustomAlert("Servono almeno 4 giocatori per iniziare la partita!", true);
+                return;
             }
+            
+            // Assegna i ruoli in modo dinamico
+            let rolesToAssign = [...initialRoles];
+            while (rolesToAssign.length < playerCount) {
+                rolesToAssign.push("Contadino"); // Ruoli riempitivi
+            }
+            
+            const shuffledRoles = shuffleArray(rolesToAssign.slice(0, playerCount));
+            const updates = {};
+            
+            playerIdsToAssign.forEach((id, index) => {
+                updates['players/' + id + '/role'] = shuffledRoles[index];
+                updates['players/' + id + '/isAlive'] = true;
+                updates['players/' + id + '/showRole'] = true; // Mostra il ruolo al giocatore
+                updates['players/' + id + '/lastTarget'] = '';
+                updates['players/' + id + '/dayVote'] = '';
+            });
+
+            // Imposta lo stato iniziale del gioco
+            updates['gameStatus/day'] = 1;
+            updates['gameStatus/phase'] = 'Night';
+            updates['gameStatus/hostMessage'] = 'Il Narratore ha assegnato i ruoli. La Notte 1 è iniziata.';
+            updates['gameStatus/lastKilled'] = '';
+            updates['gameStatus/lastLynched'] = '';
+            updates['gameStatus/lastInvestigated'] = '';
+
+            await database.ref().update(updates);
+            
+            document.getElementById('startGameButton').style.display = 'none';
+            document.getElementById('nextPhaseButton').style.display = 'block';
         }
 
-        function listenForRoles() {
-            playersRef.on('value', (snapshot) => {
-                const players = snapshot.val() || {};
-                const assignedRolesDiv = document.getElementById('assignedRoles');
-                assignedRolesDiv.innerHTML = '<h2>RUOLI ASSEGNATI:</h2>';
-                
-                let playerCount = 0;
-                
-                for (const [id, player] of Object.entries(players)) {
-                    if (!player.isHost) {
-                        assignedRolesDiv.innerHTML += `<div>${player.name}: <strong>${player.role || '...in attesa...'}</strong></div>`;
-                        playerCount++;
-                    }
+        function handleHostNextPhase() {
+            gameRef.once('value').then(snapshot => {
+                const status = snapshot.val();
+                if (!status) return;
+
+                switch (status.phase) {
+                    case 'Night':
+                        startVote(); // Dalla notte si passa al voto (risoluzione e linciaggio)
+                        break;
+                    case 'Vote':
+                        startDay(); // Dalla votazione si passa al giorno (discussione)
+                        break;
+                    case 'Day':
+                        startNight(status.day + 1); // Dal giorno si passa alla notte successiva
+                        break;
+                    default:
+                        showCustomAlert("Fase di gioco non gestita.", true);
                 }
-                
-                updatePlayerCount(playerCount + 1); // +1 per il narratore
             });
         }
 
-        async function startGame() {
-            try {
-                const snapshot = await playersRef.once('value');
-                const players = snapshot.val() || {};
-                const playerIds = Object.keys(players);
-                const playerCount = playerIds.length;
-                
-                if (playerCount < 3) {
-                    showCustomAlert("Servono almeno 3 giocatori per iniziare!", true);
-                    return;
-                }
-                
-                // Filtra solo i giocatori (escludi il narratore)
-                const playerIdsToAssign = playerIds.filter(id => !players[id].isHost);
-                
-                let rolesToAssign = [...baseRoles];
-                while (rolesToAssign.length < playerIdsToAssign.length) {
-                    rolesToAssign.push("Contadino");
-                }
-                
-                const shuffledRoles = shuffleArray(rolesToAssign);
-                const updates = {};
-                
-                // Assegna i ruoli solo ai giocatori (non al narratore)
-                playerIdsToAssign.forEach((id, index) => {
-                    updates['players/' + id + '/role'] = shuffledRoles[index] || "Contadino";
-                    updates['players/' + id + '/showRole'] = false; // Inizialmente non mostrare
-                });
+        async function startNight(newDay) {
+            if (!isHost) return;
+            // 1. Controlla condizione di vittoria prima di iniziare la notte
+            const winCondition = await checkWinCondition();
+            if (winCondition) return resolveGameOver(winCondition);
 
-                await database.ref().update(updates);
-                
-                // Dopo 0.5 secondi, imposta showRole a true per tutti i giocatori (più veloce)
-                setTimeout(async () => {
-                    const showRoleUpdates = {};
-                    playerIdsToAssign.forEach(id => {
-                        showRoleUpdates['players/' + id + '/showRole'] = true;
-                    });
-                    await database.ref().update(showRoleUpdates);
-                }, 500);
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nell'assegnazione dei ruoli. Riprova!", true);
+            // 2. Resetta i target e imposta la fase
+            await gameRef.update({
+                phase: 'Night',
+                day: newDay,
+                hostMessage: `È Calata la Notte ${newDay}. Tutti chiudano gli occhi. Il Lupo si sveglia...`,
+                lastKilled: '',
+                lastLynched: ''
+            });
+            await playersRef.once('value').then(snapshot => {
+                const players = snapshot.val() || {};
+                const updates = {};
+                Object.keys(players).forEach(id => {
+                    updates[id + '/lastTarget'] = '';
+                    updates[id + '/dayVote'] = '';
+                });
+                playersRef.update(updates);
+            });
+
+            document.getElementById('nextPhaseButton').textContent = 'RISOLVI LA NOTTE (Voto)';
+        }
+
+        async function startVote() {
+            if (!isHost) return;
+
+            // 1. Risolvi le azioni notturne
+            const nightResults = await resolveNight();
+            
+            // 2. Controlla Matto (se eliminato di notte) o altre condizioni di vittoria
+            const winConditionAfterNight = await checkWinCondition();
+            if (winConditionAfterNight) return resolveGameOver(winConditionAfterNight);
+
+            // 3. Imposta la fase di Votazione del Giorno
+            await gameRef.update({
+                phase: 'Vote',
+                hostMessage: `È Mattino! ${nightResults.message} Ora è il momento di discutere e votare per un linciaggio.`,
+            });
+            document.getElementById('nextPhaseButton').textContent = 'LINCIAGGIO (Giorno)';
+        }
+
+        async function startDay() {
+            if (!isHost) return;
+            
+            // 1. Risolvi il Voto di Linciaggio
+            const dayResults = await resolveDayVote();
+
+            // 2. Controlla la vittoria del Matto (se linciato al giorno 1)
+            const gameStatus = (await gameRef.once('value')).val();
+
+            if (dayResults.playerLynchedId && roles[dayResults.playerLynchedRole].faction === "Neutrale" && gameStatus.day === 1) {
+                return resolveGameOver("Matto");
             }
+            
+            // 3. Controlla condizione di vittoria dopo il linciaggio
+            const winConditionAfterDay = await checkWinCondition();
+            if (winConditionAfterDay) return resolveGameOver(winConditionAfterDay);
+            
+            // 4. Imposta la fase Giorno (Discussione)
+            await gameRef.update({
+                phase: 'Day',
+                hostMessage: `Sopravvissuti! ${dayResults.message} Discutete e preparatevi per la prossima notte.`,
+                lastLynched: dayResults.playerLynchedId ? (await playersRef.child(dayResults.playerLynchedId).once('value')).val().name : ''
+            });
+
+            document.getElementById('nextPhaseButton').textContent = 'PROSSIMA NOTTE';
+        }
+
+        async function resolveNight() {
+            const snapshot = await playersRef.once('value');
+            const players = snapshot.val() || {};
+            const alivePlayers = Object.entries(players).filter(([, p]) => p.isAlive === true);
+            const nightActions = alivePlayers.map(([, p]) => ({ name: p.name, role: p.role, target: p.lastTarget }));
+
+            const lupoTargetId = nightActions.find(a => a.role === "Lupo")?.target;
+            const puttanaTargetId = nightActions.find(a => a.role === "Puttana")?.target;
+            const investigatoreTargetId = nightActions.find(a => a.role === "Investigatore")?.target;
+
+            let killedPlayerName = '';
+            let message = '';
+            let updates = {};
+            let isKilled = false;
+
+            // 1. Risoluzione Morte
+            if (lupoTargetId) {
+                if (lupoTargetId === puttanaTargetId) {
+                    message += `Il Lupo ha attaccato ${players[lupoTargetId].name}, ma è stato salvato dalla Puttana!`;
+                } else {
+                    // Uccide il bersaglio
+                    updates['players/' + lupoTargetId + '/isAlive'] = false;
+                    killedPlayerName = players[lupoTargetId].name;
+                    message += `Il Lupo ha ucciso ${killedPlayerName} (${players[lupoTargetId].role}) di notte!`;
+                    isKilled = true;
+                }
+            } else {
+                 message += `Il Lupo non ha attaccato.`;
+            }
+
+            // 2. Risoluzione Investigatore (Comunicazione privata dell'Host)
+            if (investigatoreTargetId) {
+                const targetRole = players[investigatoreTargetId].role;
+                let suspicion = roles[targetRole].faction === "Lupo" ? 'ALTO' : 'BASSO';
+                message += ` **Investigatore:** La tua indagine su ${players[investigatoreTargetId].name} ha rivelato Sospetto: ${suspicion}.`;
+                updates['gameStatus/lastInvestigated'] = `${players[investigatoreTargetId].name} (Sospetto: ${suspicion})`;
+            }
+
+            // 3. Aggiorna Firebase
+            updates['gameStatus/lastKilled'] = killedPlayerName;
+            await database.ref().update(updates);
+
+            return { message, isKilled };
+        }
+
+        async function resolveDayVote() {
+            const snapshot = await playersRef.once('value');
+            const players = snapshot.val() || {};
+            const alivePlayers = Object.entries(players).filter(([, p]) => p.isAlive === true && !p.isHost);
+            
+            // Calcola i voti totali
+            let voteCounts = {};
+            alivePlayers.forEach(([id, player]) => {
+                if (player.dayVote) {
+                    voteCounts[player.dayVote] = (voteCounts[player.dayVote] || 0) + 1;
+                    // Il Sindaco vota due volte (Implementazione realistica nel codice)
+                    if (player.role === 'Sindaco') {
+                         voteCounts[player.dayVote] = (voteCounts[player.dayVote] || 0) + 1;
+                    }
+                }
+            });
+
+            // Trova il linciato (maggioranza semplice)
+            let maxVotes = 0;
+            let playerLynchedId = null;
+            let playerLynchedRole = null;
+            let tied = false;
+
+            for (const id in voteCounts) {
+                if (voteCounts[id] > maxVotes) {
+                    maxVotes = voteCounts[id];
+                    playerLynchedId = id;
+                    playerLynchedRole = players[id].role;
+                    tied = false;
+                } else if (voteCounts[id] === maxVotes) {
+                    tied = true;
+                }
+            }
+
+            let message = '';
+            let updates = {};
+
+            if (playerLynchedId && !tied) {
+                // Linciaggio avvenuto
+                updates['players/' + playerLynchedId + '/isAlive'] = false;
+                message = `${players[playerLynchedId].name} è stato linciato ed era un **${playerLynchedRole}**!`;
+                await database.ref().update(updates);
+            } else {
+                message = "Nessuno è stato linciato oggi, i voti erano pari o insufficienti.";
+                playerLynchedId = null;
+                playerLynchedRole = null;
+            }
+
+            return { message, playerLynchedId, playerLynchedRole };
+        }
+
+        async function resolveGameOver(winner) {
+            await gameRef.update({
+                phase: 'GameOver',
+                hostMessage: `La Partita è Terminata! Vittoria della Fazione: ${winner}.`,
+            });
+            document.getElementById('nextPhaseButton').style.display = 'none'; // Fine partita
+        }
+
+        async function checkWinCondition() {
+            const snapshot = await playersRef.once('value');
+            const players = snapshot.val() || {};
+            const alivePlayers = Object.values(players).filter(p => p.role && !p.isHost && p.isAlive !== false);
+            
+            const aliveLupi = alivePlayers.filter(p => roles[p.role]?.faction === "Lupo");
+            const aliveVillici = alivePlayers.filter(p => roles[p.role]?.faction === "Villico");
+
+            // 1. Vittoria dei Lupi (Realistica: Lupi >= Villici)
+            if (aliveLupi.length >= aliveVillici.length && aliveLupi.length > 0) {
+                return "Lupi";
+            }
+
+            // 2. Vittoria dei Villici
+            if (aliveLupi.length === 0 && aliveVillici.length > 0) {
+                return "Villici";
+            }
+
+            return null; // Nessuna vittoria, continua
+        }
+
+        // --- Logica di Gioco (Giocatore) ---
+
+        function listenForGameStatus() {
+            gameRef.on('value', async (snapshot) => {
+                const status = snapshot.val();
+                if (!status) return;
+
+                const playerSnapshot = await currentPlayerRef.once('value');
+                const player = playerSnapshot.val();
+                if (!player) return; // Giocatore disconnesso
+
+                // Aggiorna lo stato generale
+                document.getElementById('gameStatusDisplay').innerHTML = `
+                    <p>Fase: **${status.phase}** | Giorno: **${status.day || 0}**</p>
+                    <p>Messaggio Narratore: **${status.hostMessage}**</p>
+                `;
+
+                updatePlayersAliveList();
+
+                // Gestione Schermate
+                if (status.phase === 'GameOver') {
+                    showScreen('gameOverScreen');
+                    resolvePlayerGameOver(status);
+                    return;
+                } else if (player.showRole) {
+                    showScreen('roleScreen'); // Mantiene i giocatori sulla schermata del ruolo
+                } else if (player.isHost) {
+                    showScreen('hostScreen');
+                } else {
+                    showScreen('lobbyScreen');
+                }
+
+                // Gestione Azioni (Solo se il giocatore è vivo e non Narratore)
+                if (player.isAlive && !player.isHost) {
+                    if (status.phase === 'Night') {
+                        setupNightAction(player, status);
+                        document.getElementById('dayAction').style.display = 'none';
+                        document.getElementById('nightAction').style.display = 'block';
+                    } else if (status.phase === 'Vote') {
+                        setupDayVote(player, status);
+                        document.getElementById('nightAction').style.display = 'none';
+                        document.getElementById('dayAction').style.display = 'block';
+                    } else {
+                         document.getElementById('nightAction').style.display = 'none';
+                         document.getElementById('dayAction').style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        async function updatePlayersAliveList() {
+            const playersSnapshot = await playersRef.once('value');
+            const players = playersSnapshot.val() || {};
+            const list = document.getElementById('playersAliveList');
+            list.innerHTML = '';
+
+            Object.values(players).filter(p => !p.isHost).forEach(player => {
+                const listItem = document.createElement('li');
+                listItem.textContent = player.name;
+                if (player.isAlive === false) {
+                    listItem.classList.add('eliminated');
+                    listItem.textContent += ` (${player.role})`;
+                }
+                list.appendChild(listItem);
+            });
+        }
+
+        async function setupNightAction(player, status) {
+            const playerRole = roles[player.role];
+            const targetListDiv = document.getElementById('targetList');
+            const confirmBtn = document.getElementById('confirmNightAction');
+            targetListDiv.innerHTML = '';
+            confirmBtn.style.display = 'none';
+
+            if (!playerRole.action) {
+                targetListDiv.innerHTML = `<p>È notte. Chiudi gli occhi e riposa, **Contadino**.</p>`;
+                return;
+            }
+
+            const playersSnapshot = await playersRef.once('value');
+            const allPlayers = playersSnapshot.val() || {};
+            const aliveTargets = Object.entries(allPlayers).filter(([id, p]) => p.isAlive && !p.isHost && id !== playerId);
+
+            aliveTargets.forEach(([id, p]) => {
+                const btn = document.createElement('button');
+                btn.textContent = `Scegli ${p.name}`;
+                btn.onclick = () => {
+                    currentTargetId = id;
+                    confirmBtn.style.display = 'block';
+                    showCustomAlert(`Hai scelto ${p.name}. Conferma.`);
+                };
+                targetListDiv.appendChild(btn);
+            });
+
+            confirmBtn.onclick = () => confirmAction(playerRole.action);
+        }
+
+        async function confirmAction(actionType) {
+            if (!currentTargetId) {
+                showCustomAlert("Devi scegliere un obiettivo!", true);
+                return;
+            }
+
+            try {
+                await currentPlayerRef.update({
+                    lastTarget: currentTargetId
+                });
+                showCustomAlert(`Azione di ${actionType} confermata su ${document.querySelector(`#targetList button[onclick*="${currentTargetId}"]`).textContent.replace('Scegli ', '')}!`);
+                document.getElementById('confirmNightAction').style.display = 'none';
+                currentTargetId = null; // Resetta dopo la conferma
+            } catch (error) {
+                console.error("Errore nell'azione notturna:", error);
+                showCustomAlert("Errore nella conferma dell'azione.", true);
+            }
+        }
+
+        async function setupDayVote(player, status) {
+            const voteListDiv = document.getElementById('voteList');
+            const confirmBtn = document.getElementById('confirmDayVote');
+            voteListDiv.innerHTML = '';
+            confirmBtn.style.display = 'none';
+
+            const playersSnapshot = await playersRef.once('value');
+            const allPlayers = playersSnapshot.val() || {};
+            const aliveTargets = Object.entries(allPlayers).filter(([id, p]) => p.isAlive && !p.isHost && id !== playerId);
+
+            aliveTargets.forEach(([id, p]) => {
+                const btn = document.createElement('button');
+                btn.textContent = `Vota per linciare ${p.name}`;
+                btn.onclick = () => {
+                    currentVoteTargetId = id;
+                    confirmBtn.style.display = 'block';
+                    showCustomAlert(`Hai scelto di linciare ${p.name}. Conferma.`);
+                };
+                voteListDiv.appendChild(btn);
+            });
+
+            confirmBtn.onclick = confirmDayVote;
+        }
+
+        async function confirmDayVote() {
+            if (!currentVoteTargetId) {
+                showCustomAlert("Devi scegliere qualcuno da linciare!", true);
+                return;
+            }
+
+            try {
+                await currentPlayerRef.update({
+                    dayVote: currentVoteTargetId
+                });
+                showCustomAlert(`Voto confermato! Il tuo voto è per ${document.querySelector(`#voteList button[onclick*="${currentVoteTargetId}"]`).textContent.replace('Vota per linciare ', '')}.`);
+                document.getElementById('confirmDayVote').style.display = 'none';
+                currentVoteTargetId = null; // Resetta dopo la conferma
+            } catch (error) {
+                console.error("Errore nel voto diurno:", error);
+                showCustomAlert("Errore nella conferma del voto.", true);
+            }
+        }
+        
+        async function resolvePlayerGameOver(status) {
+             const playersSnapshot = await playersRef.once('value');
+             const allPlayers = playersSnapshot.val() || {};
+             const finalRolesList = document.getElementById('finalRolesList');
+             finalRolesList.innerHTML = '';
+
+             document.getElementById('winnerFaction').textContent = `Vittoria della Fazione: ${status.hostMessage.split(': ')[1]}`;
+             
+             Object.values(allPlayers).filter(p => !p.isHost).forEach(player => {
+                 const listItem = document.createElement('li');
+                 let roleFaction = roles[player.role]?.faction;
+                 let style = roleFaction === 'Lupo' ? 'color: var(--danger-color); font-weight: bold;' : (roleFaction === 'Villico' ? 'color: var(--success-color);' : 'color: var(--primary-color);');
+                 
+                 listItem.innerHTML = `<span style="${style}">${player.name} (${player.role})</span> - Stato: ${player.isAlive !== false ? 'Vivo' : 'Eliminato'}`;
+                 finalRolesList.appendChild(listItem);
+             });
         }
 
         async function resetGame() {
             if (!isHost) return;
+
+            const alertDiv = showCustomAlert("Vuoi resettare la partita (ruoli e stato)?", false);
+            alertDiv.innerHTML = `
+                <p>Vuoi resettare la partita (ruoli e stato)?</p>
+                <button onclick="confirmReset()">CONFERMA</button>
+                <button onclick="this.parentNode.remove()">ANNULLA</button>
+            `;
             
-            try {
-                const alertDiv = showCustomAlert("Vuoi resettare la partita e assegnare un nuovo narratore?", false);
-                alertDiv.innerHTML = `
-                    <p>Vuoi resettare la partita e assegnare un nuovo narratore?</p>
-                    <button onclick="confirmReset()">CONFERMA</button>
-                    <button onclick="this.parentNode.remove()">ANNULLA</button>
-                `;
-                
-                window.confirmReset = async function() {
+            window.confirmReset = async function() {
+                try {
+                    // Resetta tutti gli stati e i ruoli
+                    const playersSnapshot = await playersRef.once('value');
+                    const players = playersSnapshot.val() || {};
                     const updates = {};
-                    const snapshot = await playersRef.once('value');
-                    const players = snapshot.val() || {};
                     
                     for (const id in players) {
+                        // Mantiene solo il nome e l'host, resetta il resto
                         updates['players/' + id + '/role'] = '';
                         updates['players/' + id + '/showRole'] = false;
-                        updates['players/' + id + '/isHost'] = false;
+                        updates['players/' + id + '/isAlive'] = true;
+                        updates['players/' + id + '/lastTarget'] = '';
+                        updates['players/' + id + '/dayVote'] = '';
+                        // Se il giocatore era il Narratore, lo riporta a Contadino/senza ruolo
+                        if (!players[id].isHost) {
+                           updates['players/' + id + '/isHost'] = false;
+                        }
                     }
+
+                    // Resetta lo stato del gioco
+                    updates['gameStatus'] = {
+                        day: 0,
+                        phase: 'Lobby',
+                        hostMessage: 'In attesa di un nuovo narratore...'
+                    };
                     
                     await database.ref().update(updates);
                     
                     document.querySelector('.custom-alert')?.remove();
-                    showCustomAlert("Partita resettata! Ora puoi assegnare un nuovo narratore.");
-                };
-                
-            } catch (error) {
-                console.error("Errore:", error);
-                showCustomAlert("Errore nel resettare il gioco.", true);
-            }
-        }
-
-        function shuffleArray(array) {
-            const newArray = [...array];
-            for (let i = newArray.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-            }
-            return newArray;
-        }
-
-        // Gestione della disconnessione
-        window.addEventListener('beforeunload', async () => {
-            if (currentPlayerRef) {
-                try {
-                    await currentPlayerRef.remove();
+                    
+                    // L'host torna alla schermata host, gli altri alla lobby
+                    isHost = false; 
+                    showScreen('lobbyScreen');
+                    
+                    showCustomAlert("Partita resettata! Ora un giocatore può diventare Narratore.");
                 } catch (error) {
-                    console.error("Errore nella pulizia:", error);
+                    console.error("Errore nel reset:", error);
+                    showCustomAlert("Errore nel resettare il gioco.", true);
                 }
-            }
-        });
+            };
+        }
+
+        // --- Inizializzazione ---
+        // Funzione da eseguire all'avvio: verifica subito se sono già un host/giocatore attivo.
+        // A causa della natura di Firebase, i listener gestiranno la maggior parte dei cambi di schermata.
+        window.onload = () => {
+            // Se ho un player ID salvato, potrei rientrare (non implementato per semplicità, ricarica pulita)
+        };
     </script>
 </body>
 </html>
