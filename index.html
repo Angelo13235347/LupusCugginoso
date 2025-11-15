@@ -391,6 +391,14 @@
             font-weight: bold;
         }
         
+        .voting-status {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: rgba(248, 187, 34, 0.2);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
         /* Animazioni e effetti aggiuntivi */
         .pulse {
             animation: pulse 2s infinite;
@@ -476,6 +484,10 @@
         <div class="parchment-effect">
             <div id="assignedRoles"></div>
             <div class="player-count" id="hostPlayerCount">0 giocatori in lobby</div>
+            <div id="votingStatus" class="voting-status" style="display: none;">
+                <h3>STATO VOTAZIONE</h3>
+                <p id="votesCount">0 voti registrati</p>
+            </div>
         </div>
         <button id="startGameButton" onclick="startGame()" class="pulse">AVVIA PARTITA</button>
         <button onclick="startVotingPhase()" id="startVotingButton">INIZIA VOTAZIONE</button>
@@ -502,6 +514,9 @@
                 <div class="voting-options" id="votingOptions"></div>
             </div>
             <button onclick="submitVote()" id="submitVoteButton">CONFERMA VOTO</button>
+            <div id="alreadyVoted" style="display: none; margin-top: 20px;">
+                <p style="color: var(--primary-color); font-weight: bold;">Hai già votato! Attendi i risultati.</p>
+            </div>
         </div>
     </div>
 
@@ -546,6 +561,8 @@
         let isHost = false;
         let currentVote = null;
         let votingPhase = 1; // 1 = prima votazione, 2 = seconda votazione
+        let hasVoted = false;
+        
         const roles = {
             "Lupo": {
                 description: "Il tuo scopo è eliminare tutti i Villici.",
@@ -688,6 +705,7 @@
                 listenForRoleAssignment();
                 listenForGameReset();
                 listenForVotingPhase();
+                listenForVotes();
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -788,18 +806,36 @@
                 const gameState = snapshot.val();
                 if (!gameState) return;
                 
+                console.log("Stato del gioco aggiornato:", gameState);
+                
                 if (gameState.votingPhase && !isHost) {
                     votingPhase = gameState.votingPhase;
+                    console.log("Avvio schermata votazione per fase:", votingPhase);
                     setupVotingScreen();
                 }
                 
                 if (gameState.showVotingResults) {
+                    console.log("Mostrando risultati votazione");
                     showVotingResults();
                 }
                 
                 if (gameState.nightPhase) {
                     showNightPhase();
                 }
+            });
+        }
+
+        function listenForVotes() {
+            if (!isHost) return;
+            
+            votesRef.on('value', (snapshot) => {
+                const votes = snapshot.val() || {};
+                const voteCount = Object.keys(votes).length;
+                
+                document.getElementById('votingStatus').style.display = 'block';
+                document.getElementById('votesCount').textContent = `${voteCount} voti registrati`;
+                
+                console.log(`Voti registrati: ${voteCount}`);
             });
         }
 
@@ -824,6 +860,7 @@
                 isHost = true;
                 showScreen('hostScreen');
                 listenForRoles();
+                listenForVotes();
                 
             } catch (error) {
                 console.error("Errore:", error);
@@ -956,11 +993,15 @@
                 // Reset dei voti precedenti
                 await votesRef.remove();
                 
+                // Reset stato votazione
+                hasVoted = false;
+                
                 // Imposta la fase di gioco a votazione
                 await gameStateRef.set({
                     votingPhase: 1,
                     showVotingResults: false,
-                    nightPhase: false
+                    nightPhase: false,
+                    votingActive: true
                 });
                 
                 showCustomAlert("Votazione iniziata! I giocatori possono ora votare.");
@@ -973,6 +1014,21 @@
 
         function setupVotingScreen() {
             if (isHost) return; // L'host non vota
+            
+            console.log("Setup schermata votazione...");
+            
+            // Controlla se ha già votato
+            votesRef.child(playerId).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    hasVoted = true;
+                    document.getElementById('alreadyVoted').style.display = 'block';
+                    document.getElementById('submitVoteButton').style.display = 'none';
+                } else {
+                    hasVoted = false;
+                    document.getElementById('alreadyVoted').style.display = 'none';
+                    document.getElementById('submitVoteButton').style.display = 'block';
+                }
+            });
             
             showScreen('votingScreen');
             
@@ -992,20 +1048,10 @@
                 const players = snapshot.val() || {};
                 let candidates = [];
                 
-                if (votingPhase === 1) {
-                    // Prima votazione: tutti i giocatori vivi (tranne sé stessi)
-                    for (const [id, player] of Object.entries(players)) {
-                        if (player.isAlive && id !== playerId && !player.isHost) {
-                            candidates.push({ id, name: player.name });
-                        }
-                    }
-                } else {
-                    // Seconda votazione: solo i due con più voti (da implementare)
-                    // Per ora mostra tutti i giocatori vivi
-                    for (const [id, player] of Object.entries(players)) {
-                        if (player.isAlive && id !== playerId && !player.isHost) {
-                            candidates.push({ id, name: player.name });
-                        }
+                // Prima votazione: tutti i giocatori vivi (tranne sé stessi)
+                for (const [id, player] of Object.entries(players)) {
+                    if (player.isAlive && id !== playerId && !player.isHost) {
+                        candidates.push({ id, name: player.name });
                     }
                 }
                 
@@ -1019,9 +1065,12 @@
                     optionDiv.className = 'voting-option';
                     optionDiv.innerHTML = `
                         <span>${candidate.name}</span>
-                        <div class="vote-count" style="display:none;">0</div>
                     `;
-                    optionDiv.onclick = () => selectVote(candidate.id, optionDiv);
+                    optionDiv.onclick = () => {
+                        if (!hasVoted) {
+                            selectVote(candidate.id, optionDiv);
+                        }
+                    };
                     votingOptions.appendChild(optionDiv);
                 });
             });
@@ -1031,6 +1080,8 @@
         }
 
         function selectVote(playerId, optionElement) {
+            if (hasVoted) return;
+            
             // Deseleziona tutte le opzioni
             document.querySelectorAll('.voting-option').forEach(opt => {
                 opt.classList.remove('selected');
@@ -1043,7 +1094,7 @@
         }
 
         async function submitVote() {
-            if (!currentVote) {
+            if (!currentVote || hasVoted) {
                 showCustomAlert("Seleziona un giocatore prima di votare!", true);
                 return;
             }
@@ -1055,6 +1106,10 @@
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
                 
+                hasVoted = true;
+                document.getElementById('alreadyVoted').style.display = 'block';
+                document.getElementById('submitVoteButton').style.display = 'none';
+                
                 showCustomAlert("Voto registrato! Attendi i risultati.");
                 
             } catch (error) {
@@ -1064,6 +1119,8 @@
         }
 
         async function showVotingResults() {
+            if (!isHost) return;
+            
             try {
                 // Calcola i risultati dei voti
                 const votesSnapshot = await votesRef.once('value');
@@ -1125,7 +1182,8 @@
                 
                 // Mostra a tutti i risultati
                 await gameStateRef.update({
-                    showVotingResults: true
+                    showVotingResults: true,
+                    votingPhase: 0
                 });
                 
                 showScreen('votingResultsScreen');
@@ -1250,7 +1308,6 @@
 
         // Inizializzazione
         document.addEventListener('DOMContentLoaded', function() {
-            // I riferimenti Firebase sono già inizializzati
             console.log("Lupus Cugginoso inizializzato!");
         });
     </script>
